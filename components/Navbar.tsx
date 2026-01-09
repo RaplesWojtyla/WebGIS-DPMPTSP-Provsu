@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon, Menu } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -28,39 +29,28 @@ import { Button } from "@/components/ui/button"
 
 const components: { title: string; href: string; description: string }[] = [
   {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
+    title: "Sektor Pertanian",
+    href: "/peluang-investasi/pertanian",
     description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
+      "Potensi investasi di sektor pertanian, perkebunan, dan peternakan Sumatera Utara.",
   },
   {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
+    title: "Sektor Pariwisata",
+    href: "/peluang-investasi/pariwisata",
     description:
-      "For sighted users to preview content available behind a link.",
+      "Peluang pengembangan destinasi wisata alam, budaya, dan infrastruktur pendukung.",
   },
   {
-    title: "Progress",
-    href: "/docs/primitives/progress",
+    title: "Sektor Energi",
+    href: "/peluang-investasi/energi",
     description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+      "Investasi energi terbarukan dan sumber daya mineral yang potensial.",
   },
   {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
+    title: "Sektor Infrastruktur",
+    href: "/peluang-investasi/infrastruktur",
     description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
+      "Pembangunan jalan, jembatan, dan fasilitas umum untuk mendukung pertumbuhan ekonomi.",
   },
 ]
 
@@ -83,7 +73,9 @@ export function NavigationMenuDemo() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Beranda</NavigationMenuTrigger>
+                <NavigationMenuTrigger className="hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900">
+                  Beranda
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                     <li className="row-span-3">
@@ -114,7 +106,9 @@ export function NavigationMenuDemo() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Peluang Investasi</NavigationMenuTrigger>
+                <NavigationMenuTrigger className="hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900">
+                  Peluang Investasi
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                     {components.map((component) => (
@@ -130,18 +124,18 @@ export function NavigationMenuDemo() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="#" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink asChild>
+                  <Link href="/maps" className={cn(navigationMenuTriggerStyle(), "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900")}>
                     Daerah
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="#" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink asChild>
+                  <Link href="#" className={cn(navigationMenuTriggerStyle(), "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900")}>
                     Informasi
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
@@ -153,7 +147,7 @@ export function NavigationMenuDemo() {
         <div className="md:hidden">
           <Drawer direction="left">
             <DrawerTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden hover:text-blue-900 hover:bg-blue-50/50">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
@@ -171,20 +165,21 @@ export function NavigationMenuDemo() {
               <div className="flex-1 overflow-y-auto px-4 py-4">
                 <nav className="flex flex-col space-y-4">
                   <div className="space-y-2">
-                    <Link href="/" className="block py-2 text-sm hover:text-primary">Home</Link>
-                    <Link href="#" className="block py-2 text-sm hover:text-primary">Visi & Misi</Link>
-                    <Link href="#" className="block py-2 text-sm hover:text-primary">Struktur Organisasi</Link>
+                    <h4 className="font-medium text-sm py-2 px-2 rounded-md border-b">Beranda</h4>
+                    <Link href="/" className="block py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Home</Link>
+                    <Link href="#" className="block py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Visi & Misi</Link>
+                    <Link href="#" className="block py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Struktur Organisasi</Link>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-medium text-sm text-muted-foreground">Peluang Investasi</h4>
+                    <h4 className="font-medium text-sm py-2 px-2 rounded-md border-b">Peluang Investasi</h4>
                     {components.slice(0, 4).map((component) => (
-                      <Link key={component.title} href={component.href} className="block py-2 text-sm hover:text-primary">
+                      <Link key={component.title} href={component.href} className="block py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">
                         {component.title}
                       </Link>
                     ))}
                   </div>
-                  <Link href="/maps" className="block font-medium py-2 text-sm hover:text-primary">Daerah</Link>
-                  <Link href="#" className="block font-medium py-2 text-sm hover:text-primary">Informasi</Link>
+                  <Link href="/maps" className="block font-medium py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Daerah</Link>
+                  <Link href="#" className="block font-medium py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Informasi</Link>
                 </nav>
               </div>
               <DrawerFooter className="border-t pt-4">

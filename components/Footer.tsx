@@ -3,7 +3,7 @@ import { Facebook, Instagram, MapPin, Phone } from "lucide-react"
 
 export function Footer() {
     return (
-        <footer className="w-full border-t bg-linear-to-r from-blue-600 to-indigo-700 text-white">
+        <footer className="w-full border-t bg-gradient-to-r from-slate-950 via-blue-950 to-blue-900 text-white">
             <div className="container px-4 md:px-6 py-4 md:py-16">
                 <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     <div className="space-y-4">
@@ -31,14 +31,18 @@ export function Footer() {
                         <h4 className="text-lg font-bold">Follow Us</h4>
                         <div className="flex gap-4">
                             <Link
-                                href="#"
+                                href="https://instagram.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-blue-100 hover:text-white transition-colors"
                                 aria-label="Instagram"
                             >
                                 <Instagram className="h-5 w-5" />
                             </Link>
                             <Link
-                                href="#"
+                                href="https://facebook.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-blue-100 hover:text-white transition-colors"
                                 aria-label="Facebook"
                             >
@@ -50,24 +54,24 @@ export function Footer() {
                         <h4 className="text-lg font-bold">Quick Links</h4>
                         <ul className="space-y-2 text-sm text-blue-100">
                             <li>
-                                <Link href="#" className="hover:text-white hover:underline transition-colors">
+                                <Link href="/" className="hover:text-white hover:underline transition-colors">
                                     Home
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="hover:text-white hover:underline transition-colors">
+                                <Link href="/about" className="hover:text-white hover:underline transition-colors">
                                     About
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="hover:text-white hover:underline transition-colors">
+                                <Link href="/services" className="hover:text-white hover:underline transition-colors">
                                     Services
                                 </Link>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div className="mt-10 border-t border-blue-500 pt-6 text-center text-xs text-blue-200">
+                <div className="mt-10 border-t border-slate-500 pt-6 text-center text-xs text-blue-200">
                     <p>© {new Date().getFullYear()} DPMPTSP Provinsi Sumatera Utara. All rights reserved.</p>
                 </div>
             </div>
