@@ -2,23 +2,8 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { promises as fs } from 'fs';
-import path from 'path';
-import MapWrapper from '@/components/Map/MapWrapper';
 
-export default async function MapsPage() {
-    const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json');
-    let geoJsonData = null;
-    let errorMessage = null;
-
-    try {
-        const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8');
-        geoJsonData = JSON.parse(geoJsonFileContents);
-    } catch (error) {
-        console.error("Error loading GeoJSON:", error);
-        errorMessage = "Failed to load map data. System could not retrieve necessary files.";
-    }
-
+export default function MapsPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Main Content Area: Sidebar + Map */}
@@ -71,15 +56,14 @@ export default async function MapsPage() {
 
                 {/* Map Container */}
                 <main className="flex-1 bg-gray-100 relative min-h-[500px]">
-                    {errorMessage ? (
-                        <div className="w-full h-full flex items-center justify-center text-red-600">
-                            <p>{errorMessage}</p>
+                    <div className="w-full h-full flex items-center justify-center p-8">
+                        <div className="text-center space-y-4">
+                            <div className="bg-white p-6 rounded-lg shadow-sm border">
+                                <p className="text-muted-foreground font-medium">Area Peta Interaktif</p>
+                                <p className="text-xs text-muted-foreground mt-2">(Peta akan dimuat di sini)</p>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="w-full h-full">
-                            <MapWrapper geoJsonData={geoJsonData} />
-                        </div>
-                    )}
+                    </div>
                 </main>
             </div>
 
