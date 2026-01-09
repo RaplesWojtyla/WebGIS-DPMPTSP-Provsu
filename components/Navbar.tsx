@@ -54,6 +54,16 @@ const components: { title: string; href: string; description: string }[] = [
   },
 ]
 
+/**
+ * Renders the site's responsive navigation header with desktop dropdown menus and a mobile drawer.
+ *
+ * The header includes a logo linking to home, a centered desktop navigation with "Beranda",
+ * "Peluang Investasi", "Daerah", and "Informasi" (with dropdown/content panels), and a
+ * mobile-only drawer menu exposing the same navigation items. Layout and visibility adapt
+ * to screen size.
+ *
+ * @returns The header element containing the navigation UI.
+ */
 export function NavigationMenuDemo() {
   const isMobile = useIsMobile()
 
@@ -195,6 +205,17 @@ export function NavigationMenuDemo() {
   )
 }
 
+/**
+ * Renders a navigation list item with a linked title and supporting description.
+ *
+ * Renders an `li` containing a navigation link to `href` that displays `title` and the provided `children` as a descriptive subtitle, styled for use inside the navigation menu.
+ *
+ * @param title - The visible label used for the link
+ * @param href - The destination URL for the link
+ * @param children - Descriptive content shown below the title
+ * @param props - Additional props forwarded to the `li` element
+ * @returns An `li` element that contains the configured navigation link
+ */
 function ListItem({
   title,
   children,

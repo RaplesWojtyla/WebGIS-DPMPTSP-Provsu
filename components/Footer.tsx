@@ -1,6 +1,11 @@
 import Link from "next/link"
 import { Facebook, Instagram, MapPin, Phone } from "lucide-react"
 
+/**
+ * Render the site footer containing organization info, contact details, social links, and quick navigation.
+ *
+ * @returns The JSX footer element for the site.
+ */
 export function Footer() {
     return (
         <footer className="w-full border-t bg-gradient-to-r from-slate-950 via-blue-950 to-blue-900 text-white">
