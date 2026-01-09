@@ -1,17 +1,20 @@
+import { NavigationMenuDemo as Navbar } from "@/components/Navbar"
+import { Footer } from "@/components/Footer"
+
 export default function LandingPageLayout({
     children
 }: Readonly<{
     children: React.ReactNode
 }>) {
     return (
-        <div>
-            <h1>Letak Navbar</h1>
+        <div className="flex min-h-screen flex-col">
+            <Navbar />
 
-            <main className="flex min-h-screen flex-col">
-                { children }
+            <main className="flex-1">
+                {children}
             </main>
 
-            <h1>Letak  Footer</h1>
+            <Footer />
         </div>
     )
 }
