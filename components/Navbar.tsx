@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon, Menu } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -56,6 +57,7 @@ const components: { title: string; href: string; description: string }[] = [
 
 export function NavigationMenuDemo() {
   const isMobile = useIsMobile()
+  const pathname = usePathname()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-xs supports-backdrop-filter:bg-background/60">
@@ -73,7 +75,12 @@ export function NavigationMenuDemo() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900">
+                <NavigationMenuTrigger
+                  className={cn(
+                    "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900",
+                    pathname === "/" && "text-blue-700 font-bold bg-blue-50/50"
+                  )}
+                >
                   Beranda
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -106,7 +113,12 @@ export function NavigationMenuDemo() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900">
+                <NavigationMenuTrigger
+                  className={cn(
+                    "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900 data-[state=open]:bg-blue-50/50 data-[state=open]:text-blue-900",
+                    pathname?.startsWith("/peluang-investasi") && "text-blue-700 font-bold bg-blue-50/50"
+                  )}
+                >
                   Peluang Investasi
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -125,7 +137,14 @@ export function NavigationMenuDemo() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/maps" className={cn(navigationMenuTriggerStyle(), "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900")}>
+                  <Link
+                    href="/maps"
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "hover:text-blue-900 hover:bg-blue-50/50 focus:bg-blue-50/50 focus:text-blue-900",
+                      pathname === "/maps" && "text-blue-700 font-bold bg-blue-50/50"
+                    )}
+                  >
                     Daerah
                   </Link>
                 </NavigationMenuLink>
