@@ -1,58 +1,42 @@
-import Image from "next/image";
+import Hero from "@/components/Landing/Hero";
+import About from "@/components/Landing/About";
+import Services from "@/components/Landing/Services";
+import Investment from "@/components/Landing/Investment";
+import News from "@/components/Landing/News";
+import FAQ from "@/components/Landing/FAQ";
+import Contact from "@/components/Landing/Contact";
+import SectionWrapper from "@/components/Landing/SectionWrapper";
 
 export default function Home() {
 	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<h1>Landing Page</h1>
-			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="/file.svg"
-						alt="File icon"
-						width={16}
-						height={16}
-					/>
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="/window.svg"
-						alt="Window icon"
-						width={16}
-						height={16}
-					/>
-					Examples
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="/globe.svg"
-						alt="Globe icon"
-						width={16}
-						height={16}
-					/>
-					Go to nextjs.org →
-				</a>
-			</footer>
-		</div>
+		<main className="min-h-screen bg-white font-sans text-gray-900 scroll-smooth">
+			<SectionWrapper>
+				<Hero />
+			</SectionWrapper>
+
+			<SectionWrapper delay={0.2}>
+				<About />
+			</SectionWrapper>
+
+			<SectionWrapper>
+				<Services />
+			</SectionWrapper>
+
+			<SectionWrapper>
+				<Investment />
+			</SectionWrapper>
+
+			<SectionWrapper>
+				<News />
+			</SectionWrapper>
+
+			<SectionWrapper>
+				<FAQ />
+			</SectionWrapper>
+
+			<SectionWrapper>
+				<Contact />
+			</SectionWrapper>
+		</main>
 	);
 }
