@@ -87,7 +87,7 @@ export default function Contact() {
                                 <label className="text-sm font-medium text-gray-700">Pesan</label>
                                 <Textarea placeholder="Tuliskan pesan Anda di sini..." className="min-h-[150px] focus-visible:ring-green-500" />
                             </div>
-                            <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg shadow-green-100">
+                            <Button className="w-full bg-linear-to-r from-blue-700 to-blue-850 hover:from-blue-850 hover:to-blue-950 text-white shadow-lg shadow-blue-100">
                                 Kirim Pesan
                             </Button>
                         </form>

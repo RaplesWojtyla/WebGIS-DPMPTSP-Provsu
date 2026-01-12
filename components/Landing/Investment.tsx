@@ -42,7 +42,7 @@ export default function Investment() {
                             Sumatera Utara menawarkan beragam sektor unggulan dengan potensi investasi yang menjanjikan
                         </p>
                     </div>
-                    <Button variant="outline" className="shrink-0 group hover:border-green-500 hover:text-green-600">
+                    <Button variant="outline" className="shrink-0 group hover:border-blue-500 hover:text-blue-600">
                         Lihat Semua Sektor <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                 </div>
@@ -55,13 +55,13 @@ export default function Investment() {
                                 <div className="w-full h-full bg-slate-800/50 pattern-grid-lg"></div>
                             </div>
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end transition-all duration-500 group-hover:from-emerald-900/90 group-hover:via-green-900/50">
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end transition-all duration-500 group-hover:from-blue-900/90 group-hover:via-blue-900/50">
                                 <h3 className="text-xl font-bold text-white mb-2">{sector.title}</h3>
                                 <p className="text-gray-200 text-sm line-clamp-2 group-hover:line-clamp-none transition-all">
                                     {sector.desc}
                                 </p>
                                 <div className="h-0 group-hover:h-8 transition-all duration-300 overflow-hidden">
-                                    <span className="text-green-300 text-sm font-medium flex items-center mt-2 cursor-pointer hover:text-white">
+                                    <span className="text-blue-300 text-sm font-medium flex items-center mt-2 cursor-pointer hover:text-white">
                                         Pelajari lebih lanjut <ArrowRight className="ml-1 h-3 w-3" />
                                     </span>
                                 </div>

@@ -39,7 +39,7 @@ export default function News() {
                             Informasi terbaru seputar kegiatan, regulasi, dan peluang investasi di Sumatera Utara
                         </p>
                     </div>
-                    <Button variant="outline" className="shrink-0 bg-white hover:bg-gray-100 hover:text-green-600 hover:border-green-200">
+                    <Button variant="outline" className="shrink-0 bg-white hover:bg-gray-100 hover:text-blue-600 hover:border-blue-200">
                         Lihat Semua Berita <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>
@@ -52,7 +52,7 @@ export default function News() {
                                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 group-hover:scale-105 transition-transform duration-500">
                                     Image Placeholder
                                 </div>
-                                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-green-600 shadow-sm">
+                                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-700 shadow-sm">
                                     {item.category}
                                 </div>
                             </div>
@@ -63,7 +63,7 @@ export default function News() {
                                     <span className="flex items-center gap-1"><User className="h-3 w-3" /> {item.author}</span>
                                 </div>
 
-                                <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-green-600 transition-colors">
+                                <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                     <Link href="#">{item.title}</Link>
                                 </h3>
 
@@ -72,7 +72,7 @@ export default function News() {
                                 </p>
 
                                 <div className="mt-auto pt-4 border-t border-gray-100">
-                                    <Link href="#" className="inline-flex items-center text-green-600 text-sm font-medium hover:underline hover:text-green-700">
+                                    <Link href="#" className="inline-flex items-center text-slate-600 text-sm font-medium hover:underline hover:text-blue-700">
                                         Baca Selengkapnya <ArrowRight className="ml-1 h-3 w-3" />
                                     </Link>
                                 </div>
