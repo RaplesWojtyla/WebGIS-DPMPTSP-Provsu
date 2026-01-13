@@ -1,21 +1,22 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
-import { promises as fs } from 'fs';
-import path from 'path';
-import MapInterface from '@/components/Map/MapInterface';
+import { promises as fs } from 'fs'
+import path from 'path'
+import MapInterface from '@/components/Map/MapInterface'
+import Link from "next/link"
 
 export default async function MapsPage() {
-    const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json');
-    let geoJsonData = null;
-    let errorMessage = null;
+    const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json')
+    let geoJsonData = null
+    let errorMessage = null
 
     try {
-        const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8');
-        geoJsonData = JSON.parse(geoJsonFileContents);
+        const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8')
+        geoJsonData = JSON.parse(geoJsonFileContents)
     } catch (error) {
-        console.error("Error loading GeoJSON:", error);
-        errorMessage = "Failed to load map data. System could not retrieve necessary files.";
+        console.error("Error loading GeoJSON:", error)
+        errorMessage = "Failed to load map data. System could not retrieve necessary files."
     }
 
     return (
