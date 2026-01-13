@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button"
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Sektor Pertanian",
-    href: "/peluang-investasi/pertanian",
+    href: "/invest",
     description:
       "Potensi investasi di sektor pertanian, perkebunan, dan peternakan Sumatera Utara.",
   },
