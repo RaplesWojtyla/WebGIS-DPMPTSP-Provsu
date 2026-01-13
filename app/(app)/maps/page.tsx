@@ -1,120 +1,95 @@
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { promises as fs } from 'fs';
-import path from 'path';
-import MapWrapper from '@/components/Map/MapWrapper';
+import { ArrowRight } from "lucide-react"
+import { promises as fs } from 'fs'
+import path from 'path'
+import MapInterface from '@/components/Map/MapInterface'
+import Link from "next/link"
 
 export default async function MapsPage() {
-    const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json');
-    let geoJsonData = null;
-    let errorMessage = null;
+    const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json')
+    let geoJsonData = null
+    let errorMessage = null
 
     try {
-        const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8');
-        geoJsonData = JSON.parse(geoJsonFileContents);
+        const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8')
+        geoJsonData = JSON.parse(geoJsonFileContents)
     } catch (error) {
-        console.error("Error loading GeoJSON:", error);
-        errorMessage = "Failed to load map data. System could not retrieve necessary files.";
+        console.error("Error loading GeoJSON:", error)
+        errorMessage = "Failed to load map data. System could not retrieve necessary files."
     }
 
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Main Content Area: Sidebar + Map */}
-            <div className="flex flex-1 flex-col md:flex-row">
+        <div className="flex flex-col min-h-screen bg-gray-50/50">
 
-                {/* Sidebar - Filter */}
-                <aside className="w-full md:w-1/4 min-w-[300px] border-r bg-background p-6 space-y-6">
-                    <div className="space-y-2">
-                        <h2 className="text-xl font-bold tracking-tight">Filter Peta</h2>
-                        <p className="text-sm text-muted-foreground">Sesuaikan tampilan peta sesuai kebutuhan Anda.</p>
-                    </div>
+            {/* Header / Page Title */}
+            <div className="bg-white border-b py-8">
+                <div className="container mx-auto px-4 md:px-6">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Peta Potensi Investasi</h1>
+                    <p className="text-gray-600">Jelajahi peluang investasi di Sumatera Utara melalui peta interaktif</p>
+                </div>
+            </div>
 
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <h3 className="text-sm font-medium">Cari Lokasi</h3>
-                            <Input placeholder="Cari nama daerah..." />
-                        </div>
-
-                        <div className="space-y-3">
-                            <h3 className="text-sm font-medium">Sektor Investasi</h3>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="pertanian" />
-                                <label htmlFor="pertanian" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Pertanian
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="pariwisata" />
-                                <label htmlFor="pariwisata" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Pariwisata
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="energi" />
-                                <label htmlFor="energi" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Energi
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="infrastruktur" />
-                                <label htmlFor="infrastruktur" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Infrastruktur
-                                </label>
-                            </div>
-                        </div>
-
-                        <Button className="w-full">Terapkan Filter</Button>
-                    </div>
-                </aside>
+            <main className="container mx-auto px-4 md:px-6 py-8 space-y-12">
 
                 {/* Map Container */}
-                <main className="flex-1 bg-gray-100 relative min-h-[500px]">
+                <div className="relative w-full h-[650px]">
                     {errorMessage ? (
-                        <div className="w-full h-full flex items-center justify-center text-red-600">
+                        <div className="w-full h-full flex items-center justify-center text-red-600 bg-red-50 rounded-xl border border-red-200">
                             <p>{errorMessage}</p>
                         </div>
                     ) : (
-                        <div className="w-full h-full">
-                            <MapWrapper geoJsonData={geoJsonData} />
-                        </div>
+                        <MapInterface geoJsonData={geoJsonData} />
                     )}
-                </main>
-            </div>
+                </div>
 
-            {/* Bottom Section: Articles */}
-            <section className="border-t bg-background py-12">
-                <div className="container px-4 md:px-6">
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-bold tracking-tight">Artikel Terkait Investasi</h2>
-                        <p className="text-muted-foreground">Berita dan informasi terbaru seputar peluang investasi di Sumatera Utara.</p>
+                {/* Related Articles Section */}
+                <section>
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Artikel Terkait Investasi</h2>
+                            <p className="text-gray-600 mt-1">Berita dan informasi terbaru seputar peluang investasi di Sumatera Utara.</p>
+                        </div>
+                        <Link href="/articles">
+                            <Button variant="outline" className="hidden md:flex hover:text-green-600 hover:border-green-200">
+                                Lihat Semua <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
                     </div>
 
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {[1, 2, 3].map((item) => (
-                            <Card key={item}>
-                                <div className="aspect-video bg-muted w-full relative overflow-hidden rounded-t-xl">
+                            <Card key={item} className="group hover:shadow-lg transition-shadow duration-300 border-gray-100">
+                                <div className="aspect-video bg-gray-100 w-full relative overflow-hidden rounded-t-xl group-hover:opacity-90 transition-opacity">
                                     {/* Placeholder for Data Image */}
-                                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/50">
-                                        Image {item}
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-medium">
+                                        Thumbnail Image {item}
                                     </div>
                                 </div>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Potensi Sektor Unggulan {item}</CardTitle>
-                                    <CardDescription>Dipublikasikan pada 20 Mei 2024</CardDescription>
+                                <CardHeader className="p-5">
+                                    <div className="w-fit px-2 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-full mb-2">
+                                        PELUANG INVESTASI
+                                    </div>
+                                    <CardTitle className="text-lg leading-tight group-hover:text-green-700 transition-colors">
+                                        Analisis Potensi Sektor Unggulan di Kawasan Danau Toba {item}
+                                    </CardTitle>
+                                    <CardDescription className="text-xs mt-1">
+                                        Dipublikasikan pada 20 Mei 2024
+                                    </CardDescription>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-muted-foreground line-clamp-3">
+                                <CardContent className="p-5 pt-0">
+                                    <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
                                     </p>
-                                    <Button variant="link" className="px-0 mt-4 text-blue-600">Baca Selengkapnya &rarr;</Button>
+                                    <Button variant="link" className="px-0 mt-4 text-green-600 font-bold text-xs p-0 h-auto hover:text-green-700 hover:no-underline">
+                                        BACA SELENGKAPNYA <ArrowRight className="ml-1 h-3 w-3" />
+                                    </Button>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
+            </main>
         </div>
     )
 }

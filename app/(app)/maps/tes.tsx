@@ -1,104 +1,187 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Map, Layers, Info, Search, Menu } from "lucide-react"
+import dynamic from "next/dynamic"
+import { useState } from "react"
+
+// Dynamically import MapMain to avoid SSR issues
+const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400">Loading Map...</div>
+})
 
 export default function MapsPage() {
+    const [baseLayer, setBaseLayer] = useState<'osm' | 'satellite' | 'dark'>('osm');
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Main Content Area: Sidebar + Map */}
-            <div className="flex flex-1 flex-col md:flex-row">
-
-                {/* Sidebar - Filter */}
-                <aside className="w-full md:w-1/4 min-w-[300px] border-r bg-background p-6 space-y-6">
-                    <div className="space-y-2">
-                        <h2 className="text-xl font-bold tracking-tight">Filter Peta</h2>
-                        <p className="text-sm text-muted-foreground">Sesuaikan tampilan peta sesuai kebutuhan Anda.</p>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <h3 className="text-sm font-medium">Cari Lokasi</h3>
-                            <Input placeholder="Cari nama daerah..." />
-                        </div>
-
-                        <div className="space-y-3">
-                            <h3 className="text-sm font-medium">Sektor Investasi</h3>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="pertanian" />
-                                <label htmlFor="pertanian" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Pertanian
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="pariwisata" />
-                                <label htmlFor="pariwisata" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Pariwisata
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="energi" />
-                                <label htmlFor="energi" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Energi
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="infrastruktur" />
-                                <label htmlFor="infrastruktur" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Infrastruktur
-                                </label>
-                            </div>
-                        </div>
-
-                        <Button className="w-full">Terapkan Filter</Button>
-                    </div>
-                </aside>
-
-                {/* Map Container */}
-                <main className="flex-1 bg-gray-100 relative min-h-[500px]">
-                    <div className="w-full h-full flex items-center justify-center p-8">
-                        <div className="text-center space-y-4">
-                            <div className="bg-white p-6 rounded-lg shadow-sm border">
-                                <p className="text-muted-foreground font-medium">Area Peta Interaktif</p>
-                                <p className="text-xs text-muted-foreground mt-2">(Peta akan dimuat di sini)</p>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+        <div className="relative w-full h-screen overflow-hidden bg-gray-100">
+            {/* Full Screen Map */}
+            <div className="absolute inset-0 z-0">
+                <MapMain
+                    geoJsonData={null} // TODO: Add geoJSON data when available
+                    baseLayer={baseLayer}
+                    className="h-full w-full"
+                />
             </div>
 
-            {/* Bottom Section: Articles */}
-            <section className="border-t bg-background py-12">
-                <div className="container px-4 md:px-6">
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-bold tracking-tight">Artikel Terkait Investasi</h2>
-                        <p className="text-muted-foreground">Berita dan informasi terbaru seputar peluang investasi di Sumatera Utara.</p>
+            {/* Floating Sidebar Toggle (Mobile) */}
+            <Button
+                variant="secondary"
+                size="icon"
+                className="absolute top-4 left-4 z-20 md:hidden shadow-md"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+                <Menu className="h-5 w-5" />
+            </Button>
+
+            {/* Floating Sidebar */}
+            <Card className={`
+                absolute top-4 left-4 bottom-4 z-10 w-[380px] shadow-2xl border-0 overflow-hidden flex flex-col transition-transform duration-300
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-[110%] md:translate-x-0'}
+            `}>
+                <div className="flex items-center justify-between p-4 border-b bg-white">
+                    <div className="flex items-center gap-2 text-primary font-bold">
+                        <Map className="h-5 w-5" />
+                        <span>Tampilan Peta</span>
                     </div>
 
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {[1, 2, 3].map((item) => (
-                            <Card key={item}>
-                                <div className="aspect-video bg-muted w-full relative overflow-hidden rounded-t-xl">
-                                    {/* Placeholder for Data Image */}
-                                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/50">
-                                        Image {item}
+                    {/* Close button for mobile */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 md:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    >
+                        <span className="sr-only">Close</span>
+                        X
+                    </Button>
+                </div>
+
+                <Tabs defaultValue="filters" className="flex-1 flex flex-col overflow-hidden">
+                    <div className="px-4 pt-2">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="info">Info</TabsTrigger>
+                            <TabsTrigger value="filters">Filter Layer</TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="info" className="flex-1 overflow-auto p-4">
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Informasi Wilayah</h3>
+                                <p className="text-sm text-gray-500">
+                                    Klik pada wilayah di peta untuk melihat informasi detail mengenai potensi investasi, luas wilayah, dan data demografis.
+                                </p>
+                            </div>
+
+                            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                                <h4 className="font-medium text-blue-900 flex items-center gap-2 mb-2">
+                                    <Info className="h-4 w-4" /> Petunjuk
+                                </h4>
+                                <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                                    <li>Gunakan scroll untuk zoom in/out</li>
+                                    <li>Klik marker untuk popup detail</li>
+                                    <li>Gunakan tab Filter untuk opsi layer</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="filters" className="flex-1 flex flex-col overflow-hidden m-0 h-full">
+                        <ScrollArea className="flex-1 p-4">
+                            <div className="space-y-6">
+                                {/* Search */}
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold text-gray-500 uppercase">Cari Lokasi</Label>
+                                    <div className="relative">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                        <Input
+                                            placeholder="Cari Kabupaten/Kota..."
+                                            className="pl-9 bg-gray-50 border-gray-200"
+                                        />
                                     </div>
                                 </div>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Potensi Sektor Unggulan {item}</CardTitle>
-                                    <CardDescription>Dipublikasikan pada 20 Mei 2024</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-muted-foreground line-clamp-3">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-                                    </p>
-                                    <Button variant="link" className="px-0 mt-4 text-blue-600">Baca Selengkapnya &rarr;</Button>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
+                                {/* Base Layer Switcher */}
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold text-gray-500 uppercase">Tipe Peta</Label>
+                                    <RadioGroup
+                                        defaultValue="osm"
+                                        value={baseLayer}
+                                        onValueChange={(v) => setBaseLayer(v as any)}
+                                        className="grid grid-cols-3 gap-2"
+                                    >
+                                        <div>
+                                            <RadioGroupItem value="osm" id="osm" className="peer sr-only" />
+                                            <Label
+                                                htmlFor="osm"
+                                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer text-center text-xs gap-2"
+                                            >
+                                                <span className="h-8 w-8 rounded-full bg-cover shadow-sm bg-center" style={{ backgroundImage: "url('https://c.tile.openstreetmap.org/12/3274/2180.png')" }}></span>
+                                                Standard
+                                            </Label>
+                                        </div>
+                                        <div>
+                                            <RadioGroupItem value="satellite" id="satellite" className="peer sr-only" />
+                                            <Label
+                                                htmlFor="satellite"
+                                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer text-center text-xs gap-2"
+                                            >
+                                                <span className="h-8 w-8 rounded-full bg-cover shadow-sm bg-center" style={{ backgroundImage: "url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/5/12')" }}></span>
+                                                Satelit
+                                            </Label>
+                                        </div>
+                                        <div>
+                                            <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
+                                            <Label
+                                                htmlFor="dark"
+                                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer text-center text-xs gap-2"
+                                            >
+                                                <span className="h-8 w-8 rounded-full bg-cover shadow-sm bg-center bg-gray-800"></span>
+                                                Dark
+                                            </Label>
+                                        </div>
+                                    </RadioGroup>
+                                </div>
+
+                                {/* Custom Layers */}
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold text-gray-500 uppercase">Bidang Usaha</Label>
+                                    <div className="space-y-2">
+                                        {[
+                                            "Tourism",
+                                            "Manufacturing",
+                                            "Agribusiness",
+                                            "Trade",
+                                            "Energy",
+                                            "Infrastructure"
+                                        ].map((item) => (
+                                            <div key={item} className="flex items-center space-x-2">
+                                                <Checkbox id={item.toLowerCase()} />
+                                                <label
+                                                    htmlFor={item.toLowerCase()}
+                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                >
+                                                    {item}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </ScrollArea>
+                    </TabsContent>
+                </Tabs>
+            </Card>
         </div>
     )
 }
