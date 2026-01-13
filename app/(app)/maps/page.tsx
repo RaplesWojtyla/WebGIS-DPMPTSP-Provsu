@@ -49,9 +49,11 @@ export default async function MapsPage() {
                             <h2 className="text-2xl font-bold tracking-tight text-gray-900">Artikel Terkait Investasi</h2>
                             <p className="text-gray-600 mt-1">Berita dan informasi terbaru seputar peluang investasi di Sumatera Utara.</p>
                         </div>
-                        <Button variant="outline" className="hidden md:flex hover:text-green-600 hover:border-green-200">
-                            Lihat Semua <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
+                        <Link href="/articles">
+                            <Button variant="outline" className="hidden md:flex hover:text-green-600 hover:border-green-200">
+                                Lihat Semua <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
                     </div>
 
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
