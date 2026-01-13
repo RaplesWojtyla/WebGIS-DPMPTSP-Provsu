@@ -17,10 +17,10 @@ export default function FAQ() {
                         <p className="text-gray-600 text-lg">
                             Temukan jawaban atas pertanyaan umum seputar perizinan dan investasi di Sumatera Utara.
                         </p>
-                        <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100">
-                            <h4 className="font-bold text-green-900 mb-2">Masih punya pertanyaan?</h4>
-                            <p className="text-green-700 text-sm mb-4">Tim kami siap membantu Anda melalui layanan pengaduan atau konsultasi.</p>
-                            <button className="text-sm font-medium text-white bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700 transition-colors w-full shadow-md shadow-green-200">
+                        <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-100">
+                            <h4 className="font-bold text-blue-900 mb-2">Masih punya pertanyaan?</h4>
+                            <p className="text-blue-700 text-sm mb-4">Tim kami siap membantu Anda melalui layanan pengaduan atau konsultasi.</p>
+                            <button className="text-sm font-medium text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full shadow-md shadow-blue-200">
                                 Hubungi Kami
                             </button>
                         </div>
@@ -29,7 +29,7 @@ export default function FAQ() {
                     <div className="lg:col-span-8">
                         <Accordion type="single" collapsible className="w-full">
                             <AccordionItem value="item-1">
-                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-green-600 hover:text-green-600 transition-colors">
+                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-blue-600 hover:text-blue-600 transition-colors">
                                     Bagaimana cara mengajukan perizinan usaha?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-gray-600">
@@ -37,7 +37,7 @@ export default function FAQ() {
                                 </AccordionContent>
                             </AccordionItem>
                             <AccordionItem value="item-2">
-                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-green-600 hover:text-green-600 transition-colors">
+                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-blue-600 hover:text-blue-600 transition-colors">
                                     Berapa lama waktu yang dibutuhkan untuk proses izin?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-gray-600">
@@ -45,7 +45,7 @@ export default function FAQ() {
                                 </AccordionContent>
                             </AccordionItem>
                             <AccordionItem value="item-3">
-                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-green-600 hover:text-green-600 transition-colors">
+                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-blue-600 hover:text-blue-600 transition-colors">
                                     Apakah ada biaya untuk pengurusan izin?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-gray-600">
@@ -53,7 +53,7 @@ export default function FAQ() {
                                 </AccordionContent>
                             </AccordionItem>
                             <AccordionItem value="item-4">
-                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-green-600 hover:text-green-600 transition-colors">
+                                <AccordionTrigger className="text-left font-semibold text-gray-900 data-[state=open]:text-blue-600 hover:text-blue-600 transition-colors">
                                     Bagaimana cara melacak status permohonan saya?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-gray-600">

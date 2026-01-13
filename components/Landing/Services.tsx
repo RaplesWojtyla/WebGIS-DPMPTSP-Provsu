@@ -5,43 +5,43 @@ const services = [
         icon: FileCheck,
         title: "Perizinan Usaha",
         description: "Pengajuan dan penerbitan izin usaha terintegrasi melalui sistem OSS.",
-        color: "text-green-600",
-        bg: "bg-green-50"
+        color: "text-blue-600",
+        bg: "bg-blue-50"
     },
     {
         icon: Coins,
         title: "Penanaman Modal",
         description: "Fasilitasi dan pengawasan investasi daerah untuk pertumbuhan ekonomi.",
-        color: "text-emerald-600",
-        bg: "bg-emerald-50"
+        color: "text-slate-600",
+        bg: "bg-slate-100"
     },
     {
         icon: Activity,
         title: "Tracking Izin",
         description: "Pantau status perizinan Anda secara real-time dan transparan.",
-        color: "text-teal-600",
-        bg: "bg-teal-50"
+        color: "text-blue-800",
+        bg: "bg-blue-50"
     },
     {
         icon: MessageSquare,
         title: "Pengaduan",
         description: "Layanan pengaduan dan konsultasi untuk masyarakat dan investor.",
-        color: "text-green-600",
-        bg: "bg-green-50"
+        color: "text-slate-950",
+        bg: "bg-slate-100"
     },
     {
         icon: HeadphonesIcon,
         title: "Konsultasi Investasi",
         description: "Konsultasi gratis mengenai peluang investasi dan persyaratan perizinan.",
-        color: "text-emerald-600",
-        bg: "bg-emerald-50"
+        color: "text-blue-700",
+        bg: "bg-blue-50"
     },
     {
         icon: BookOpen,
         title: "Informasi Regulasi",
         description: "Akses informasi lengkap mengenai peraturan dan kebijakan perizinan terkini.",
-        color: "text-teal-600",
-        bg: "bg-teal-50"
+        color: "text-slate-700",
+        bg: "bg-slate-100"
     }
 ];
 
@@ -67,7 +67,7 @@ export default function Services() {
                             <div className={`w-14 h-14 rounded-xl ${service.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                                 <service.icon className={`h-7 w-7 ${service.color}`} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-800 transition-colors">
                                 {service.title}
                             </h3>
                             <p className="text-gray-600 leading-relaxed">

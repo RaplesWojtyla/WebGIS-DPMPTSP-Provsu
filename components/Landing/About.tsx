@@ -14,8 +14,8 @@ export default function About() {
                             <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors"></div>
                         </div>
                         {/* Decoration */}
-                        <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-green-100/50 rounded-full z-[-1] blur-md"></div>
-                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-emerald-50/50 rounded-full z-[-1] blur-md"></div>
+                        <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-blue-100/50 rounded-full z-[-1] blur-md"></div>
+                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-indigo-50/50 rounded-full z-[-1] blur-md"></div>
                     </div>
 
                     <div className="order-1 md:order-2 space-y-6">
@@ -40,14 +40,14 @@ export default function About() {
                                 "Pengawasan dan Pengendalian Perizinan"
                             ].map((item, index) => (
                                 <li key={index} className="flex items-start gap-3">
-                                    <CheckCircle2 className="h-6 w-6 text-green-500 shrink-0" />
+                                    <CheckCircle2 className="h-6 w-6 text-blue-600 shrink-0" />
                                     <span className="text-gray-700 font-medium">{item}</span>
                                 </li>
                             ))}
                         </ul>
 
                         <div className="pt-6 border-t border-gray-100">
-                            <blockquote className="italic text-gray-500 border-l-4 border-green-500 pl-4 bg-green-50/30 py-2 rounded-r-lg">
+                            <blockquote className="italic text-gray-500 border-l-4 border-blue-600 pl-4 bg-blue-50/30 py-2 rounded-r-lg">
                                 "Mewujudkan Pelayanan Perizinan dan Penanaman Modal yang Profesional, Transparan, dan Akuntabel"
                             </blockquote>
                         </div>
