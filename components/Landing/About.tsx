@@ -1,17 +1,46 @@
+"use client";
+
 import { CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 
 export default function About() {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const videoId = "u0e176V47M8"; // Lake Toba by Bryn North
+
     return (
         <section id="profil" className="py-20 bg-white">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="relative order-2 md:order-1">
                         <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 relative group">
-                            {/* Placeholder for video/image */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 text-gray-400">
-                                <span className="font-medium flex items-center gap-2"><div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">▶</div> Video Profil</span>
-                            </div>
-                            <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors"></div>
+                            {/* Video Player or Placeholder */}
+                            {isPlaying ? (
+                                <video
+                                    className="w-full h-full object-cover"
+                                    src="/video-profil.mp4"
+                                    title="DPMPTSP Sumatera Utara Profile"
+                                    controls
+                                    autoPlay
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+                            ) : (
+                                <button
+                                    onClick={() => setIsPlaying(true)}
+                                    className="w-full h-full relative block group cursor-pointer"
+                                    aria-label="Play Video"
+                                >
+                                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 text-gray-400">
+                                        <span className="font-medium flex items-center gap-2">
+                                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-gray-900 border-b-[8px] border-b-transparent ml-1"></div>
+                                            </div>
+                                            Video Profil
+                                        </span>
+                                    </div>
+                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors"></div>
+                                </button>
+                            )}
                         </div>
                         {/* Decoration */}
                         <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-blue-100/50 rounded-full z-[-1] blur-md"></div>
