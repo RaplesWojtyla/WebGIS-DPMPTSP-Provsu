@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
     title: "Authentication - DPMPTSP Provsu",
@@ -27,10 +28,12 @@ export default function AuthLayout({
                 <div className="relative hidden bg-muted lg:block">
                     <div className="absolute inset-0 h-full w-full bg-linear-to-r from-slate-950 via-blue-950 to-blue-900 opacity-90" />
                     <div className="relative z-10 flex h-full flex-col items-center justify-center p-12 text-center text-white">
-                        <img
+                        <Image
                             src="/DPMPTSP_Provsu.png"
                             alt="Logo DPMPTSP Sumut"
                             className="h-32 w-auto mb-8 object-contain drop-shadow-lg"
+                            width={100}
+                            height={100}
                         />
                         <h1 className="text-4xl font-bold tracking-tight mb-4 drop-shadow-md">WebGIS DPMPTSP</h1>
                         <p className="text-lg text-blue-100 max-w-lg drop-shadow-sm">

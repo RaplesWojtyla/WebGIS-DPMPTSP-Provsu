@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { Button } from './button';
 
 interface SidebarProps {
-    selectedRegion: any | null;
+    selectedRegion: GeoJSON.Feature<GeoJSON.Geometry> | null;
     onClose: () => void;
     onPredict: () => void;
 }
@@ -12,7 +12,7 @@ interface SidebarProps {
 const Sidebar = ({ selectedRegion, onClose, onPredict }: SidebarProps) => {
     if (!selectedRegion) return null;
 
-    const { properties } = selectedRegion;
+    const properties = selectedRegion.properties || {};
     const regionName = properties.province || properties.VARNAME_2 || 'Unknown Region';
     const districtName = properties.NAME_1 || 'Sumatera Utara';
 
@@ -39,7 +39,7 @@ const Sidebar = ({ selectedRegion, onClose, onPredict }: SidebarProps) => {
                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                         <h3 className="font-semibold text-blue-900 mb-2">Investment Overview</h3>
                         <p className="text-sm text-blue-800">
-                            Select "Analyze Investment" to view AI-driven predictions for this region.
+                            Select &quot;Analyze Investment&quot; to view AI-driven predictions for this region.
                         </p>
                     </div>
 
