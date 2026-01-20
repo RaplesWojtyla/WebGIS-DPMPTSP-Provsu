@@ -12,35 +12,49 @@ export default function AuthLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="flex min-h-screen w-full items-center justify-center p-4 lg:p-8 relative">
-            <div
-                className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: "url('/bg_login.png')" }}
-            />
-            <div className="absolute inset-0 z-0 bg-slate-800/70" />
+        <div className="w-full h-screen lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+            <div className="relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                    <Image
+                        src="/bg_login.png"
+                        alt="Background"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    {/* Overlay to ensure text readability */}
+                    <div className="absolute inset-0 bg-blue-900/60 mix-blend-multiply" />
+                </div>
 
-            <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-2xl border bg-background shadow-2xl lg:grid lg:min-h-[600px] lg:grid-cols-2 lg:border-none">
-                <div className="flex items-center justify-center py-12 md:py-24 bg-white/50 backdrop-blur-sm lg:bg-white">
-                    <div className="mx-auto grid w-[350px] gap-6">
-                        {children}
-                    </div>
+                <div className="relative z-20 flex items-center text-lg font-medium">
+                    <Image
+                        src="/DPMPTSP_Provsu.png"
+                        alt="Logo"
+                        width={40}
+                        height={40}
+                        className="mr-2 h-10 w-auto object-contain"
+                    />
+                    WebGIS DPMPTSP
                 </div>
-                <div className="relative hidden bg-muted lg:block">
-                    <div className="absolute inset-0 h-full w-full bg-linear-to-r from-slate-950 via-blue-950 to-blue-900 opacity-90" />
-                    <div className="relative z-10 flex h-full flex-col items-center justify-center p-12 text-center text-white">
-                        <Image
-                            src="/DPMPTSP_Provsu.png"
-                            alt="Logo DPMPTSP Sumut"
-                            className="h-32 w-auto mb-8 object-contain drop-shadow-lg"
-                            width={100}
-                            height={100}
-                        />
-                        <h1 className="text-4xl font-bold tracking-tight mb-4 drop-shadow-md">WebGIS DPMPTSP</h1>
-                        <p className="text-lg text-blue-100 max-w-lg drop-shadow-sm">
-                            Peta Potensi Investasi Sumatera Utara. Explore investment opportunities with our interactive geographic information system.
-                        </p>
-                    </div>
+
+                {/* Centered Content on the left side */}
+                <div className="relative z-20 m-auto flex flex-col items-center text-center max-w-lg">
+                    <h1 className="text-4xl font-bold tracking-tight mb-6 drop-shadow-xl">
+                        Selamat Datang di Portal Investasi
+                    </h1>
+                    <p className="text-xl text-blue-50 leading-relaxed drop-shadow-md">
+                        Jelajahi potensi investasi Sumatera Utara melalui Sistem Informasi Geografis yang interaktif dan komprehensif.
+                    </p>
                 </div>
+
+                <div className="relative z-20 mt-auto flex items-center space-x-2 text-sm text-blue-100">
+                    <div className="h-1 w-12 bg-blue-400 rounded-full" />
+                    <span>Dinas Penanaman Modal dan Pelayanan Perizinan Terpadu Satu Pintu Provinsi Sumatera Utara</span>
+                </div>
+            </div>
+            <div className="flex flex-col h-full bg-slate-50/50">
+                {children}
             </div>
         </div>
     );
