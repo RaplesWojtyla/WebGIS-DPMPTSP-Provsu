@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +35,7 @@ export default function Investment() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="max-w-2xl">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Potensi Investasi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-950">Sumatera Utara</span>
+                            Potensi Investasi <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-900 to-blue-950">Sumatera Utara</span>
                         </h2>
                         <p className="text-gray-600 text-lg">
                             Sumatera Utara menawarkan beragam sektor unggulan dengan potensi investasi yang menjanjikan
@@ -55,7 +54,7 @@ export default function Investment() {
                                 <div className="w-full h-full bg-slate-800/50 pattern-grid-lg"></div>
                             </div>
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end transition-all duration-500 group-hover:from-blue-900/90 group-hover:via-blue-900/50">
+                            <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end transition-all duration-500 group-hover:from-blue-900/90 group-hover:via-blue-900/50">
                                 <h3 className="text-xl font-bold text-white mb-2">{sector.title}</h3>
                                 <p className="text-gray-200 text-sm line-clamp-2 group-hover:line-clamp-none transition-all">
                                     {sector.desc}

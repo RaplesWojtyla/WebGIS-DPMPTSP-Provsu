@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function About() {
     const [isPlaying, setIsPlaying] = useState(false);
-    const videoId = "u0e176V47M8"; // Lake Toba by Bryn North
+    // const videoId = "u0e176V47M8"; // Lake Toba by Bryn North
 
     return (
         <section id="profil" className="py-20 bg-white">
@@ -30,10 +30,10 @@ export default function About() {
                                     className="w-full h-full relative block group cursor-pointer"
                                     aria-label="Play Video"
                                 >
-                                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 text-gray-400">
+                                    <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-200 text-gray-400">
                                         <span className="font-medium flex items-center gap-2">
                                             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-gray-900 border-b-[8px] border-b-transparent ml-1"></div>
+                                                <div className="w-0 h-0 border-t-8 border-t-transparent border-l-14 border-l-gray-900 border-b-8 border-b-transparent ml-1"></div>
                                             </div>
                                             Video Profil
                                         </span>
@@ -49,7 +49,7 @@ export default function About() {
 
                     <div className="order-1 md:order-2 space-y-6">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Tentang DPMPTSP <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-950">Sumatera Utara</span>
+                            Tentang DPMPTSP <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-900 to-blue-950">Sumatera Utara</span>
                         </h2>
 
                         <p className="text-gray-600 leading-relaxed">
@@ -77,7 +77,7 @@ export default function About() {
 
                         <div className="pt-6 border-t border-gray-100">
                             <blockquote className="italic text-gray-500 border-l-4 border-blue-600 pl-4 bg-blue-50/30 py-2 rounded-r-lg">
-                                "Mewujudkan Pelayanan Perizinan dan Penanaman Modal yang Profesional, Transparan, dan Akuntabel"
+                                &quot;Mewujudkan Pelayanan Perizinan dan Penanaman Modal yang Profesional, Transparan, dan Akuntabel&quot;
                             </blockquote>
                         </div>
                     </div>

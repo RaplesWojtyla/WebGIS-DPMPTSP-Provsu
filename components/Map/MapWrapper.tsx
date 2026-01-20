@@ -14,13 +14,13 @@ const MapMain = dynamic(() => import('./MapMain'), {
 });
 
 interface MapWrapperProps {
-    geoJsonData: any;
+    geoJsonData: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
 }
 
 export default function MapWrapper({ geoJsonData }: MapWrapperProps) {
-    const [selectedRegion, setSelectedRegion] = useState<any | null>(null);
+    const [selectedRegion, setSelectedRegion] = useState<GeoJSON.Feature<GeoJSON.Geometry> | null>(null);
 
-    const handleRegionSelect = (feature: any) => {
+    const handleRegionSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
         setSelectedRegion(feature);
     };
 

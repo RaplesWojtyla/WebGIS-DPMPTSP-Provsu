@@ -8,11 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Send, Loader2 } from "lucide-react"
+import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Loader2 } from "lucide-react"
 import dynamic from "next/dynamic"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
-import { getRegionData, MacroData } from "@/data/dummy-data"
+import { getRegionData } from "@/data/dummy-data"
 
 // Dynamically import MapMain to avoid SSR issues
 const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
@@ -21,37 +21,37 @@ const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
 })
 
 interface MapInterfaceProps {
-    geoJsonData: any;
-    className?: string;
+    geoJsonData: GeoJSON.FeatureCollection<GeoJSON.Geometry>
+    className?: string
 }
 
 export default function MapInterface({ geoJsonData, className }: MapInterfaceProps) {
-    const [baseLayer, setBaseLayer] = useState<'osm' | 'satellite' | 'dark'>('osm');
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [layersOpen, setLayersOpen] = useState(false);
-    const [selectedRegion, setSelectedRegion] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState("filters");
-    const [showAiPanel, setShowAiPanel] = useState(false);
+    const [baseLayer, setBaseLayer] = useState<'osm' | 'satellite' | 'dark'>('osm')
+    const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [layersOpen, setLayersOpen] = useState(false)
+    const [selectedRegion, setSelectedRegion] = useState<GeoJSON.Feature<GeoJSON.Geometry> | null>(null)
+    const [activeTab, setActiveTab] = useState("filters")
+    const [showAiPanel, setShowAiPanel] = useState(false)
 
     // AI State
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [analysisResult, setAnalysisResult] = useState<string | null>(null)
 
-    const handleAnalyze = async () => {
-        setIsAnalyzing(true);
-        setAnalysisResult(null);
+    const handleAnalyze = useCallback(async () => {
+        setIsAnalyzing(true)
+        setAnalysisResult(null)
 
         // Simulate API Call delay
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 3000))
 
         const lat = selectedRegion?.geometry?.type === 'Point'
             ? selectedRegion.geometry.coordinates[1]
-            : 2.1154; // Fallback center
+            : 2.1154 // Fallback center
         const lng = selectedRegion?.geometry?.type === 'Point'
             ? selectedRegion.geometry.coordinates[0]
-            : 99.5451; // Fallback center
-        const address = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2 || "Wilayah Sumatera Utara";
-        const macroData = getRegionData(address);
+            : 99.5451 // Fallback center
+        const address = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2 || "Wilayah Sumatera Utara"
+        const macroData = getRegionData(address)
 
         const result = `
 # Analisis Investasi: ${macroData.name} (Site Specific)
@@ -73,25 +73,25 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
 1. Lakukan Feasibility Study mendalam terkait kontur tanah untuk mitigasi risiko ${macroData.risk_profile.disaster_risk}.
 2. Prioritaskan rekrutmen tenaga kerja lokal untuk menjaga stabilitas sosial (${macroData.risk_profile.social_conflict}).
 3. Manfaatkan insentif pajak daerah untuk sektor ${macroData.economy.main_sectors[0]}.
-        `;
+        `
 
-        setAnalysisResult(result);
-        setIsAnalyzing(false);
-    };
+        setAnalysisResult(result)
+        setIsAnalyzing(false)
+    }, [selectedRegion])
 
     // Auto-analyze when panel opens
     useEffect(() => {
         if (showAiPanel && !analysisResult && !isAnalyzing) {
-            handleAnalyze();
+            handleAnalyze()
         }
-    }, [showAiPanel, analysisResult, isAnalyzing]);
+    }, [showAiPanel, analysisResult, isAnalyzing, handleAnalyze])
 
     // Handle region selection
-    const handleRegionSelect = (feature: any) => {
-        setSelectedRegion(feature);
-        setActiveTab("info"); // Auto-switch to info tab
-        if (!sidebarOpen) setSidebarOpen(true);
-    };
+    const handleRegionSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
+        setSelectedRegion(feature)
+        setActiveTab("info") // Auto-switch to info tab
+        if (!sidebarOpen) setSidebarOpen(true)
+    }
 
     return (
         <div className={cn("relative w-full h-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-inner", className)}>
@@ -246,7 +246,7 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                                 <span className="text-[10px] font-medium bg-blue-100 text-blue-900 px-2 py-0.5 rounded-full">High Confidence</span>
                                             </div>
 
-                                            <div className="rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-4 relative overflow-hidden">
+                                            <div className="rounded-xl bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-100 p-4 relative overflow-hidden">
                                                 <div className="relative z-10 space-y-3">
                                                     <div>
                                                         <div className="text-[10px] text-blue-900/70 mb-1">Sektor Paling Potensial</div>
@@ -384,9 +384,9 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                             defaultValue="osm"
                             value={baseLayer}
                             onValueChange={(v) => {
-                                setBaseLayer(v as any);
+                                setBaseLayer(v as 'osm' | 'satellite' | 'dark')
                                 // Optional: close on select
-                                // setLayersOpen(false);
+                                // setLayersOpen(false)
                             }}
                             className="flex flex-col gap-2"
                         >
