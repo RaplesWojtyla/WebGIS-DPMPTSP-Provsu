@@ -69,7 +69,7 @@ export default function RegisterForm() {
                 <CardFooter className="justify-center">
                     <div className="text-sm text-muted-foreground">
                         Sudah punya akun?{" "}
-                        <Link href="/login" className="text-primary underline-offset-4 font-semibold hover:underline hover:text-blue-900 hover:font-bold">
+                        <Link href="/login" className="text-primary underline-offset-4 font-bold hover:underline hover:text-blue-800 hover:font-bold">
                             Masuk
                         </Link>
                     </div>

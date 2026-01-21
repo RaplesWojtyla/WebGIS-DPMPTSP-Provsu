@@ -28,22 +28,30 @@ export default function FormInput({ id, label, extraLabel, className = "", type,
                     {...props}
                 />
                 {isPassword && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
-                        onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? (
-                            <EyeOff className="h-4 w-4" aria-hidden="true" />
-                        ) : (
-                            <Eye className="h-4 w-4" aria-hidden="true" />
-                        )}
-                        <span className="sr-only">
-                            {showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
-                        </span>
-                    </Button>
+                    <>
+                        <style>{`
+                            #${id}::-ms-reveal,
+                            #${id}::-ms-clear {
+                                display: none;
+                            }
+                        `}</style>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" aria-hidden="true" />
+                            ) : (
+                                <Eye className="h-4 w-4" aria-hidden="true" />
+                            )}
+                            <span className="sr-only">
+                                {showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                            </span>
+                        </Button>
+                    </>
                 )}
             </div>
         </div>
