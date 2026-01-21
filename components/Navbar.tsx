@@ -7,11 +7,9 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
 	NavigationMenu,
-	NavigationMenuContent,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import {
@@ -29,28 +27,29 @@ import Image from "next/image"
 
 const components: { title: string; href: string; description: string }[] = [
 	{
-		title: "Sektor Pertanian",
-		href: "/invest",
-		description:
-			"Potensi investasi di sektor pertanian, perkebunan, dan peternakan Sumatera Utara.",
+		title: "Pertanian & Perkebunan",
+		href: "/invest?sector=Pertanian",
+		description: "Sektor basis dengan kontribusi terbesar terhadap PDRB.",
 	},
 	{
-		title: "Sektor Pariwisata",
-		href: "/peluang-investasi/pariwisata",
-		description:
-			"Peluang pengembangan destinasi wisata alam, budaya, dan infrastruktur pendukung.",
+		title: "Industri Pengolahan",
+		href: "/invest?sector=Industri",
+		description: "Hilirisasi produk unggulan daerah bernilai tambah tinggi.",
 	},
 	{
-		title: "Sektor Energi",
-		href: "/peluang-investasi/energi",
-		description:
-			"Investasi energi terbarukan dan sumber daya mineral yang potensial.",
+		title: "Pariwisata",
+		href: "/invest?sector=Pariwisata",
+		description: "Destinasi wisata alam dan budaya berkelas dunia.",
 	},
 	{
-		title: "Sektor Infrastruktur",
-		href: "/peluang-investasi/infrastruktur",
-		description:
-			"Pembangunan jalan, jembatan, dan fasilitas umum untuk mendukung pertumbuhan ekonomi.",
+		title: "Energi & SDM",
+		href: "/invest?sector=Energi",
+		description: "Potensi energi terbarukan dan pertambangan.",
+	},
+	{
+		title: "Infrastruktur",
+		href: "/invest?sector=Konstruksi",
+		description: "Pembangunan konektivitas dan fasilitas pendukung.",
 	},
 ]
 
@@ -120,65 +119,34 @@ export function NavigationMenuDemo() {
 					<NavigationMenu>
 						<NavigationMenuList className={menuListClass}>
 							<NavigationMenuItem>
-								<NavigationMenuTrigger
-									className={cn(
-										triggerClass,
-										pathname === "/" && activeLinkClass
-									)}
-								>
-									Beranda
-								</NavigationMenuTrigger>
-								<NavigationMenuContent>
-									<ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-										<li className="row-span-3">
-											<NavigationMenuLink asChild>
-												<Link
-													className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden transition-colors hover:shadow-md focus:shadow-md select-none"
-													href="/"
-												>
-													<div className="mb-2 text-lg font-medium">
-														WebGIS DPMPTSP Sumut
-													</div>
-													<p className="text-muted-foreground text-sm leading-tight">
-														Sistem Informasi Geografis Dinas Penanaman Modal dan Pelayanan Perizinan Terpadu Satu Pintu Provinsi Sumatera Utara
-													</p>
-												</Link>
-											</NavigationMenuLink>
-										</li>
-										<ListItem href="#" title="Visi & Misi">
-											Visi dan Misi DPMPTSP Sumatera Utara
-										</ListItem>
-										<ListItem href="#" title="Struktur Organisasi">
-											Struktur Organisasi dan Tata Kerja
-										</ListItem>
-										<ListItem href="#" title="Tugas & Fungsi">
-											Tugas Pokok dan Fungsi DPMPTSP
-										</ListItem>
-									</ul>
-								</NavigationMenuContent>
+								<NavigationMenuLink asChild>
+									<Link
+										href="/"
+										className={cn(
+											navigationMenuTriggerStyle(),
+											triggerClass,
+											"bg-transparent",
+											pathname === "/" && activeLinkClass
+										)}
+									>
+										Beranda
+									</Link>
+								</NavigationMenuLink>
 							</NavigationMenuItem>
 							<NavigationMenuItem>
-								<NavigationMenuTrigger
-									className={cn(
-										triggerClass,
-										pathname?.startsWith("/peluang-investasi") && activeLinkClass
-									)}
-								>
-									Peluang Investasi
-								</NavigationMenuTrigger>
-								<NavigationMenuContent>
-									<ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-										{components.map((component) => (
-											<ListItem
-												key={component.title}
-												title={component.title}
-												href={component.href}
-											>
-												{component.description}
-											</ListItem>
-										))}
-									</ul>
-								</NavigationMenuContent>
+								<NavigationMenuLink asChild>
+									<Link
+										href="/invest"
+										className={cn(
+											navigationMenuTriggerStyle(),
+											triggerClass,
+											"bg-transparent",
+											pathname?.startsWith("/invest") && activeLinkClass
+										)}
+									>
+										Sektor Unggulan
+									</Link>
+								</NavigationMenuLink>
 							</NavigationMenuItem>
 							<NavigationMenuItem>
 								<NavigationMenuLink asChild>

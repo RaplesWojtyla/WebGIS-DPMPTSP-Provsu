@@ -1,0 +1,198 @@
+[
+    {
+        "id": "1_2023",
+        "region": "Kota Medan",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 14000000000,
+        "year": 2023
+    },
+    {
+        "id": "1_2024",
+        "region": "Kota Medan",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 15500000000,
+        "year": 2024
+    },
+    {
+        "id": "2_2023",
+        "region": "Kota Medan",
+        "sector": "Industri Pengolahan",
+        "value": 8000000000,
+        "year": 2023
+    },
+    {
+        "id": "2_2024",
+        "region": "Kota Medan",
+        "sector": "Industri Pengolahan",
+        "value": 8500000000,
+        "year": 2024
+    },
+    {
+        "id": "3_2023",
+        "region": "Kota Medan",
+        "sector": "Jasa-jasa",
+        "value": 4000000000,
+        "year": 2023
+    },
+    {
+        "id": "3_2024",
+        "region": "Kota Medan",
+        "sector": "Jasa-jasa",
+        "value": 4200000000,
+        "year": 2024
+    },
+    {
+        "id": "4_2023",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Industri Pengolahan",
+        "value": 11000000000,
+        "year": 2023
+    },
+    {
+        "id": "4_2024",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Industri Pengolahan",
+        "value": 12500000000,
+        "year": 2024
+    },
+    {
+        "id": "5_2023",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 6000000000,
+        "year": 2023
+    },
+    {
+        "id": "5_2024",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 6200000000,
+        "year": 2024
+    },
+    {
+        "id": "6_2023",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Konstruksi",
+        "value": 3000000000,
+        "year": 2023
+    },
+    {
+        "id": "6_2024",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Konstruksi",
+        "value": 3800000000,
+        "year": 2024
+    },
+    {
+        "id": "7_2023",
+        "region": "Kabupaten Karo",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 9000000000,
+        "year": 2023
+    },
+    {
+        "id": "7_2024",
+        "region": "Kabupaten Karo",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 9800000000,
+        "year": 2024
+    },
+    {
+        "id": "8_2023",
+        "region": "Kabupaten Karo",
+        "sector": "Pariwisata",
+        "value": 1800000000,
+        "year": 2023
+    },
+    {
+        "id": "8_2024",
+        "region": "Kabupaten Karo",
+        "sector": "Pariwisata",
+        "value": 2200000000,
+        "year": 2024
+    },
+    {
+        "id": "9_2023",
+        "region": "Kabupaten Langkat",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 7500000000,
+        "year": 2023
+    },
+    {
+        "id": "9_2024",
+        "region": "Kabupaten Langkat",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 7800000000,
+        "year": 2024
+    },
+    {
+        "id": "10_2023",
+        "region": "Kabupaten Langkat",
+        "sector": "Industri Pengolahan",
+        "value": 3000000000,
+        "year": 2023
+    },
+    {
+        "id": "10_2024",
+        "region": "Kabupaten Langkat",
+        "sector": "Industri Pengolahan",
+        "value": 3300000000,
+        "year": 2024
+    },
+    {
+        "id": "11_2023",
+        "region": "Kota Pematangsiantar",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 4000000000,
+        "year": 2023
+    },
+    {
+        "id": "11_2024",
+        "region": "Kota Pematangsiantar",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 4500000000,
+        "year": 2024
+    },
+    {
+        "id": "13_2023",
+        "region": "Kabupaten Simalungun",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 10500000000,
+        "year": 2023
+    },
+    {
+        "id": "13_2024",
+        "region": "Kabupaten Simalungun",
+        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "value": 11500000000,
+        "year": 2024
+    },
+    {
+        "id": "15_2023",
+        "region": "Kabupaten Asahan",
+        "sector": "Perkebunan",
+        "value": 13000000000,
+        "year": 2023
+    },
+    {
+        "id": "15_2024",
+        "region": "Kabupaten Asahan",
+        "sector": "Perkebunan",
+        "value": 14500000000,
+        "year": 2024
+    },
+    {
+        "id": "17_2023",
+        "region": "Kabupaten Batubara",
+        "sector": "Industri Pengolahan",
+        "value": 20000000000,
+        "year": 2023
+    },
+    {
+        "id": "17_2024",
+        "region": "Kabupaten Batubara",
+        "sector": "Industri Pengolahan",
+        "value": 26000000000,
+        "year": 2024
+    }
+]

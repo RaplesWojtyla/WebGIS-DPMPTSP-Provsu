@@ -43,7 +43,7 @@ export default function LoginForm() {
                         Masukkan email dan kata sandi untuk mengakses akun Anda
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4 p-4">
+                <CardContent className="grid gap-4 p-2">
                     <FormInput
                         id="email"
                         label="Email"
@@ -109,10 +109,10 @@ export default function LoginForm() {
                         Masuk dengan Google
                     </FormButton>
                 </CardContent>
-                <CardFooter className="flex flex-wrap items-center justify-between gap-2">
+                <CardFooter className="flex flex-wrap justify-center gap-2">
                     <div className="text-sm text-muted-foreground">
                         Belum punya akun?{" "}
-                        <Link href="/register" className="text-primary underline-offset-4 font-semibold hover:underline hover:text-blue-900 hover:font-bold">
+                        <Link href="/register" className="text-primary underline-offset-4 font-bold hover:underline hover:text-blue-800 hover:font-bold">
                             Daftar
                         </Link>
                     </div>
