@@ -1,8 +1,3 @@
-declare module '*.png';
-declare module '*.jpg';
-declare module '*.jpeg';
-declare module '*.svg';
-
 declare global {
     interface RegionData {
         id: string
@@ -36,6 +31,17 @@ declare global {
         lat: string
         lng: string
         address: string
+    }
+
+    type SignInFormData = {
+        email: string
+        password: string
+    }
+
+    type SignUpFormData = {
+        name: string
+        email: string
+        password: string
     }
 }
 
