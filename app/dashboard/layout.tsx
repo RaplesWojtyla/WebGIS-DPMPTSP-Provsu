@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pathname = usePathname();
     const isAdmin = pathname.includes("/admin");
     const isOperator = pathname.includes("/operator");
-    const isUser = pathname.includes("/user");
+    // const isUser = pathname.includes("/user");
 
     let navigation = [
         { name: "Ringkasan", href: "/dashboard/user", icon: LayoutDashboard },

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiLock, FiSend, FiFileText, FiDollarSign, FiMap, FiUploadCloud, FiBriefcase, FiHome } from "react-icons/fi";
+import { FiLock, FiSend, FiUploadCloud, FiBriefcase, FiHome } from "react-icons/fi";
 
 export default function UserProposalPage() {
     const router = useRouter();

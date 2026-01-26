@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiX, FiUsers, FiFilter, FiCheckCircle, FiMoreVertical } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiX, FiUsers, FiFilter, FiCheckCircle } from "react-icons/fi";
 
 // User Type Definition
 interface User {
@@ -167,8 +167,8 @@ export default function UsersPage() {
                                         </td>
                                         <td className="p-5">
                                             <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${user.role === 'Admin' ? 'bg-purple-50 text-purple-700 border-purple-100' :
-                                                    user.role === 'Investor' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                                                        'bg-blue-50 text-blue-700 border-blue-100'
+                                                user.role === 'Investor' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                                    'bg-blue-50 text-blue-700 border-blue-100'
                                                 }`}>
                                                 {user.role}
                                             </span>
@@ -266,7 +266,7 @@ export default function UsersPage() {
                                     <select
                                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all bg-white"
                                         value={formData.role}
-                                        onChange={(e: any) => setFormData({ ...formData, role: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, role: e.target.value as "Admin" | "User" | "Investor" })}
                                     >
                                         <option value="User">User</option>
                                         <option value="Investor">Investor</option>
@@ -278,7 +278,7 @@ export default function UsersPage() {
                                     <select
                                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all bg-white"
                                         value={formData.status}
-                                        onChange={(e: any) => setFormData({ ...formData, status: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, status: e.target.value as "Active" | "Inactive" })}
                                     >
                                         <option value="Active">Aktif</option>
                                         <option value="Inactive">Non-Aktif</option>

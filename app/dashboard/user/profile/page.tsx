@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiUser, FiSave, FiBriefcase, FiMapPin, FiCheckCircle } from "react-icons/fi";
+import { FiUser, FiSave, FiBriefcase, FiMapPin } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
 export default function UserProfilePage() {

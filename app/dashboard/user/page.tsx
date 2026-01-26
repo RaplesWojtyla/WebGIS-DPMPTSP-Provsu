@@ -4,8 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiUser, FiActivity, FiFileText, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
+interface UserProfile {
+    name: string;
+    isComplete: boolean;
+}
+
 export default function UserOverviewPage() {
-    const [profile, setProfile] = useState<any>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
 
     useEffect(() => {
         const saved = localStorage.getItem("userProfile");

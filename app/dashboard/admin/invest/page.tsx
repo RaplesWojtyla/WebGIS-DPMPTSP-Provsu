@@ -130,7 +130,7 @@ export default function InvestmentPage() {
                         {["All", "Pending", "Approved", "Rejected"].map((status) => (
                             <button
                                 key={status}
-                                onClick={() => setStatusFilter(status as any)}
+                                onClick={() => setStatusFilter(status as "All" | "Pending" | "Approved" | "Rejected")}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${statusFilter === status
                                     ? "bg-slate-800 text-white shadow-md"
                                     : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
