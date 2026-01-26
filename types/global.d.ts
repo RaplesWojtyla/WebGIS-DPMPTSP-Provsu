@@ -1,5 +1,4 @@
-import { Path } from "better-auth"
-import { FieldError, FieldValues, RegisterOptions, UseFormRegister } from "react-hook-form"
+import { FieldError, FieldValues, RegisterOptions, UseFormRegister, Path } from "react-hook-form"
 
 declare global {
     interface RegionData {

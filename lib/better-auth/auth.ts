@@ -27,9 +27,10 @@ export const auth = betterAuth({
                 to: user.email,
                 subject: "DPMPTSP Provinsi Sumatera Utara - Verifikasi Email",
                 react: EmailVerification({ user: user.name, url })
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 console.error('Failed to send verification email', error)
+
+                throw new Error('Failed to send verification email')
             })
         },
         sendOnSignUp: true,

@@ -102,7 +102,6 @@ export const signInWithEmail = async (data: SignInFormData) => {
         console.error('Sign in with email failed', error)
 
         if (error instanceof APIError) {
-            console.log(error.body)
             if (error.body?.code === 'INVALID_EMAIL_OR_PASSWORD') {
                 return {
                     success: false,
