@@ -3,27 +3,39 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Map, Settings, Users, LogOut, FileText, PieChart } from "lucide-react";
+import { FiActivity } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAdmin = pathname.includes("/admin");
+    const isOperator = pathname.includes("/operator");
+    const isUser = pathname.includes("/user");
 
-    const navigation = isAdmin
-        ? [
-            { name: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
-            { name: "Users", href: "/dashboard/admin/users", icon: Users },
-            { name: "Investments", href: "/dashboard/admin/investments", icon: PieChart },
-            { name: "Map Data", href: "/dashboard/admin/map-data", icon: Map },
-            { name: "Settings", href: "/dashboard/admin/settings", icon: Settings },
-        ]
-        : [
-            { name: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
-            { name: "My Investments", href: "/dashboard/user/investments", icon: PieChart },
-            { name: "Saved Locations", href: "/dashboard/user/saved", icon: Map },
-            { name: "Applications", href: "/dashboard/user/applications", icon: FileText },
-            { name: "Settings", href: "/dashboard/user/settings", icon: Settings },
+    let navigation = [
+        { name: "Ringkasan", href: "/dashboard/user", icon: LayoutDashboard },
+        { name: "Profil Saya", href: "/dashboard/user/profile", icon: Users },
+        { name: "Simulasi Investasi", href: "/dashboard/user/simulation", icon: FiActivity },
+        { name: "Ajukan Proposal", href: "/dashboard/user/proposal", icon: FileText },
+    ];
+
+    let workspaceName = "Area Investor";
+
+    if (isAdmin) {
+        navigation = [
+            { name: "Ringkasan", href: "/dashboard/admin", icon: LayoutDashboard },
+            { name: "Pengguna", href: "/dashboard/admin/users", icon: Users },
+            { name: "Investasi", href: "/dashboard/admin/invest", icon: PieChart },
+            { name: "Data Peta", href: "/maps", icon: Map },
+            { name: "Pengaturan", href: "/dashboard/admin/settings", icon: Settings },
         ];
+        workspaceName = "Area Admin";
+    } else if (isOperator) {
+        navigation = [
+            { name: "Dashboard Operator", href: "/dashboard/operator", icon: LayoutDashboard },
+        ];
+        workspaceName = "Area Operator";
+    }
 
     return (
         <div className="flex h-screen bg-muted/20">
@@ -38,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">
-                        {isAdmin ? "Admin Workspace" : "Investor Workspace"}
+                        {workspaceName}
                     </div>
                     {navigation.map((item) => {
                         const Icon = item.icon;
@@ -48,8 +60,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                                        ? "bg-primary/10 text-primary"
-                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -63,7 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <Button variant="outline" className="w-full justify-start gap-2" asChild>
                         <Link href="/login">
                             <LogOut className="w-4 h-4" />
-                            Sign Out
+                            Keluar
                         </Link>
                     </Button>
                 </div>

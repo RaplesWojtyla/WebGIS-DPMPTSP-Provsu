@@ -1,124 +1,85 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin, TrendingUp, Clock, ArrowRight, Wallet, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { FiUser, FiActivity, FiFileText, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
-export default function UserDashboard() {
+export default function UserOverviewPage() {
+    const [profile, setProfile] = useState<any>(null);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("userProfile");
+        if (saved) {
+            setProfile(JSON.parse(saved));
+        }
+    }, []);
+
+    const isComplete = profile?.isComplete;
+
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Bonjour, Investor</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Welcome back to your investment overview
-                    </p>
-                </div>
-                <Button asChild>
-                    <Link href="/">
-                        Explore Map <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
-                </Button>
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <div>
+                <h1 className="text-3xl font-bold text-slate-800">Selamat Datang, {profile?.name || "Investor"}</h1>
+                <p className="text-slate-500">Pantau aktivitas investasi dan simulasi Anda di sini.</p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Investments</CardTitle>
-                        <Wallet className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">Rp 12.5M</div>
-                        <p className="text-xs text-muted-foreground">+2.5% from last month</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Saved Locations</CardTitle>
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">4</div>
-                        <p className="text-xs text-muted-foreground">Across 3 regencies</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Pending Applications</CardTitle>
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">1</div>
-                        <p className="text-xs text-muted-foreground">Updated 2 hours ago</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Main Content Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-
-                {/* Recent Activity */}
-                <Card className="col-span-4">
-                    <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
-                        <CardDescription>
-                            Your recent interactions with the investment map.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-8">
-                            {[
-                                { title: "Viewed Medan Investment Zone", time: "2 hours ago", icon: MapPin },
-                                { title: "Downloaded ROI Report", time: "5 hours ago", icon: TrendingUp },
-                                { title: "Updated Profile Information", time: "1 day ago", icon: Activity },
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-center">
-                                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                        <item.icon className="h-4 w-4" />
-                                    </div>
-                                    <div className="ml-4 space-y-1">
-                                        <p className="text-sm font-medium leading-none">{item.title}</p>
-                                        <p className="text-xs text-muted-foreground">{item.time}</p>
-                                    </div>
-                                    <div className="ml-auto font-medium text-sm text-primary cursor-pointer hover:underline">
-                                        View
-                                    </div>
-                                </div>
-                            ))}
+            {/* Profile Status Card */}
+            <div className={`p-6 rounded-2xl border ${isComplete ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
+                <div className="flex items-start justify-between">
+                    <div className="flex gap-4">
+                        <div className={`p-3 rounded-xl ${isComplete ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
+                            {isComplete ? <FiCheckCircle size={24} /> : <FiAlertCircle size={24} />}
                         </div>
-                    </CardContent>
-                </Card>
+                        <div>
+                            <h3 className={`text-lg font-bold ${isComplete ? 'text-green-800' : 'text-amber-800'}`}>
+                                {isComplete ? "Profil Lengkap" : "Profil Belum Lengkap"}
+                            </h3>
+                            <p className={`${isComplete ? 'text-green-700' : 'text-amber-700'}`}>
+                                {isComplete ? "Anda memiliki akses penuh ke alat investasi." : "Harap lengkapi detail profil Anda untuk membuka kunci alat investasi."}
+                            </p>
+                        </div>
+                    </div>
+                    {!isComplete && (
+                        <Link href="/dashboard/user/profile" className="px-4 py-2 bg-amber-600 text-white rounded-lg font-bold text-sm hover:bg-amber-700">
+                            Lengkapi Sekarang
+                        </Link>
+                    )}
+                </div>
+            </div>
 
-                {/* Recommended Opportunities */}
-                <Card className="col-span-3">
-                    <CardHeader>
-                        <CardTitle>Opportunities</CardTitle>
-                        <CardDescription>
-                            AI-recommended zones based on your profile.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {[
-                            { name: "Kawasan Industri Sei Mangkei", type: "Industrial", match: "98%" },
-                            { name: "Danau Toba Tourism", type: "Tourism", match: "92%" },
-                            { name: "Medan Tech Park", type: "Technology", match: "85%" }
-                        ].map((item, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors cursor-pointer">
-                                <div>
-                                    <p className="font-medium text-sm">{item.name}</p>
-                                    <p className="text-xs text-muted-foreground">{item.type}</p>
-                                </div>
-                                <div className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                    {item.match}
-                                </div>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Link href="/dashboard/user/profile" className="block group">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                            <FiUser size={24} />
+                        </div>
+                        <h3 className="font-bold text-slate-800 mb-2">Profil Saya</h3>
+                        <p className="text-slate-500 text-sm">Kelola informasi pribadi dan data perusahaan Anda.</p>
+                    </div>
+                </Link>
 
+                <Link href="/dashboard/user/simulation" className="block group">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                            <FiActivity size={24} />
+                        </div>
+                        <h3 className="font-bold text-slate-800 mb-2">Simulasi Investasi</h3>
+                        <p className="text-slate-500 text-sm">Jalankan analisis ekonomi (LQ, SSA, DLQ) untuk menemukan peluang.</p>
+                        {!isComplete && <div className="mt-4 text-xs bg-slate-100 text-slate-500 py-1 px-2 rounded w-fit">Terkunci 🔒</div>}
+                    </div>
+                </Link>
+
+                <Link href="/dashboard/user/proposal" className="block group">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                            <FiFileText size={24} />
+                        </div>
+                        <h3 className="font-bold text-slate-800 mb-2">Proposal Saya</h3>
+                        <p className="text-slate-500 text-sm">Ajukan dan pantau status permohonan investasi Anda.</p>
+                        {!isComplete && <div className="mt-4 text-xs bg-slate-100 text-slate-500 py-1 px-2 rounded w-fit">Terkunci 🔒</div>}
+                    </div>
+                </Link>
             </div>
         </div>
     );
