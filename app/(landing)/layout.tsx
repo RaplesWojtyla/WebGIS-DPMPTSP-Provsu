@@ -3,6 +3,8 @@ import { Footer } from "@/components/Footer"
 import { auth } from "@/lib/better-auth/auth"
 import { headers } from "next/headers"
 
+export const dynamic = 'force-dynamic'
+
 export default async function LandingPageLayout({
     children
 }: Readonly<{

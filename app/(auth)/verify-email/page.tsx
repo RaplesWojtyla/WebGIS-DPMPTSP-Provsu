@@ -5,14 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Mail, ArrowLeft, RefreshCw } from "lucide-react"
-import { useState, useEffect } from "react"
+import { Mail, ArrowLeft, RefreshCw, Loader2 } from "lucide-react"
+import { useState, useEffect, Suspense } from "react"
 import { toast } from "sonner"
 import { resendVerificationEmail } from "@/lib/actions/auth.actions"
 
 const COOLDOWN_SECONDS = 60
 
-export default function VerifyEmailPage() {
+function VerifyEmailLoading() {
+    return (
+        <div className="flex w-full h-full justify-center items-center p-6 md:p-10">
+            <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <p className="text-muted-foreground">Memuat...</p>
+            </div>
+        </div>
+    )
+}
+
+function VerifyEmailContent() {
     const searchParams = useSearchParams()
     const email = searchParams.get("email") || ""
     const [isResending, setIsResending] = useState(false)
@@ -62,7 +73,7 @@ export default function VerifyEmailPage() {
             }
         } catch (error) {
             console.error("Terjadi kesalahan saat mengirim ulang email:", error)
-            
+
             toast.error("Terjadi kesalahan", {
                 description: "Silakan coba lagi dalam beberapa saat",
             })
@@ -160,5 +171,13 @@ export default function VerifyEmailPage() {
                 </motion.div>
             </div>
         </div>
+    )
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<VerifyEmailLoading />}>
+            <VerifyEmailContent />
+        </Suspense>
     )
 }
