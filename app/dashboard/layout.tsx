@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <div className="p-4 border-t">
                     <Button variant="outline" className="w-full justify-start gap-2" asChild>
-                        <Link href="/login">
+                        <Link href="/sign-in">
                             <LogOut className="w-4 h-4" />
                             Sign Out
                         </Link>

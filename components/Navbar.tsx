@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Menu, LogIn } from "lucide-react"
+import { Menu, LogIn, LogInIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import UserDropdown from "./UserDropdown"
 
 const components: { title: string; href: string; description: string }[] = [
 	{
@@ -53,7 +54,7 @@ const components: { title: string; href: string; description: string }[] = [
 	},
 ]
 
-export function NavigationMenuDemo() {
+export function Navbar({ user }: { user: User | null }) {
 	// const isMobile = useIsMobile()
 	const pathname = usePathname()
 	const [isScrolled, setIsScrolled] = React.useState(false)
@@ -99,7 +100,7 @@ export function NavigationMenuDemo() {
 					: "bg-background/95 backdrop-blur-xs supports-backdrop-filter:bg-background/40"
 			)}
 		>
-			<div className="container flex h-20 items-center justify-between py-4">
+			<div className="container flex h-20 items-center justify-between py-4 px-6">
 				<div className="flex items-center gap-2 ml-6">
 					<Link href="/" className="flex items-center space-x-2">
 						<span className="font-bold inline-block">
@@ -174,21 +175,25 @@ export function NavigationMenuDemo() {
 					</NavigationMenu>
 				</div>
 
-				<div className="hidden md:flex items-center justify-end w-[120px] mr-8">
-					<Button
-						asChild
-						className={cn(
-							"h-12 text-base rounded-full px-6 font-bold shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95",
-							isTransparent
-								? "bg-white/10 backdrop-blur-md border border-white/50 text-white hover:bg-white hover:text-blue-900"
-								: "bg-linear-to-r from-blue-600 to-blue-800 text-white border border-blue-500 hover:shadow-blue-200"
-						)}
-					>
-						<Link href="/login" className="flex items-center gap-2">
-							<LogIn className="w-4 h-4" /> Masuk
-						</Link>
-					</Button>
-				</div>
+				{user ? (
+					<UserDropdown user={user} />
+				) : (
+					<div className="hidden md:flex items-center justify-end w-[120px] mr-8">
+						<Button
+							asChild
+							className={cn(
+								"h-12 text-base rounded-full px-6 font-bold shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95",
+								isTransparent
+									? "bg-white/10 backdrop-blur-md border border-white/50 text-white hover:bg-white hover:text-blue-900"
+									: "bg-linear-to-r from-blue-600 to-blue-800 text-white border border-blue-500 hover:shadow-blue-200"
+							)}
+						>
+							<Link href="/sign-in" className="flex items-center gap-2">
+								<LogInIcon className="w-4 h-4" /> Masuk
+							</Link>
+						</Button>
+					</div>
+				)}
 
 				{/* Mobile Menu */}
 				<div className="md:hidden">
@@ -234,7 +239,7 @@ export function NavigationMenuDemo() {
 									<Link href="#" className="block font-medium py-2 px-2 text-sm rounded-md hover:text-blue-900 hover:bg-blue-50/50">Informasi</Link>
 									<div className="pt-2">
 										<Button asChild className="w-full bg-linear-to-r from-blue-600 to-blue-800 text-white rounded-full shadow-lg">
-											<Link href="/login" className="flex items-center justify-center gap-2">
+											<Link href="/sign-in" className="flex items-center justify-center gap-2">
 												<LogIn className="w-4 h-4" /> Masuk
 											</Link>
 										</Button>
@@ -251,28 +256,5 @@ export function NavigationMenuDemo() {
 				</div>
 			</div>
 		</header>
-	)
-}
-
-function ListItem({
-	title,
-	children,
-	href,
-	...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
-	return (
-		<li {...props}>
-			<NavigationMenuLink asChild>
-				<Link
-					href={href}
-					className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-				>
-					<div className="text-sm font-medium leading-none">{title}</div>
-					<p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-						{children}
-					</p>
-				</Link>
-			</NavigationMenuLink>
-		</li>
 	)
 }

@@ -2,42 +2,53 @@ import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import prisma from "../prisma"
 import { nextCookies } from "better-auth/next-js"
+import { Resend } from "resend"
+import EmailVerification from "@/components/email/EmailVerificationTemplate"
 
-let authInstance: ReturnType<typeof betterAuth> | null = null
+const resend = new Resend(process.env.RESEND_API_KEY as string)
 
-export const getAuth = async () => {
-    if (authInstance) {
-        return authInstance
-    }
-
-
-    if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL) {
-        throw new Error("BETTER_AUTH_SECRET and BETTER_AUTH_URL must be provided.")
-    }
-
-    authInstance = betterAuth({
-        database: prismaAdapter(prisma, {
-            provider: 'postgresql'
-        }),
-        secret: process.env.BETTER_AUTH_SECRET!,
-        baseURL: process.env.BETTER_AUTH_URL!,
-        emailAndPassword: {
-            enabled: true,
-            disableSignUp: false,
-            requireEmailVerification: false,
-            minPasswordLength: 8,
-            maxPasswordLength: 128,
-            autoSignIn: true
-        },
-        socialProviders: {
-            google: {
-                clientId: process.env.GOOGLE_CLIENT_ID!,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                prompt: 'select_account'
+export const auth = betterAuth({
+    database: prismaAdapter(prisma, {
+        provider: 'postgresql'
+    }),
+    secret: process.env.BETTER_AUTH_SECRET!,
+    baseURL: process.env.BETTER_AUTH_URL!,
+    user: {
+        additionalFields: {
+            role: {
+                type: "string"
             }
+        }
+    },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            await resend.emails.send({
+                from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
+                to: user.email,
+                subject: "DPMPTSP Provinsi Sumatera Utara - Verifikasi Email",
+                react: EmailVerification({ user: user.name, url })
+            })
+            .catch((error) => {
+                console.error('Failed to send verification email', error)
+            })
         },
-        plugins: [nextCookies()]
-    })
-
-    return authInstance
-}
+        sendOnSignUp: true,
+        autoSignInAfterVerification: true,
+        expiresIn: 3600
+    },
+    emailAndPassword: {
+        enabled: true,
+        disableSignUp: false,
+        requireEmailVerification: true,
+        minPasswordLength: 8,
+        maxPasswordLength: 128,
+    },
+    socialProviders: {
+        google: {
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            prompt: 'select_account'
+        }
+    },
+    plugins: [nextCookies()]
+})
