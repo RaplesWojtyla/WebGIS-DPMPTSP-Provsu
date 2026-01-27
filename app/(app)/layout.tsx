@@ -1,4 +1,4 @@
-import { NavigationMenuDemo as Navbar } from "@/components/Navbar"
+import { Navbar as Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 export default function AppLayout({
     children
@@ -7,7 +7,7 @@ export default function AppLayout({
 }>) {
     return (
         <div>
-            <Navbar />
+            <Navbar user={null} />
             <main className="flex min-h-screen mx-10 flex-col pt-20">
                 {children}
             </main>

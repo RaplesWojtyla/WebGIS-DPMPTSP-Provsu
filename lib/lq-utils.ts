@@ -208,9 +208,9 @@ export function calculateKlassen(records: InvestmentRecord[], startYear: number,
     const sectors = Array.from(new Set(records.map(r => r.sector)));
 
     // Calculate Reference Growth (Total Province/National) -> R
-    const totalStart = startRecords.reduce((acc, r) => acc + r.value, 0);
-    const totalEnd = endRecords.reduce((acc, r) => acc + r.value, 0);
-    // const R = totalStart === 0 ? 0 : (totalEnd - totalStart) / totalStart; // Unused for now
+    // const totalStart = startRecords.reduce((acc, r) => acc + r.value, 0);
+    // const totalEnd = endRecords.reduce((acc, r) => acc + r.value, 0);
+    // const R = totalStart === 0 ? 0 : (totalEnd - totalStart) / totalStart;
 
     // Calculate Reference Average Share/Value (Average Sector Value across all regions) -> Y
     // Or simpler: Total Value of Sector / Num Regions?

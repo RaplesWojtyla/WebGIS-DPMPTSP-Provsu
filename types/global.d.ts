@@ -1,3 +1,5 @@
+import { FieldError, FieldValues, RegisterOptions, UseFormRegister, Path } from "react-hook-form"
+
 declare global {
     interface RegionData {
         id: string
@@ -33,16 +35,23 @@ declare global {
         address: string
     }
 
-    type SignInFormData = {
-        email: string
-        password: string
-    }
-
-    type SignUpFormData = {
+    type User = {
+        id: string
         name: string
         email: string
-        password: string
+        role: string
+        image?: string
+    }
+
+    type FormInputProps<T extends FieldValues> = {
+        name: Path<T>
+        label: string
+        placeholder?: string
+        type?: string
+        register: UseFormRegister<T>
+        error?: FieldError
+        validation?: RegisterOptions<T, Path<T>>
+        disabled?: boolean
+        value?: string
     }
 }
-
-export {}
