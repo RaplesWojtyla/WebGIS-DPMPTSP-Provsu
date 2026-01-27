@@ -42,48 +42,43 @@ export default function SignInPage() {
                     duration: 3000,
                 })
 
-                try {
-                    await resendVerificationEmail(data.email)
+                const resendResult = await resendVerificationEmail(data.email)
 
+                if (resendResult.success) {
                     toast.success("Email Verifikasi Terkirim!", {
                         description: "Silakan cek inbox atau folder spam Anda",
                         duration: 5000,
                     })
-                } catch (error) {
-                    console.error("Resend verification email failed", error)
-                    
+
+                    router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
+                } else {
                     toast.error("Gagal mengirim email verifikasi", {
-                        description: "Silakan coba lagi beberapa saat.",
+                        description: resendResult.message || "Silakan coba lagi beberapa saat.",
                         duration: 5000,
                     })
-
-                    return
                 }
-
-                router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
-                return
-            }
-
-            toast.error("Gagal Masuk", {
-                description: response.message || "Kredensial yang Anda masukkan tidak valid.",
-                duration: 5000,
-                className: '!border-red-600 !bg-red-300',
-                classNames: {
-                    title: '!text-red-800 !font-bold !text-base',
-                    description: '!text-red-900',
-                    icon: '!text-red-900 size-4'
-                }
-            })
-
-            if (typeof response.error === 'object') {
-                Object.entries(response.error).forEach(([field, messages]) => {
-                    if (messages && messages.length > 0) {
-                        setError(field as keyof SignInFormData, {
-                            type: 'server',
-                            message: messages[0]
-                        })
+            } else {
+                toast.error("Gagal Masuk", {
+                    description: response.message || "Kredensial yang Anda masukkan tidak valid.",
+                    duration: 5000,
+                    className: '!border-red-600 !bg-red-300',
+                    classNames: {
+                        title: '!text-red-800 !font-bold !text-base',
+                        description: '!text-red-900',
+                        icon: '!text-red-900 size-4'
                     }
                 })
+
+                if (typeof response.error === 'object') {
+                    Object.entries(response.error).forEach(([field, messages]) => {
+                        if (messages && messages.length > 0) {
+                            setError(field as keyof SignInFormData, {
+                                type: 'server',
+                                message: messages[0]
+                            })
+                        }
+                    })
+                }
             }
         }
     }
