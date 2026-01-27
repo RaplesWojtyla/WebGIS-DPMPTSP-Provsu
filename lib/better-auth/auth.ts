@@ -2,10 +2,10 @@ import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import prisma from "../prisma"
 import { nextCookies } from "better-auth/next-js"
-import { Resend } from "resend"
+import { render } from "@react-email/components"
 import EmailVerification from "@/components/email/EmailVerificationTemplate"
+import { transporter } from "../email/mailer"
 
-const resend = new Resend(process.env.RESEND_API_KEY as string)
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -22,11 +22,13 @@ export const auth = betterAuth({
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
-            await resend.emails.send({
+            const emailHtml = await render(EmailVerification({ user: user.name, url }))
+
+            await transporter.sendMail({
                 from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
                 to: user.email,
                 subject: "DPMPTSP Provinsi Sumatera Utara - Verifikasi Email",
-                react: EmailVerification({ user: user.name, url })
+                html: emailHtml
             }).catch((error) => {
                 console.error('Failed to send verification email', error)
 

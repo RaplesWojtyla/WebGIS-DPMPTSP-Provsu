@@ -44,8 +44,14 @@ export default function SignInPage() {
 
                 try {
                     await resendVerificationEmail(data.email)
+
+                    toast.success("Email Verifikasi Terkirim!", {
+                        description: "Silakan cek inbox atau folder spam Anda",
+                        duration: 5000,
+                    })
                 } catch (error) {
                     console.error("Resend verification email failed", error)
+                    
                     toast.error("Gagal mengirim email verifikasi", {
                         description: "Silakan coba lagi beberapa saat.",
                         duration: 5000,
@@ -53,17 +59,6 @@ export default function SignInPage() {
 
                     return
                 }
-
-                toast.success("Email Verifikasi Terkirim!", {
-                    description: "Silakan cek inbox atau folder spam Anda",
-                    duration: 5000,
-                    className: '!border-red-600 !bg-red-300',
-                    classNames: {
-                        title: '!text-red-800 !font-bold !text-base',
-                        description: '!text-red-900',
-                        icon: '!text-red-900 size-4'
-                    }
-                })
 
                 router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
                 return
