@@ -7,6 +7,13 @@ datasource db {
     provider = "postgresql"
 }
 
+
+enum Role {
+    user
+    admin
+    operator
+}
+
 model User {
     id            String   @id @default(cuid())
     name          String
@@ -16,7 +23,7 @@ model User {
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
-    role String @default("user")
+    role Role @default(user)
 
     sessions Session[]
     accounts Account[]

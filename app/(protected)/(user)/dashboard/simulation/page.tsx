@@ -109,7 +109,7 @@ export default function UserSimulationPage() {
         const saved = localStorage.getItem("userProfile");
         if (!saved || !JSON.parse(saved).isComplete) {
             alert("You must complete your profile first!");
-            router.push("/dashboard/user/profile");
+            router.push("/dashboard/profile");
         } else {
             setIsAuthorized(true);
         }

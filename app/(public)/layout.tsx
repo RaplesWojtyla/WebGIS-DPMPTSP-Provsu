@@ -12,7 +12,7 @@ export default async function LandingPageLayout({
 }>) {
     let session = null
     let user: User | null = null
-
+    
     try {
         session = await auth.api.getSession({
             headers: await headers()

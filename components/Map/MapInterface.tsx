@@ -8,11 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Loader2 } from "lucide-react"
+import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Loader2, Lock } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { getRegionData } from "@/data/dummy-data"
+import Link from "next/link"
 
 // Dynamically import MapMain to avoid SSR issues
 const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
@@ -23,9 +24,10 @@ const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
 interface MapInterfaceProps {
     geoJsonData: GeoJSON.FeatureCollection<GeoJSON.Geometry>
     className?: string
+    isAuthenticated?: boolean
 }
 
-export default function MapInterface({ geoJsonData, className }: MapInterfaceProps) {
+export default function MapInterface({ geoJsonData, className, isAuthenticated = false }: MapInterfaceProps) {
     const [baseLayer, setBaseLayer] = useState<'osm' | 'satellite' | 'dark'>('osm')
     const [sidebarOpen, setSidebarOpen] = useState(true)
     const [layersOpen, setLayersOpen] = useState(false)
@@ -297,14 +299,28 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                             </div>
                                         </div>
 
-                                        <Button
-                                            className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
-                                            size="sm"
-                                            onClick={() => setShowAiPanel(true)}
-                                        >
-                                            <Sparkles className="w-3 h-3 mr-2" />
-                                            Analisis AI
-                                        </Button>
+                                        {isAuthenticated ? (
+                                            <Button
+                                                className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
+                                                size="sm"
+                                                onClick={() => setShowAiPanel(true)}
+                                            >
+                                                <Sparkles className="w-3 h-3 mr-2" />
+                                                Analisis AI
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                className="w-full mt-4"
+                                                size="sm"
+                                                variant="outline"
+                                                asChild
+                                            >
+                                                <Link href="/sign-in">
+                                                    <Lock className="w-3 h-3 mr-2" />
+                                                    Login untuk Analisis AI
+                                                </Link>
+                                            </Button>
+                                        )}
                                     </>
                                 )}
                             </div>
