@@ -299,7 +299,20 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                             </div>
                                         </div>
 
-                                        {isAuthenticated ? (
+                                        <Button
+                                            className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
+                                            size="sm"
+                                            onClick={() => setShowAiPanel(true)}
+                                        >
+                                            {isAuthenticated ? (
+                                                <Sparkles className="w-3 h-3 mr-2" />
+                                            ) : (
+                                                <Lock className="w-3 h-3 mr-2" />
+                                            )}
+                                            Analisis AI
+                                        </Button>
+
+                                        {/* {isAuthenticated ? (
                                             <Button
                                                 className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
                                                 size="sm"
@@ -320,7 +333,7 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                                     Login untuk Analisis AI
                                                 </Link>
                                             </Button>
-                                        )}
+                                        )} */}
                                     </>
                                 )}
                             </div>

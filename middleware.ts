@@ -4,6 +4,8 @@ import { getSessionCookie } from "better-auth/cookies"
 
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl
+    const requestHeaders = new Headers(req.headers)
+    requestHeaders.set('x-url', pathname)
 
     const isAuthRoute =
         pathname.startsWith("/sign-in") ||
@@ -22,7 +24,9 @@ export async function middleware(req: NextRequest) {
     const isProtectedApiRoute = pathname.startsWith("/api/predict")
 
     if (isPublicRoute) {
-        return NextResponse.next()
+        return NextResponse.next({
+            request: { headers: requestHeaders }
+        })
     }
 
     const session = getSessionCookie(req)
@@ -36,7 +40,9 @@ export async function middleware(req: NextRequest) {
         }
 
         if (isAuthRoute) {
-            return NextResponse.next()
+            return NextResponse.next({
+                request: { headers: requestHeaders }
+            })
         }
 
         if (isDashboardRoute || isAdminRoute || isOperatorRoute) {
@@ -46,14 +52,18 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(signInUrl)
         }
 
-        return NextResponse.next()
+        return NextResponse.next({
+            request: { headers: requestHeaders }
+        })
     }
 
     if (isAuthRoute) {
         return NextResponse.redirect(new URL('/dashboard', req.url))
     }
 
-    return NextResponse.next()
+    return NextResponse.next({
+        request: { headers: requestHeaders }
+    })
 }
 
 

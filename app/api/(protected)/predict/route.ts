@@ -1,10 +1,23 @@
 import { generateInvestmentPrediction } from "@/lib/actions/investment-analysis.actions"
-
+import requireRole from "@/lib/auth/role-guard"
+import { auth } from "@/lib/better-auth/auth"
+import { headers } from "next/headers"
 
 export const maxDuration = 60
 
 export async function POST(req: Request) {
     try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session?.user) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+                status: 401,
+                headers: { "Content-Type": "application/json" }
+            })
+        }
+
         const response = await req.json()
         const { lat, lng, address } = response
 

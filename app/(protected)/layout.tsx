@@ -1,24 +1,13 @@
 import ProtectedSidebar from "@/components/dashboard/ProtectedSidebar"
-import { auth } from "@/lib/better-auth/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-
+import requireRole from "@/lib/auth/role-guard"
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-    const session  = await auth.api.getSession({
-        headers: await headers()
-    })
-
-    if (!session?.user) {
-        return redirect('/sign-in')
-    }
-
-    const userRole = session.user.role
+    const { role } = await requireRole(['admin', 'operator', 'user'])
 
     return (
         <div className="flex h-screen bg-muted/20">
             {/* Sidebar */}
-            <ProtectedSidebar role={userRole as Role} />
+            <ProtectedSidebar role={role} />
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto p-8">

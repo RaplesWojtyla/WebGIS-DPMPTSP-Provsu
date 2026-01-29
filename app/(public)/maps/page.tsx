@@ -13,12 +13,13 @@ export default async function MapsPage() {
     let geoJsonData = null
     let errorMessage = null
 
-    // Check authentication status
+
     let isAuthenticated = false
     try {
         const session = await auth.api.getSession({
             headers: await headers()
         })
+
         isAuthenticated = !!session?.user
     } catch (error) {
         console.error("Error checking session:", error)
