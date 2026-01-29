@@ -57,7 +57,7 @@ export default function UserProfilePage() {
         setProfile(updatedProfile);
         localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
         alert("Profil berhasil disimpan! Fitur simulasi dan proposal kini terbuka.");
-        router.push("/dashboard/user/simulation");
+        router.push("/dashboard/simulation");
     };
 
     return (

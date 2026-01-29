@@ -13,7 +13,7 @@ export default function UserProposalPage() {
         const saved = localStorage.getItem("userProfile");
         if (!saved || !JSON.parse(saved).isComplete) {
             alert("Anda Harus melengkapi profil terlebih dahulu!");
-            router.push("/dashboard/user/profile");
+            router.push("/dashboard/profile");
         } else {
             setIsAuthorized(true);
         }
@@ -23,7 +23,7 @@ export default function UserProposalPage() {
         e.preventDefault();
         const typeMsg = proposalType === "investor" ? "Permohonan Investasi" : "Penawaran Lokasi";
         alert(`${typeMsg} Berhasil Dikirim! Admin kami akan segera meninjau pengajuan Anda.`);
-        router.push("/dashboard/user");
+        router.push("/dashboard");
     };
 
     if (!isAuthorized) return <div className="p-10 text-center"><FiLock className="mx-auto w-10 h-10 text-slate-400 mb-4" /> Checking Access...</div>;

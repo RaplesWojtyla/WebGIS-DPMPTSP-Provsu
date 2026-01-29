@@ -134,7 +134,7 @@ function VerifyEmailContent() {
                                 {emailProvider && (
                                     <Button
                                         variant="default"
-                                        className="w-full h-12 text-base bg-blue-900 hover:bg-blue-800 text-white transition duration-300"
+                                        className="w-full h-12 text-base bg-blue-900 hover:bg-blue-800 text-white transition duration-300 cursor-pointer"
                                         onClick={() => window.open(emailProvider.url, "_blank")}
                                     >
                                         <Mail className="mr-2 h-5 w-5" />

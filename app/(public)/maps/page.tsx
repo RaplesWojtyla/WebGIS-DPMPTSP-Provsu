@@ -5,11 +5,25 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import MapInterface from '@/components/Map/MapInterface'
 import Link from "next/link"
+import { auth } from "@/lib/better-auth/auth"
+import { headers } from "next/headers"
 
 export default async function MapsPage() {
     const geoJsonPath = path.join(process.cwd(), 'public', 'north-sumatera-geo.json')
     let geoJsonData = null
     let errorMessage = null
+
+
+    let isAuthenticated = false
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        isAuthenticated = !!session?.user
+    } catch (error) {
+        console.error("Error checking session:", error)
+    }
 
     try {
         const geoJsonFileContents = await fs.readFile(geoJsonPath, 'utf8')
@@ -39,7 +53,7 @@ export default async function MapsPage() {
                             <p>{errorMessage}</p>
                         </div>
                     ) : (
-                        <MapInterface geoJsonData={geoJsonData} />
+                        <MapInterface geoJsonData={geoJsonData} isAuthenticated={isAuthenticated} />
                     )}
                 </div>
 

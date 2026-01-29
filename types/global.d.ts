@@ -20,7 +20,7 @@ declare global {
             nearest_toll_gate_km: number // Eg. 10
             nearest_port_name: string // Eg. Pelabuhan Belawan (25km)
             internet_quality: "High Speed Fiber" | "4G Standard" | "Low Coverage"
-            power_supply: "Stabil" | "Sering Pemadaman"   
+            power_supply: "Stabil" | "Sering Pemadaman"
         }
 
         risk_profile: {
@@ -54,4 +54,10 @@ declare global {
         disabled?: boolean
         value?: string
     }
+
+    interface ProtectedSidebarProps {
+        role: 'user' | 'operator' | 'admin'
+    }
+
+    type Role = 'user' | 'operator' | 'admin'
 }

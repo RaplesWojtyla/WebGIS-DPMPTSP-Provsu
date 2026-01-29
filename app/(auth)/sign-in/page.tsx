@@ -33,8 +33,21 @@ export default function SignInPage() {
     const onSubmit: SubmitHandler<SignInFormData> = async (data: SignInFormData) => {
         const response = await signInWithEmail(data)
 
-        if (response.success) {
-            router.push('/')
+        if (response.success && response.data) {
+            const { data: { user } } = response
+
+            if (user.role === 'admin') {
+                router.push('/admin/dashboard')
+            } else if (user.role === 'operator') {
+                router.push('/operator/dashboard')
+            } else if (user.role === 'user') {
+                router.push('/')
+            } else {
+                toast.error("Gagal Masuk", {
+                    description: "Anda tidak memiliki akses ke halaman ini",
+                    duration: 5000,
+                })
+            }
         } else {
             if (response.errorCode === 'EMAIL_NOT_VERIFIED') {
                 toast.info("Email Belum Terverifikasi", {
