@@ -40,7 +40,7 @@ declare global {
         name: string
         email: string
         role: string
-        image?: string
+        image?: string | null
     }
 
     type FormInputProps<T extends FieldValues> = {
@@ -57,6 +57,7 @@ declare global {
 
     interface ProtectedSidebarProps {
         role: 'user' | 'operator' | 'admin'
+        user: User
     }
 
     type Role = 'user' | 'operator' | 'admin'

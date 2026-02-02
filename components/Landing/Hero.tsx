@@ -71,7 +71,7 @@ const statsColumn2 = [
 
 export default function Hero() {
     return (
-        <section id="beranda" className="relative max-h-screen flex items-center pt-40 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-b from-slate-950 via-blue-950 via-70% to-white text-white">
+        <section id="beranda" className="relative max-h-screen flex items-center pt-40 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-linear-to-b from-slate-950 via-blue-950 via-70% to-white text-white">
             <style jsx>{`
                 @keyframes scroll-up {
                     0% { transform: translateY(0); }
@@ -100,7 +100,7 @@ export default function Hero() {
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                            Mendorong Investasi, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-500">Mempermudah Perizinan</span> di Sumatera Utara
+                            Mendorong Investasi, <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-300 to-orange-500">Mempermudah Perizinan</span> di Sumatera Utara
                         </h1>
 
                         <p className="text-lg text-slate-300 max-w-lg">
@@ -108,7 +108,7 @@ export default function Hero() {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-950 hover:to-blue-950 text-white h-12 px-6 text-base shadow-lg shadow-blue-900/20 transition-all hover:shadow-blue-900/40 hover:-translate-y-1">
+                            <Button className="bg-linear-to-r from-blue-700 to-blue-800 hover:from-blue-950 hover:to-blue-950 text-white h-12 px-6 text-base shadow-lg shadow-blue-900/20 transition-all hover:shadow-blue-900/40 hover:-translate-y-1">
                                 Ajukan Perizinan <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                             <Button variant="outline" className="h-12 px-6 text-base border-white/20 hover:bg-white/10 text-blue-950 hover:text-white backdrop-blur-sm">
@@ -117,7 +117,13 @@ export default function Hero() {
                         </div>
                     </div>
 
-                    <div className="relative hidden md:block h-[600px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
+                    <div
+                        className="relative hidden md:block h-[600px] overflow-hidden"
+                        style={{
+                            maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
+                            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)'
+                        }}
+                    >
                         <div className="grid grid-cols-2 gap-4 h-full">
                             {/* Column 1 - Scroll Up */}
                             <div className="animate-scroll-up flex flex-col gap-4">
@@ -149,7 +155,7 @@ export default function Hero() {
                         </div>
 
                         {/* Decorative blobs */}
-                        <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-blue-400/20 via-blue-600/10 to-transparent blur-3xl rounded-full"></div>
+                        <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-linear-to-tr from-blue-400/20 via-blue-600/10 to-transparent blur-3xl rounded-full"></div>
                     </div>
                 </div>
             </div>

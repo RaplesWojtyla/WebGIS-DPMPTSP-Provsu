@@ -1,30 +1,38 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import Image from "next/image";
+
 const sectors = [
     {
         title: "Perkebunan & Pertanian",
         desc: "Kelapa sawit, karet, kakao, dan hasil pertanian lainnya dengan lahan produktif yang luas.",
+        image: "/perkebunan.jpg"
     },
     {
         title: "Energi & Pertambangan",
         desc: "Potensi energi terbarukan dan sumber daya mineral yang melimpah.",
+        image: "/pertambangan.jpg"
     },
     {
         title: "Pariwisata",
         desc: "Destinasi wisata alam, budaya, dan kuliner yang beragam di Danau Toba dan sekitarnya.",
+        image: "/pariwisata.jpeg"
     },
     {
         title: "Industri Manufaktur",
         desc: "Industri pengolahan hasil perkebunan, makanan-minuman, dan tekstil.",
+        image: "/industri.jpg"
     },
     {
         title: "Perikanan & Kelautan",
         desc: "Perikanan tangkap, budidaya, dan pengolahan hasil laut dengan garis pantai yang panjang.",
+        image: "/perikanan.jpg"
     },
     {
         title: "Ekonomi Digital",
         desc: "Startup teknologi, e-commerce, dan layanan digital yang berkembang pesat.",
+        image: "/digital.jpg"
     }
 ];
 
@@ -49,10 +57,12 @@ export default function Investment() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {sectors.map((sector, index) => (
                         <div key={index} className="group relative overflow-hidden rounded-2xl h-64 shadow-md bg-gray-900">
-                            {/* Fallback pattern */}
-                            <div className="absolute inset-0 opacity-50">
-                                <div className="w-full h-full bg-slate-800/50 pattern-grid-lg"></div>
-                            </div>
+                            <Image
+                                src={sector.image}
+                                alt={sector.title}
+                                fill
+                                className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-500"
+                            />
 
                             <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end transition-all duration-500 group-hover:from-blue-900/90 group-hover:via-blue-900/50">
                                 <h3 className="text-xl font-bold text-white mb-2">{sector.title}</h3>

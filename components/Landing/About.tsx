@@ -30,15 +30,20 @@ export default function About() {
                                     className="w-full h-full relative block group cursor-pointer"
                                     aria-label="Play Video"
                                 >
-                                    <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-200 text-gray-400">
-                                        <span className="font-medium flex items-center gap-2">
-                                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                                <div className="w-0 h-0 border-t-8 border-t-transparent border-l-14 border-l-gray-900 border-b-8 border-b-transparent ml-1"></div>
+                                    <div className="absolute inset-0">
+                                        <div className="absolute inset-0 bg-black/20 z-10" />
+                                        <img
+                                            src="/thumbnail.png"
+                                            alt="Video Thumbnail"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center z-20">
+                                            <div className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <div className="w-0 h-0 border-t-10 border-t-transparent border-l-18 border-l-blue-900 border-b-10 border-b-transparent ml-1"></div>
                                             </div>
-                                            Video Profil
-                                        </span>
+                                        </div>
                                     </div>
-                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors"></div>
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-30"></div>
                                 </button>
                             )}
                         </div>

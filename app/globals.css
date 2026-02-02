@@ -116,9 +116,26 @@
 }
 
 @layer base {
+  html {
+    overflow-y: scroll;
+  }
+
+  /* Force scrollbar to be visible even when Radix locks it */
+  body[data-scroll-locked] {
+    overflow: auto !important;
+    padding-right: 0px !important;
+  }
+
+  body {
+    /* Ensure base state handles overflow similarly */
+    overflow-y: scroll;
+  }
+
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
