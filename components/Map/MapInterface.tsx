@@ -8,12 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Loader2, Lock } from "lucide-react"
+import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Lock } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { getRegionData } from "@/data/dummy-data"
+import { toast } from "sonner"
 import Link from "next/link"
+import CollapsibeMarkdown from "./CollapsibeMarkdown"
+
+
+const TypingIndicator = () => (
+    <div className="flex items-center gap-1 text-blue-600">
+        <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+        <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+        <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+    </div>
+)
 
 // Dynamically import MapMain to avoid SSR issues
 const MapMain = dynamic(() => import("@/components/Map/MapMain"), {
@@ -34,64 +45,92 @@ export default function MapInterface({ geoJsonData, className, isAuthenticated =
     const [selectedRegion, setSelectedRegion] = useState<GeoJSON.Feature<GeoJSON.Geometry> | null>(null)
     const [activeTab, setActiveTab] = useState("filters")
     const [showAiPanel, setShowAiPanel] = useState(false)
+    const [lastAnalyzedRegion, setLastAnalyzedRegion] = useState<string | null>(null)
 
-    // AI State
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [analysisResult, setAnalysisResult] = useState<string | null>(null)
 
     const handleAnalyze = useCallback(async () => {
+        if (!isAuthenticated) {
+            toast.error("Anda harus login terlebih dahulu", {
+                duration: 5000
+            })
+
+            return
+        }
+
+        if (!selectedRegion) {
+            toast.error("Pilih wilayah terlebih dahulu", {
+                duration: 5000
+            })
+            return
+        }
+
         setIsAnalyzing(true)
         setAnalysisResult(null)
 
-        // Simulate API Call delay
-        await new Promise(resolve => setTimeout(resolve, 3000))
+        try {
+            const lat = selectedRegion?.geometry?.type === 'Point'
+                ? selectedRegion.geometry.coordinates[1]
+                : 2.1154
+            const lng = selectedRegion?.geometry?.type === 'Point'
+                ? selectedRegion.geometry.coordinates[0]
+                : 99.5451
+            const address = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2 || "Wilayah Sumatera Utara"
+            const macroData = getRegionData(address)
 
-        const lat = selectedRegion?.geometry?.type === 'Point'
-            ? selectedRegion.geometry.coordinates[1]
-            : 2.1154 // Fallback center
-        const lng = selectedRegion?.geometry?.type === 'Point'
-            ? selectedRegion.geometry.coordinates[0]
-            : 99.5451 // Fallback center
-        const address = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2 || "Wilayah Sumatera Utara"
-        const macroData = getRegionData(address)
+            const response = await fetch('/api/investment-analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ lat, lng, address })
+            })
 
-        const result = `
-# Analisis Investasi: ${macroData.name} (Site Specific)
+            if (!response.ok) {
+                const errorData = await response.json()
+                setAnalysisResult(`❌ ${errorData.error}`)
 
-1. Observasi Lokasi (Analisis Koordinat)
-Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topografi yang mendukung untuk pengembangan sektor unggulan wilayah. Berdasarkan pemetaan satelit, aksesibilitas menuju jalan utama provinsi ${macroData.infrastructure.road_status.includes("Baik") ? "tergolong mudah" : "perlu peningkatan"}. Lahan ini dominan berupa area hijau yang potensial untuk *Greenfield Project* dengan minim risiko sengketa lahan sosial (${macroData.risk_profile.social_conflict}).
+                toast.error("Analisi gagal. Harap cobalagi beberapa saat kemudian", {
+                    duration: 5000
+                })
+                return
+            }
 
-2. Potensi & Kesesuaian Lahan
- Peruntukan Terbaik: ${macroData.economy.main_sectors[0]} Terintegrasi & Kawasan Penunjang ${macroData.economy.main_sectors[1] || "Jasa"}.
- Alasan: Mendukung pertumbuhan UMK sebesar ${macroData.economy.umk} dan memanfaatkan stabilitas pasokan listrik (${macroData.infrastructure.power_supply}) yang ada.
+            const reader = response.body?.getReader()
+            const decoder = new TextDecoder()
+            let res = ''
 
-3. Analisis SWOT (Gabungan Data & Lokasi)
- Strengths: Pertumbuhan PDRB ${macroData.economy.grdp_growth} yang stabil dan ketersediaan tenaga kerja lokal.
- Weaknesses: Ketergantungan pada infrastruktur jalan yang masih berstatus ${macroData.infrastructure.road_status}.
- Opportunities: Ekspansi pasar ke wilayah barat Sumatera dan insentif investasi daerah.
- Threat: Risiko ${macroData.risk_profile.disaster_risk} perlu mitigasi teknis sejak awal konstruksi.
+            while (reader) {
+                const { done, value } = await reader.read()
+                if (done) break
 
-4. Rekomendasi Strategis
-1. Lakukan Feasibility Study mendalam terkait kontur tanah untuk mitigasi risiko ${macroData.risk_profile.disaster_risk}.
-2. Prioritaskan rekrutmen tenaga kerja lokal untuk menjaga stabilitas sosial (${macroData.risk_profile.social_conflict}).
-3. Manfaatkan insentif pajak daerah untuk sektor ${macroData.economy.main_sectors[0]}.
-        `
-
-        setAnalysisResult(result)
-        setIsAnalyzing(false)
-    }, [selectedRegion])
-
-    // Auto-analyze when panel opens
-    useEffect(() => {
-        if (showAiPanel && !analysisResult && !isAnalyzing) {
-            handleAnalyze()
+                res += decoder.decode(value, { stream: true })
+                setAnalysisResult(res)
+            }
+        } catch (error) {
+            console.error('Analysis error:', error);
+            setAnalysisResult("❌ Terjadi kesalahan jaringan.");
+        } finally {
+            setIsAnalyzing(false)
         }
-    }, [showAiPanel, analysisResult, isAnalyzing, handleAnalyze])
+    }, [selectedRegion, isAuthenticated])
 
-    // Handle region selection
+
+    useEffect(() => {
+        if (showAiPanel) {
+            const currentRegionId = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2
+            if (currentRegionId && currentRegionId !== lastAnalyzedRegion) {
+                setAnalysisResult(null)
+                handleAnalyze()
+                setLastAnalyzedRegion(currentRegionId)
+            }
+        }
+    }, [showAiPanel, handleAnalyze, lastAnalyzedRegion, selectedRegion])
+
     const handleRegionSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
         setSelectedRegion(feature)
-        setActiveTab("info") // Auto-switch to info tab
+        setActiveTab("info")
         if (!sidebarOpen) setSidebarOpen(true)
     }
 
@@ -228,8 +267,12 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                             <Map className="w-6 h-6 text-gray-400" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium text-gray-600">Belum ada wilayah dipilih</p>
-                                            <p className="text-xs text-gray-400 mt-1">Klik pada area peta untuk melihat analisis detail.</p>
+                                            <p className="text-sm font-medium text-gray-600">
+                                                Belum ada wilayah dipilih
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                Klik pada area peta untuk melihat analisis detail.
+                                            </p>
                                         </div>
                                     </div>
                                 ) : (
@@ -299,22 +342,9 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                             </div>
                                         </div>
 
-                                        <Button
-                                            className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
-                                            size="sm"
-                                            onClick={() => setShowAiPanel(true)}
-                                        >
-                                            {isAuthenticated ? (
-                                                <Sparkles className="w-3 h-3 mr-2" />
-                                            ) : (
-                                                <Lock className="w-3 h-3 mr-2" />
-                                            )}
-                                            Analisis AI
-                                        </Button>
-
-                                        {/* {isAuthenticated ? (
+                                        {isAuthenticated ? (
                                             <Button
-                                                className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4"
+                                                className="w-full bg-blue-900 hover:bg-blue-800 text-white shadow-md mt-4 cursor-pointer"
                                                 size="sm"
                                                 onClick={() => setShowAiPanel(true)}
                                             >
@@ -333,7 +363,7 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                                                     Login untuk Analisis AI
                                                 </Link>
                                             </Button>
-                                        )} */}
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -364,21 +394,34 @@ Area di sekitar koordinat ${lat.toFixed(4)}, ${lng.toFixed(4)} menunjukkan topog
                 </div>
 
                 <div className="flex-1 overflow-auto p-4 space-y-5">
-                    {!analysisResult ? (
+                    {isAnalyzing ? (
                         <div className="flex flex-col items-center justify-center h-full space-y-4">
-                            <Loader2 className="w-8 h-8 text-blue-900 animate-spin" />
-                            <p className="text-sm font-medium text-gray-600">Sedang Menganalisis Potensi Wilayah...</p>
+                            <div className="relative">
+                                <div className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-blue-700 animate-pulse" />
+                                <Sparkles className="w-8 h-8 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                            </div>
+                            <div className="text-center space-y-2 flex flex-col justify-center items-center">
+                                <p className="text-sm font-semibold text-gray-800">AI Sedang Menganalisis</p>
+                                <p className="text-xs text-gray-500 mb-5">Mencari data & berita terkini...</p>
+                                <TypingIndicator />
+                            </div>
                         </div>
                     ) : (
                         /* Result View */
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
                             <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-emerald-800 text-xs flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-emerald-600" />
-                                Analisis Selesai (Dummy Mode)
+                                Analisis Selesai - Powered by Google Gemini
                             </div>
                             <div className="prose prose-sm prose-blue max-w-none text-gray-700 bg-white p-1 rounded-lg">
-                                <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed border-l-2 border-blue-200 pl-3">
-                                    {analysisResult}
+                                <div
+                                    className="bg-linear-to-br from-white to-blue-50/30 p-4 rounded-xl border border-blue-100/50 shadow-inner"
+                                >
+                                    {analysisResult ? (
+                                        <CollapsibeMarkdown content={analysisResult} />
+                                    ) : (
+                                        <div className="text-center text-gray-500">Tidak ada hasil analisis</div>
+                                    )}
                                 </div>
                             </div>
                         </div>

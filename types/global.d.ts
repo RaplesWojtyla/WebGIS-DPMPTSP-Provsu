@@ -60,4 +60,10 @@ declare global {
     }
 
     type Role = 'user' | 'operator' | 'admin'
+
+    interface AnalysisResult {
+        text: string
+        reasoning?: string
+        sources?: Array<{ title?: string, url?: string }>   
+    }
 }
