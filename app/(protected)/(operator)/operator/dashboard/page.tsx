@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { FiClock, FiActivity, FiSave, FiTrendingUp, FiGrid, FiFastForward } from "react-icons/fi";
+import Decimal from "decimal.js";
+import { SECTORS, REGIONS } from "../pdrb/constants";
 
 // Types
 interface PendingInvestment {
@@ -15,26 +17,26 @@ interface PendingInvestment {
 }
 
 interface AnalysisResultLQ {
-    lq: number;
+    lq: string;
     status: "Basis" | "Non-Basis";
     description: string;
 }
 
 interface AnalysisResultSSA {
-    nij: number; // National Growth Effect
-    mij: number; // Industry Mix Effect
-    cij: number; // Competitive Effect
-    dij: number; // Total Shift
+    nij: string; // National Growth Effect
+    mij: string; // Industry Mix Effect
+    cij: string; // Competitive Effect
+    dij: string; // Total Shift
 }
 
 interface AnalysisResultKlassen {
     quadrant: "Prima" | "Berkembang" | "Potensial" | "Terbelakang";
-    growthRate: number; // r
-    share: number; // y
+    growthRate: string; // r
+    share: string; // y
 }
 
 interface AnalysisResultDLQ {
-    dlq: number;
+    dlq: string;
     status: "Potensial" | "Belum Potensial";
     description: string;
 }
@@ -44,30 +46,93 @@ const pendingInvestments: PendingInvestment[] = [
     {
         id: "PEND-001",
         companyName: "PT. Sawit Makmur",
-        sector: "Pertanian",
+        sector: "Pertanian, Kehutanan dan Perikanan/Agriculture, Forestry, and Fishing",
         subSector: "Perkebunan",
-        location: "Asahan",
+        location: "KAB. ASAHAN",
         district: "Kisaran",
         date: "2024-01-20",
     },
     {
         id: "PEND-002",
         companyName: "CV. Nelayan Sejahtera",
-        sector: "Perikanan",
+        sector: "Pertanian, Kehutanan dan Perikanan/Agriculture, Forestry, and Fishing",
         subSector: "Tangkap",
-        location: "Sibolga",
+        location: "KOTA SIBOLGA",
         district: "Sibolga Kota",
         date: "2024-01-22",
     },
     {
         id: "PEND-003",
         companyName: "UD. Tenun Toba",
-        sector: "Industri Pengolahan",
+        sector: "Industri Pengolahan/ Manufacturing",
         subSector: "Tekstil",
-        location: "Samosir",
+        location: "KAB. SAMOSIR",
         district: "Pangururan",
         date: "2024-01-25",
     },
+    {
+        id: "PEND-004",
+        companyName: "PT. Toba Pulp Lestari",
+        sector: "Industri Pengolahan/ Manufacturing",
+        subSector: "Kertas",
+        location: "KAB. TOBA SAMOSIR",
+        district: "Porsea",
+        date: "2024-02-01",
+    },
+    {
+        id: "PEND-005",
+        companyName: "CV. Berastagi Buah",
+        sector: "Perdagangan Besar dan Eceran; Reparasi Mobil dan Sepeda Motor/Wholesale and RetailTrade; Repair of Motor Vehicles and Motorcycles",
+        subSector: "Hortikultura",
+        location: "KAB. KARO",
+        district: "Berastagi",
+        date: "2024-02-03",
+    },
+    {
+        id: "PEND-006",
+        companyName: "PT. Agincourt Resources",
+        sector: "Pertambangan dan Penggalian/Mining and Quarrying",
+        subSector: "Emas",
+        location: "KAB. TAPANULI SELATAN",
+        district: "Batang Toru",
+        date: "2024-02-05",
+    },
+    {
+        id: "PEND-007",
+        companyName: "Grand City Hall Hotel",
+        sector: "Penyediaan Akomodasi dan Makan Minum/ Accommodation and Food Service Activities",
+        subSector: "Hotel",
+        location: "KOTA MEDAN",
+        district: "Medan Barat",
+        date: "2024-02-08",
+    },
+    {
+        id: "PEND-008",
+        companyName: "PT. Kawasan Industri Medan",
+        sector: "Jasa Perusahaan/Business Activities",
+        subSector: "Kawasan Industri",
+        location: "KAB. DELI SERDANG",
+        district: "Percut Sei Tuan",
+        date: "2024-02-10",
+    },
+    {
+        id: "PEND-009",
+        companyName: "RS. Columbia Asia",
+        sector: "Jasa Kesehatan dan Kegiatan Sosial/Human Health and Social Work Activities",
+        subSector: "Rumah Sakit",
+        location: "KOTA MEDAN",
+        district: "Medan Johor",
+        date: "2024-02-12",
+    },
+    {
+        id: "PEND-010",
+        companyName: "Univ. Sumatera Utara",
+        sector: "Jasa Pendidikan/Education",
+        subSector: "Perguruan Tinggi",
+        location: "KOTA MEDAN",
+        district: "Medan Baru",
+        date: "2024-02-15",
+    }
 ];
 
 export default function OperatorDashboard() {
@@ -75,9 +140,9 @@ export default function OperatorDashboard() {
 
     // LQ Form State
     const [formDataLQ, setFormDataLQ] = useState({
-        regency: "Medan",
+        regency: REGIONS[0].name,
         district: "",
-        sector: "Pertanian",
+        sector: SECTORS[0],
         subSector: "",
         year: new Date().getFullYear().toString(),
         pdrbSector: "",
@@ -88,8 +153,8 @@ export default function OperatorDashboard() {
 
     // SSA Form State
     const [formDataSSA, setFormDataSSA] = useState({
-        regency: "Medan",
-        sector: "Pertanian",
+        regency: REGIONS[0].name,
+        sector: SECTORS[0],
         startYear: (new Date().getFullYear() - 1).toString(),
         endYear: new Date().getFullYear().toString(),
         regionSectorStart: "",
@@ -102,8 +167,8 @@ export default function OperatorDashboard() {
 
     // Klassen Form State
     const [formDataKlassen, setFormDataKlassen] = useState({
-        regency: "Medan",
-        sector: "Pertanian",
+        regency: REGIONS[0].name,
+        sector: SECTORS[0],
         startYear: (new Date().getFullYear() - 1).toString(),
         endYear: new Date().getFullYear().toString(),
         regionSectorStart: "",
@@ -115,8 +180,8 @@ export default function OperatorDashboard() {
 
     // DLQ Form State
     const [formDataDLQ, setFormDataDLQ] = useState({
-        regency: "Medan",
-        sector: "Pertanian",
+        regency: REGIONS[0].name,
+        sector: SECTORS[0],
         startYear: (new Date().getFullYear() - 1).toString(),
         endYear: new Date().getFullYear().toString(),
         regionSectorStart: "",
@@ -136,8 +201,25 @@ export default function OperatorDashboard() {
     const [resultDLQ, setResultDLQ] = useState<AnalysisResultDLQ | null>(null);
 
     // Helpers
-    const cleanNumber = (val: string) => parseFloat(val.replace(/[^0-9.]/g, ""));
-    const formatNumberInput = (val: string) => val.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Helper: Safely parse to Decimal, defaulting to 0 if invalid
+    const toDecimal = (val: string) => {
+        try {
+            // Support Indonesian format: 1.000.000,50 -> 1000000.50
+            // Remove dots (thousands separators)
+            let normalized = val.replace(/\./g, "");
+            // Replace comma with dot (decimal separator)
+            normalized = normalized.replace(/,/g, ".");
+
+            const cleaned = normalized.replace(/[^0-9.-]/g, "");
+            if (!cleaned || cleaned === "." || cleaned === "-") return new Decimal(0);
+            return new Decimal(cleaned);
+        } catch {
+            return new Decimal(0);
+        }
+    };
+
+    const formatNumberInput = (val: string) => val.replace(/[^0-9.,-]/g, "");
+    const formatDisplay = (val: string) => new Intl.NumberFormat("id-ID").format(parseFloat(val));
 
     // Handlers
     const handleInputLQ = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -178,133 +260,147 @@ export default function OperatorDashboard() {
 
 
     const calculateLQ = () => {
-        const vi = cleanNumber(formDataLQ.pdrbSector);
-        const vt = cleanNumber(formDataLQ.totalPdrb);
-        const Vi = cleanNumber(formDataLQ.pdbSector);
-        const Vt = cleanNumber(formDataLQ.totalPdb);
+        const vi = toDecimal(formDataLQ.pdrbSector); // PDRB Sektor Kab
+        const vt = toDecimal(formDataLQ.totalPdrb);  // Total PDRB Kab
+        const Vi = toDecimal(formDataLQ.pdbSector);  // PDRB Sektor Prov
+        const Vt = toDecimal(formDataLQ.totalPdb);   // Total PDRB Prov
 
-        if (vt === 0 || Vi === 0 || Vt === 0) { alert("Nilai pembagi tidak boleh 0!"); return; }
+        if (vt.isZero() || Vi.isZero() || Vt.isZero()) { alert("Nilai pembagi tidak boleh 0!"); return; }
 
-        const lq = (vi / vt) / (Vi / Vt);
+        // Region Share = vi / vt
+        // Prov Share = Vi / Vt
+        // LQ = (Region Share) / (Prov Share)
+
+        const regionShare = vi.dividedBy(vt);
+        const provShare = Vi.dividedBy(Vt);
+        const lq = regionShare.dividedBy(provShare);
+
         setResultLQ({
-            lq: parseFloat(lq.toFixed(4)),
-            status: lq > 1 ? "Basis" : "Non-Basis",
-            description: lq > 1
+            lq: lq.toFixed(4),
+            status: lq.greaterThan(1) ? "Basis" : "Non-Basis",
+            description: lq.greaterThan(1)
                 ? "Sektor ini memiliki keunggulan komparatif dan berpotensi untuk dikembangkan sebagai sektor unggulan."
                 : "Sektor ini belum memiliki keunggulan komparatif dan produksinya belum mencukupi kebutuhan wilayah.",
         });
     };
 
     const calculateSSA = () => {
-        const Eij_t0 = cleanNumber(formDataSSA.regionSectorStart);
-        const Ei_t0 = cleanNumber(formDataSSA.provSectorStart);
-        const Ei_t1 = cleanNumber(formDataSSA.provSectorEnd);
-        const Et_t0 = cleanNumber(formDataSSA.provTotalStart);
-        const Et_t1 = cleanNumber(formDataSSA.provTotalEnd);
+        const Eij_t0 = toDecimal(formDataSSA.regionSectorStart);
+        const Ei_t0 = toDecimal(formDataSSA.provSectorStart);
+        const Ei_t1 = toDecimal(formDataSSA.provSectorEnd);
+        const Et_t0 = toDecimal(formDataSSA.provTotalStart);
+        const Et_t1 = toDecimal(formDataSSA.provTotalEnd);
 
-        if (Et_t0 === 0 || Ei_t0 === 0) { alert("Nilai awal tidak boleh 0!"); return; }
+        if (Et_t0.isZero() || Ei_t0.isZero()) { alert("Nilai awal tidak boleh 0!"); return; }
 
-        const Rn = (Et_t1 - Et_t0) / Et_t0;
-        const Ri = (Ei_t1 - Ei_t0) / Ei_t0;
+        // Rn (National Growth Rate) = (Et_t1 - Et_t0) / Et_t0
+        const Rn = Et_t1.minus(Et_t0).dividedBy(Et_t0);
 
-        const nij = Eij_t0 * Rn;
-        const mij = Eij_t0 * (Ri - Rn);
+        // Ri (Industrial Mix Growth Rate) = (Ei_t1 - Ei_t0) / Ei_t0
+        const Ri = Ei_t1.minus(Ei_t0).dividedBy(Ei_t0);
 
-        const Eij_t1 = cleanNumber(formDataSSA.regionSectorEnd);
-        const cij = Eij_t1 - (Eij_t0 * (1 + Ri));
-        const dij = nij + mij + cij;
+        // Nij (National Share) = Eij_t0 * Rn
+        // Mij (Proportional Shift) = Eij_t0 * (Ri - Rn)
+        const nij = Eij_t0.times(Rn);
+        const mij = Eij_t0.times(Ri.minus(Rn));
+
+        // Cij (Differential Shift)
+        // Formula: Cij = Eij_t1 - (Eij_t0 * (1 + Ri))
+        // Or sometimes: Cij = Eij_t0 * (rij - Ri) where rij is regional sector growth
+        const Eij_t1 = toDecimal(formDataSSA.regionSectorEnd);
+        const cij = Eij_t1.minus(Eij_t0.times(new Decimal(1).plus(Ri)));
+
+        // Dij (Total Shift) = Nij + Mij + Cij
+        const dij = nij.plus(mij).plus(cij);
 
         setResultSSA({
-            nij: parseFloat(nij.toFixed(2)),
-            mij: parseFloat(mij.toFixed(2)),
-            cij: parseFloat(cij.toFixed(2)),
-            dij: parseFloat(dij.toFixed(2)),
+            nij: nij.toFixed(2),
+            mij: mij.toFixed(2),
+            cij: cij.toFixed(2),
+            dij: dij.toFixed(2),
         });
     };
 
     const calculateKlassen = () => {
-        const r_start = cleanNumber(formDataKlassen.regionSectorStart);
-        const r_end = cleanNumber(formDataKlassen.regionSectorEnd);
-        const R_start = cleanNumber(formDataKlassen.refSectorStart);
-        const R_end = cleanNumber(formDataKlassen.refSectorEnd);
-        const Y = cleanNumber(formDataKlassen.refAvgSectorValue);
+        const r_start = toDecimal(formDataKlassen.regionSectorStart);
+        const r_end = toDecimal(formDataKlassen.regionSectorEnd);
+        const R_start = toDecimal(formDataKlassen.refSectorStart);
+        const R_end = toDecimal(formDataKlassen.refSectorEnd);
+        const Y = toDecimal(formDataKlassen.refAvgSectorValue);
 
-        if (r_start === 0 || R_start === 0) { alert("Nilai awal tidak boleh 0!"); return; }
+        if (r_start.isZero() || R_start.isZero()) { alert("Nilai awal tidak boleh 0!"); return; }
 
-        const r = (r_end - r_start) / r_start;
-        const R = (R_end - R_start) / R_start;
+        // r (Laju pertumbuhan sektor di wilayah) = (End - Start) / Start
+        const r = r_end.minus(r_start).dividedBy(r_start);
+
+        // R (Laju pertumbuhan sektor di provinsi/ref) = (End - Start) / Start
+        const R = R_end.minus(R_start).dividedBy(R_start);
+
+        // y (Nilai/Kontribusi sektor wilayah saat ini)
         const y = r_end;
+
+        // Quadrant Logic
+        // I: r > R && y > Y (Prima)
+        // II: r > R && y <= Y (Berkembang)
+        // III: r <= R && y > Y (Potensial)
+        // IV: r <= R && y <= Y (Terbelakang)
 
         let quadrant: AnalysisResultKlassen["quadrant"] = "Terbelakang";
 
-        if (r > R && y > Y) quadrant = "Prima";
-        else if (r > R && y <= Y) quadrant = "Berkembang";
-        else if (r <= R && y > Y) quadrant = "Potensial";
+        if (r.greaterThan(R) && y.greaterThan(Y)) quadrant = "Prima";
+        else if (r.greaterThan(R) && y.lessThanOrEqualTo(Y)) quadrant = "Berkembang";
+        else if (r.lessThanOrEqualTo(R) && y.greaterThan(Y)) quadrant = "Potensial";
         else quadrant = "Terbelakang";
 
         setResultKlassen({
             quadrant,
-            growthRate: parseFloat(r.toFixed(4)),
-            share: parseFloat(y.toFixed(2)),
+            growthRate: r.times(100).toFixed(2) + "%", // Show as percentage
+            share: y.toFixed(2),
         });
     };
 
     const calculateDLQ = () => {
-        // DLQ Formula: [ (1 + g_ik) / (1 + g_k) ] / [ (1 + g_ip) / (1 + g_p) ]
-        // g_ik: Growth of Region Sector
-        // g_k: Growth of Region Total
-        // g_ip: Growth of Prov Sector
-        // g_p: Growth of Prov Total
+        // DLQ Formula (Matsuura / SLQ version often used)
+        // DLQ = [ (1 + g_ik) / (1 + g_k) ] / [ (1 + g_ip) / (1 + g_p) ]
 
-        const regSecStart = cleanNumber(formDataDLQ.regionSectorStart);
-        const regSecEnd = cleanNumber(formDataDLQ.regionSectorEnd);
+        const regSecStart = toDecimal(formDataDLQ.regionSectorStart);
+        const regSecEnd = toDecimal(formDataDLQ.regionSectorEnd);
+        const regTotStart = toDecimal(formDataDLQ.regionTotalStart);
+        const regTotEnd = toDecimal(formDataDLQ.regionTotalEnd);
 
-        const regTotStart = cleanNumber(formDataDLQ.regionTotalStart);
-        const regTotEnd = cleanNumber(formDataDLQ.regionTotalEnd);
+        const provSecStart = toDecimal(formDataDLQ.provSectorStart);
+        const provSecEnd = toDecimal(formDataDLQ.provSectorEnd);
+        const provTotStart = toDecimal(formDataDLQ.provTotalStart);
+        const provTotEnd = toDecimal(formDataDLQ.provTotalEnd);
 
-        const provSecStart = cleanNumber(formDataDLQ.provSectorStart);
-        const provSecEnd = cleanNumber(formDataDLQ.provSectorEnd);
-
-        const provTotStart = cleanNumber(formDataDLQ.provTotalStart);
-        const provTotEnd = cleanNumber(formDataDLQ.provTotalEnd);
-
-        if (regSecStart === 0 || regTotStart === 0 || provSecStart === 0 || provTotStart === 0) {
+        if (regSecStart.isZero() || regTotStart.isZero() || provSecStart.isZero() || provTotStart.isZero()) {
             alert("Nilai awal tidak boleh 0!"); return;
         }
 
-        const g_ik = (regSecEnd - regSecStart) / regSecStart; // Growth Region Sector
-        const g_k = (regTotEnd - regTotStart) / regTotStart; // Growth Region Total
-        const g_ip = (provSecEnd - provSecStart) / provSecStart; // Growth Prov Sector
-        // const g_p  = (provTotEnd - provTotStart) / provTotStart; // Growth Prov Total -> Usually DLQ denominator cancels out? 
-        // Standard DLQ compares Sector Growth vs Total Growth ratios.
-        // Let's use simpler standard ratio:
-        // DLQ = (g_ik / g_p) ??? No.
+        // Growth Rates
+        const g_ik = regSecEnd.minus(regSecStart).dividedBy(regSecStart);
+        const g_k = regTotEnd.minus(regTotStart).dividedBy(regTotStart);
+        const g_ip = provSecEnd.minus(provSecStart).dividedBy(provSecStart);
+        const g_p = provTotEnd.minus(provTotStart).dividedBy(provTotStart);
 
-        // Correct DLQ interpretation: The ratio of (Future LQ) / (Current LQ) roughly.
-        // Let's use the explicit growth factor formula:
-        // DLQ = [ (1+g_ik)/(1+g_ip) ] <-- This measures if sector grows faster in region than province.
+        // Numerator = (1 + g_ik) / (1 + g_k)
+        const num = new Decimal(1).plus(g_ik).dividedBy(new Decimal(1).plus(g_k));
 
-        // REVISION: The Matsuura (1969) / SLQ/DLQ formula often used in Indonesia:
-        // DLQ = [ (1+g_ik)/(1+g_k) ] / [ (1+g_ip)/(1+g_p) ]
-        // This measures the rate of change of the LQ.
-        const g_p = (provTotEnd - provTotStart) / provTotStart;
+        // Denominator = (1 + g_ip) / (1 + g_p)
+        const den = new Decimal(1).plus(g_ip).dividedBy(new Decimal(1).plus(g_p));
 
-        const numerator = (1 + g_ik) / (1 + g_k);
-        const denominator = (1 + g_ip) / (1 + g_p);
+        if (den.isZero()) return;
 
-        if (denominator === 0) return;
-
-        const dlq = numerator / denominator;
+        const dlq = num.dividedBy(den);
 
         setResultDLQ({
-            dlq: parseFloat(dlq.toFixed(4)),
-            status: dlq > 1 ? "Potensial" : "Belum Potensial",
-            description: dlq > 1
+            dlq: dlq.toFixed(4),
+            status: dlq.greaterThan(1) ? "Potensial" : "Belum Potensial",
+            description: dlq.greaterThan(1)
                 ? "Sektor ini memiliki potensi untuk reposisi menjadi basis di masa depan."
                 : "Sektor ini belum menunjukkan potensi pertumbuhan relatif yang signifikan."
         });
     };
-
 
     const handleSave = (type: string) => {
         alert(`Data analisis ${type.toUpperCase()} berhasil disimpan!`);
@@ -323,7 +419,7 @@ export default function OperatorDashboard() {
                     <button onClick={() => setActiveTab("pending")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "pending" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiClock /> Menunggu</button>
                     <button onClick={() => setActiveTab("lq")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "lq" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiActivity /> Analisis LQ</button>
                     <button onClick={() => setActiveTab("ssa")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "ssa" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiTrendingUp /> Analisis SSA</button>
-                    <button onClick={() => setActiveTab("dlq")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "dlq" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiFastForward /> Analisis Tipologi Sektor</button>
+                    <button onClick={() => setActiveTab("dlq")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "dlq" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiFastForward /> Analisis Tipologi Sektor (DLQ)</button>
                     <button onClick={() => setActiveTab("klassen")} className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "klassen" ? "bg-blue-600 text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}><FiGrid /> Analisis Klassen</button>
                 </div>
 
@@ -367,8 +463,22 @@ export default function OperatorDashboard() {
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
                         <h2 className="text-xl font-bold text-slate-800 mb-6">Analisis Location Quotient (LQ)</h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-                            <div><label className="text-sm font-semibold text-slate-700">Kabupaten/Kota</label><select name="regency" value={formDataLQ.regency} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg bg-white"><option>Medan</option><option>Deli Serdang</option></select></div>
-                            <div><label className="text-sm font-semibold text-slate-700">Sektor</label><select name="sector" value={formDataLQ.sector} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg bg-white"><option>Pertanian</option><option>Perikanan</option></select></div>
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Kabupaten/Kota</label>
+                                <select name="regency" value={formDataLQ.regency} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg bg-white">
+                                    {REGIONS.map(r => (
+                                        <option key={r.id} value={r.name}>{r.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-sm font-semibold text-slate-700">Sektor</label>
+                                <select name="sector" value={formDataLQ.sector} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg bg-white overflow-hidden text-ellipsis">
+                                    {SECTORS.map(s => (
+                                        <option key={s} value={s}>{s.split('/')[0]}</option>
+                                    ))}
+                                </select>
+                            </div>
                             <div><label className="text-sm font-semibold text-slate-700">PDRB Sektor</label><input name="pdrbSector" value={formDataLQ.pdrbSector} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg" placeholder="0" /></div>
                             <div><label className="text-sm font-semibold text-slate-700">Total PDRB</label><input name="totalPdrb" value={formDataLQ.totalPdrb} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg" placeholder="0" /></div>
                             <div><label className="text-sm font-semibold text-slate-700">PDB Sektor (Ref)</label><input name="pdbSector" value={formDataLQ.pdbSector} onChange={handleInputLQ} className="w-full mt-1 p-2 border rounded-lg" placeholder="0" /></div>
@@ -401,9 +511,9 @@ export default function OperatorDashboard() {
 
                         {resultSSA && (
                             <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div><p className="text-xs text-slate-500 uppercase">National Share (Nij)</p><p className="font-bold text-slate-900">{new Intl.NumberFormat().format(resultSSA.nij)}</p></div>
-                                <div><p className="text-xs text-slate-500 uppercase">Proportional Shift (Mij)</p><p className="font-bold text-slate-900">{new Intl.NumberFormat().format(resultSSA.mij)}</p></div>
-                                <div><p className="text-xs text-slate-500 uppercase">Differential Shift (Cij)</p><p className={`font-bold ${resultSSA.cij >= 0 ? 'text-green-600' : 'text-red-600'}`}>{new Intl.NumberFormat().format(resultSSA.cij)}</p></div>
+                                <div><p className="text-xs text-slate-500 uppercase">National Share (Nij)</p><p className="font-bold text-slate-900">{formatDisplay(resultSSA.nij)}</p></div>
+                                <div><p className="text-xs text-slate-500 uppercase">Proportional Shift (Mij)</p><p className="font-bold text-slate-900">{formatDisplay(resultSSA.mij)}</p></div>
+                                <div><p className="text-xs text-slate-500 uppercase">Differential Shift (Cij)</p><p className={`font-bold ${parseFloat(resultSSA.cij) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatDisplay(resultSSA.cij)}</p></div>
                                 <div className="col-span-full"><button onClick={() => handleSave('ssa')} className="flex items-center gap-2 text-sm font-medium text-blue-700 hover:underline"><FiSave /> Simpan</button></div>
                             </div>
                         )}
@@ -425,6 +535,10 @@ export default function OperatorDashboard() {
                         {resultKlassen && (
                             <div className="mt-6 p-4 bg-purple-50 border border-purple-100 rounded-xl">
                                 <p className="text-lg font-bold text-purple-900">Kuadran: {resultKlassen.quadrant}</p>
+                                <div className="mt-2 text-sm text-purple-800">
+                                    <p>Growth Rate (r): {resultKlassen.growthRate}</p>
+                                    <p>Share (y): {formatDisplay(resultKlassen.share)}</p>
+                                </div>
                                 <button onClick={() => handleSave('klassen')} className="mt-4 flex items-center gap-2 text-sm font-medium text-purple-700 hover:underline"><FiSave /> Simpan</button>
                             </div>
                         )}
