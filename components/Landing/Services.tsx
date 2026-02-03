@@ -51,7 +51,7 @@ export default function Services() {
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Layanan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-950">Unggulan</span>
+                        Layanan <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-900 to-blue-950">Unggulan</span>
                     </h2>
                     <p className="text-gray-600 text-lg">
                         Kami menyediakan berbagai layanan perizinan dan investasi yang terintegrasi untuk kemudahan Anda

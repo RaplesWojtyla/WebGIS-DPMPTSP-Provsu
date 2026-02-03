@@ -2,7 +2,6 @@ import Hero from "@/components/Landing/Hero";
 import About from "@/components/Landing/About";
 import Services from "@/components/Landing/Services";
 import Investment from "@/components/Landing/Investment";
-import News from "@/components/Landing/News";
 import FAQ from "@/components/Landing/FAQ";
 import Contact from "@/components/Landing/Contact";
 import SectionWrapper from "@/components/Landing/SectionWrapper";
@@ -24,10 +23,6 @@ export default function Home() {
 
 			<SectionWrapper>
 				<Investment />
-			</SectionWrapper>
-
-			<SectionWrapper>
-				<News />
 			</SectionWrapper>
 
 			<SectionWrapper>
