@@ -38,8 +38,26 @@ export default function SectorPrintPage() {
             const pdfWidth = 210
             const pdfHeight = 297
 
-            // Wait for charts to fully render/paint
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            // Wait for charts to fully render/paint using deterministic polling
+            await new Promise<void>((resolve) => {
+                const start = Date.now();
+                const checkCharts = () => {
+                    // Check for Recharts container or SVGs
+                    const charts = document.querySelectorAll('.recharts-responsive-container, .recharts-surface');
+                    // We expect at least 2 charts (Page 2 and Page 3)
+                    if (charts.length >= 2) {
+                        // Give a small buffer for internal rendering/paint to complete
+                        setTimeout(resolve, 500);
+                    } else if (Date.now() - start > 10000) {
+                        // Timeout safety to prevent hanging (10s)
+                        console.warn("Chart rendering timeout - persisting anyway");
+                        resolve();
+                    } else {
+                        requestAnimationFrame(checkCharts);
+                    }
+                };
+                checkCharts();
+            });
 
             // Function to add a page
             const addPageToPDF = async (elementId: string, pageNum: number) => {
