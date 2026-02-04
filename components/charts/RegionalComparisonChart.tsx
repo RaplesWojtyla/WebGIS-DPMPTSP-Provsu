@@ -33,7 +33,7 @@ export function RegionalComparisonChart({
     const sortedData = [...data].sort((a, b) => b.value - a.value)
 
     // Calculate max value for the background track
-    const maxValInSet = sortedData.length > 0 ? Math.max(...sortedData.map(d => d.value)) : 0
+    const maxValInSet = Math.max(...sortedData.map(d => d.value)) || 0
     const maxValue = maxValInSet * 1.1 // 10% buffer
     const chartData = sortedData.map(d => ({ ...d, max: maxValue }))
 
