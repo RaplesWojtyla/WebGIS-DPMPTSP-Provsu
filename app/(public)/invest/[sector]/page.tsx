@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, TrendingUp, Activity, ArrowUpRight, ArrowDownRight, Info, Check, ChevronsUpDown, Filter } from "lucide-react"
+import { ArrowLeft, TrendingUp, Activity, ArrowUpRight, ArrowDownRight, Info, Check, ChevronsUpDown } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -227,7 +227,7 @@ export default function SectorDetailPage() {
                                                 <CommandItem
                                                     key={region}
                                                     value={region}
-                                                    onSelect={(currentValue) => {
+                                                    onSelect={() => {
                                                         // We use the original region name, not the lowercase value comes from command
                                                         setSelectedRegion(region)
                                                         setOpenRegion(false)

@@ -12,7 +12,7 @@ import { Map, Info, Search, Menu, Layers, X, Sparkles, ArrowLeft, Lock } from "l
 import dynamic from "next/dynamic"
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
-import { getRegionData } from "@/data/dummy-data"
+// import { getRegionData } from "@/data/dummy-data"
 import { toast } from "sonner"
 import Link from "next/link"
 import CollapsibeMarkdown from "./CollapsibeMarkdown"
@@ -77,7 +77,6 @@ export default function MapInterface({ geoJsonData, className, isAuthenticated =
                 ? selectedRegion.geometry.coordinates[0]
                 : 99.5451
             const address = selectedRegion?.properties?.province || selectedRegion?.properties?.VARNAME_2 || "Wilayah Sumatera Utara"
-            const macroData = getRegionData(address)
 
             const response = await fetch('/api/investment-analysis', {
                 method: 'POST',

@@ -16,6 +16,8 @@ export const NAVIGATION_CONFIG = {
         name: "Area Operator",
         items: [
             { name: "Dashboard Operator", href: "/operator/dashboard", icon: LayoutDashboardIcon },
+            { name: "Data Kabupaten", href: "/operator/kabupaten", icon: MapIcon },
+            { name: "Data PDRB", href: "/operator/pdrb", icon: PieChartIcon },
         ]
     },
     admin: {
