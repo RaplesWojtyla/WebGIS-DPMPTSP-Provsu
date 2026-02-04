@@ -7,12 +7,10 @@ import { ArrowLeft, TrendingUp, Activity, ArrowUpRight, ArrowDownRight, Info, Ch
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { InvestmentRecord, calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
-import dummyData from "@/data/investment_dummy.json"
 import { cn } from "@/lib/utils"
 import { RegionalComparisonChart } from "@/components/charts/RegionalComparisonChart"
 import { TrendCurveChart } from "@/components/charts/TrendCurveChart"
-import { useReactToPrint } from "react-to-print"
+import { useSectorAnalysis } from "@/hooks/useSectorAnalysis"
 import {
     Command,
     CommandEmpty,
@@ -37,154 +35,23 @@ import {
 export default function SectorDetailPage() {
     const params = useParams()
     const sectorName = decodeURIComponent(params.sector as string)
-    const [records] = React.useState<InvestmentRecord[]>(dummyData)
 
-    // Extract unique regions and years
-    const regions = React.useMemo(() => Array.from(new Set(records.map(r => r.region))).sort(), [records])
-    const years = React.useMemo(() => Array.from(new Set(records.map(r => r.year))).sort(), [records])
+    const {
+        regions,
+        years,
+        selectedRegion,
+        setSelectedRegion,
+        selectedYear,
+        setSelectedYear,
+        currentYear,
+        startYear,
+        sectorMetrics,
+        yearlyTrendData,
+        regionalData,
+        formatCurrency,
+    } = useSectorAnalysis(sectorName)
 
-    // Filter States
-    const [selectedRegion, setSelectedRegion] = React.useState<string>("all")
-    const [selectedYear, setSelectedYear] = React.useState<string>(years[years.length - 1]?.toString() || "")
     const [openRegion, setOpenRegion] = React.useState(false)
-
-    // Derived values
-    const startYear = years[0]
-    const currentYear = parseInt(selectedYear) || years[years.length - 1]
-
-    const sectorMetrics = React.useMemo(() => {
-        if (!sectorName || years.length < 1) return null
-
-        // 1. Snapshot Data (for current selected year)
-        // If "all" regions: use all records for that year
-        // If specific region: use only that region's records
-        const snapshotRecords = records.filter(r =>
-            r.year === currentYear &&
-            (selectedRegion === "all" || r.region === selectedRegion)
-        )
-
-        // 2. Trend Data (for SSA & Klassen - requires start to current year)
-        // We calculate metrics based on the Province-wide context first (standard methodology),
-        // then extract the specific region's result if a region is selected.
-
-        // Filter records to be used for calculation (up to selected year)
-        const rangeRecords = records.filter(r => r.year <= currentYear)
-
-        // Calculate global results using rangeRecords
-        const lqResults = calculateLQ(rangeRecords.filter(r => r.year === currentYear)) // LQ is usually a snapshot
-        const ssaResults = years.length >= 2 ? calculateSSA(rangeRecords, startYear, currentYear) : []
-        const klassenResults = years.length >= 2 ? calculateKlassen(rangeRecords, startYear, currentYear) : []
-
-        // --- EXTRACT METRICS ---
-
-        let avgLQ = 0
-        let isReliable = false
-        let totalShift = 0
-        let ssaBreakdown = { nij: 0, mij: 0, cij: 0 }
-        let dominantQuadrant = "Terbelakang" // Default
-
-        if (selectedRegion === "all") {
-            // AGGREGATE VIEW (Province/All Regions)
-
-            // 1. Avg LQ
-            const sectorLQs = lqResults.filter(r => r.sector === sectorName)
-            avgLQ = sectorLQs.length > 0
-                ? sectorLQs.reduce((a, b) => a + b.lq, 0) / sectorLQs.length
-                : 0
-            isReliable = avgLQ > 1
-
-            // 2. Net SSA Shift (Dij)
-            const sectorSSA = ssaResults.filter(r => r.sector === sectorName)
-            totalShift = sectorSSA.reduce((a, b) => a + b.dij, 0)
-
-            // SSA Components Breakdown
-            ssaBreakdown = sectorSSA.reduce((acc, curr) => ({
-                nij: acc.nij + curr.nij,
-                mij: acc.mij + curr.mij,
-                cij: acc.cij + curr.cij
-            }), { nij: 0, mij: 0, cij: 0 })
-
-            // 3. Dominant Typology
-            const sectorKlassen = klassenResults.filter(r => r.sector === sectorName)
-            const quadrantCounts: Record<string, number> = { "Prima": 0, "Berkembang": 0, "Potensial": 0, "Terbelakang": 0 }
-            sectorKlassen.forEach(r => {
-                if (quadrantCounts[r.quadrant] !== undefined) quadrantCounts[r.quadrant]++
-            })
-            dominantQuadrant = Object.entries(quadrantCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "Terbelakang"
-
-        } else {
-            // SPECIFIC REGION VIEW
-
-            // 1. LQ for this region
-            const regionLQ = lqResults.find(r => r.region === selectedRegion && r.sector === sectorName)
-            avgLQ = regionLQ?.lq || 0
-            isReliable = avgLQ > 1
-
-            // 2. SSA for this region
-            const regionSSA = ssaResults.find(r => r.region === selectedRegion && r.sector === sectorName)
-            totalShift = regionSSA?.dij || 0
-            ssaBreakdown = {
-                nij: regionSSA?.nij || 0,
-                mij: regionSSA?.mij || 0,
-                cij: regionSSA?.cij || 0
-            }
-
-            // 3. Klassen for this region
-            const regionKlassen = klassenResults.find(r => r.region === selectedRegion && r.sector === sectorName)
-            dominantQuadrant = regionKlassen?.quadrant || "Unknown"
-        }
-
-        // 4. Investment Value (Selected Year)
-        const currentValue = snapshotRecords
-            .filter(r => r.sector === sectorName)
-            .reduce((a, b) => a + b.value, 0)
-
-        // 5. Total Investment (All Time in Range)
-        const totalValue = rangeRecords
-            .filter(r => r.sector === sectorName && (selectedRegion === "all" || r.region === selectedRegion))
-            .reduce((a, b) => a + b.value, 0)
-
-        return {
-            avgLQ,
-            isReliable,
-            totalShift,
-            ssaBreakdown,
-            dominantQuadrant,
-            currentValue,
-            totalValue
-        }
-
-    }, [records, years, startYear, currentYear, sectorName, selectedRegion])
-
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }).format(val)
-
-    // --- CHART DATA PREPARATION ---
-
-    // 1. Yearly Trend Data (for Bar & Curve)
-    const yearlyTrendData = React.useMemo(() => {
-        return years.map(year => {
-            const val = records
-                .filter(r => r.year === year && r.sector === sectorName && (selectedRegion === "all" || r.region === selectedRegion))
-                .reduce((a, b) => a + b.value, 0)
-            return { year, value: val }
-        })
-    }, [years, records, sectorName, selectedRegion])
-
-    // 2. Regional Data (for Histogram)
-    const regionalData = React.useMemo(() => {
-        return records
-            .filter(r => r.year === currentYear && r.sector === sectorName)
-            .map(r => ({ region: r.region, value: r.value }))
-    }, [currentYear, records, sectorName])
-
-    // --- PDF EXPORT ---
-    const contentRef = React.useRef<HTMLDivElement>(null)
-    const handlePrint = useReactToPrint({
-        contentRef: contentRef,
-        documentTitle: `Analisis Sektor ${sectorName} - ${currentYear}`,
-    })
-
 
     if (!sectorMetrics) {
         return (
@@ -197,6 +64,12 @@ export default function SectorDetailPage() {
         )
     }
 
+    const handlePrint = () => {
+        // Open print page in new tab
+        const url = `/invest/${encodeURIComponent(sectorName)}/print?region=${encodeURIComponent(selectedRegion)}&year=${selectedYear}`
+        window.open(url, '_blank')
+    }
+
     return (
         <div className="container mx-auto py-10 space-y-8">
             {/* Action Bar */}
@@ -204,18 +77,18 @@ export default function SectorDetailPage() {
                 <Link href="/invest" className="inline-flex items-center text-sm text-muted-foreground hover:text-blue-600 transition-colors w-fit">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Dashboard
                 </Link>
-                <Button onClick={() => handlePrint()} variant="outline" className="gap-2">
+                <Button onClick={handlePrint} variant="outline" className="gap-2">
                     <Printer className="h-4 w-4" />
                     Cetak PDF
                 </Button>
             </div>
 
-            {/* Printable Content Wrapper */}
-            <div ref={contentRef} className="space-y-8 print:p-8 print:container">
+            {/* Content Wrapper */}
+            <div className="space-y-8">
 
                 {/* Header */}
                 <div className="flex flex-col gap-6">
-                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b pb-6 print:border-none">
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b pb-6">
                         <div>
                             <h1 className="text-3xl font-bold text-blue-900 tracking-tight">{sectorName}</h1>
                             <p className="text-muted-foreground mt-1 text-lg">
@@ -223,8 +96,8 @@ export default function SectorDetailPage() {
                             </p>
                         </div>
 
-                        {/* Filters - Hide in Print */}
-                        <div className="flex flex-col sm:flex-row gap-3 print:hidden">
+                        {/* Filters */}
+                        <div className="flex flex-col sm:flex-row gap-3">
                             {/* Region Filter (Combobox) */}
                             <Popover open={openRegion} onOpenChange={setOpenRegion}>
                                 <PopoverTrigger asChild>
@@ -232,7 +105,7 @@ export default function SectorDetailPage() {
                                         variant="outline"
                                         role="combobox"
                                         aria-expanded={openRegion}
-                                        className="w-full sm:w-[250px] justify-between transition-none" // prevent size transition jitter
+                                        className="w-full sm:w-[250px] justify-between transition-none"
                                     >
                                         <span className="truncate">
                                             {selectedRegion === "all"
@@ -267,8 +140,7 @@ export default function SectorDetailPage() {
                                                     <CommandItem
                                                         key={region}
                                                         value={region}
-                                                        onSelect={(currentValue) => {
-                                                            // We use the original region name, not the lowercase value comes from command
+                                                        onSelect={() => {
                                                             setSelectedRegion(region)
                                                             setOpenRegion(false)
                                                         }}
@@ -301,12 +173,6 @@ export default function SectorDetailPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-
-                        {/* Show Filters as Text in Print */}
-                        <div className="hidden print:block text-sm text-slate-500 text-right">
-                            <p>Wilayah: {selectedRegion === 'all' ? 'Semua' : selectedRegion}</p>
-                            <p>Tahun: {currentYear}</p>
                         </div>
                     </div>
 
@@ -384,7 +250,10 @@ export default function SectorDetailPage() {
                     <h2 className="text-xl font-bold text-slate-800 mb-4">Analisis Grafik Tren & Sebaran</h2>
                     <div className="space-y-6">
                         <TrendCurveChart data={yearlyTrendData} />
-                        <RegionalComparisonChart data={regionalData} />
+                        <RegionalComparisonChart
+                            data={regionalData}
+                            highlightedRegion={selectedRegion !== "all" ? selectedRegion : undefined}
+                        />
                     </div>
                 </div>
 
@@ -456,8 +325,6 @@ export default function SectorDetailPage() {
                     </Card>
                 </div>
             </div>
-            {/* End Printable Wrapper */}
         </div>
     )
-
 }

@@ -2,6 +2,7 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function About() {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -32,10 +33,11 @@ export default function About() {
                                 >
                                     <div className="absolute inset-0">
                                         <div className="absolute inset-0 bg-black/20 z-10" />
-                                        <img
+                                        <Image
                                             src="/thumbnail.png"
                                             alt="Video Thumbnail"
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                         <div className="absolute inset-0 flex items-center justify-center z-20">
                                             <div className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">

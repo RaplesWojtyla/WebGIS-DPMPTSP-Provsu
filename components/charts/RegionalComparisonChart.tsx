@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ComposedChart } from "recharts"
+import { Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ComposedChart, Cell } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface RegionalComparisonChartProps {
@@ -11,9 +11,21 @@ interface RegionalComparisonChartProps {
     }[]
     title?: string
     description?: string
+    highlightedRegion?: string
+    className?: string
+    height?: number
+    hideHeader?: boolean
 }
 
-export function RegionalComparisonChart({ data, title = "Perbandingan Per Daerah", description = "Sebaran investasi di semua wilayah" }: RegionalComparisonChartProps) {
+export function RegionalComparisonChart({
+    data,
+    title = "Perbandingan Per Daerah",
+    description = "Sebaran investasi di semua wilayah",
+    highlightedRegion,
+    className,
+    height = 600,
+    hideHeader = false
+}: RegionalComparisonChartProps) {
     const formatCurrency = (val: number) =>
         new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }).format(val)
 
@@ -37,13 +49,16 @@ export function RegionalComparisonChart({ data, title = "Perbandingan Per Daerah
             const dataItem = payload.find((p: any) => p.dataKey === "value")
             if (!dataItem) return null
 
+            const isHighlighted = highlightedRegion && label === highlightedRegion
+
+            // Use explicit inline styles for background and colors to avoid 'lab' parsing errors
             return (
-                <div className="bg-white/95 backdrop-blur-sm p-4 border border-slate-100 shadow-xl rounded-2xl z-50">
-                    <p className="font-bold text-slate-800 text-sm mb-1">{label}</p>
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        <p className="text-slate-600 font-medium text-sm">
-                            Investasi: <span className="text-blue-600 font-bold">{formatCurrency(dataItem.value)}</span>
+                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 50 }}>
+                    <p style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: isHighlighted ? '#c2410c' : '#1e293b' }}>{label}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '9999px', backgroundColor: isHighlighted ? '#f97316' : '#3b82f6' }} />
+                        <p style={{ color: '#475569', fontWeight: 500, fontSize: '14px' }}>
+                            Investasi: <span style={{ fontWeight: 'bold', color: isHighlighted ? '#ea580c' : '#2563eb' }}>{formatCurrency(dataItem.value)}</span>
                         </p>
                     </div>
                 </div>
@@ -53,26 +68,32 @@ export function RegionalComparisonChart({ data, title = "Perbandingan Per Daerah
     }
 
     return (
-        <Card className="col-span-1 md:col-span-2 shadow-lg border-slate-100 bg-white/50 backdrop-blur-sm">
-            <CardHeader className="pb-2">
-                <CardTitle className="text-2xl font-bold bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                    {title}
-                </CardTitle>
-                <CardDescription className="text-slate-500 font-medium">{description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {/* Fixed height container, no scroll */}
-                <div className="h-[600px] w-full">
+        <Card className={`col-span-1 md:col-span-2 ${className || ''}`} style={{ boxShadow: 'none', border: 'none', background: 'transparent' }}>
+            {!hideHeader && (
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-2xl font-bold text-slate-800">
+                        {title}
+                    </CardTitle>
+                    <CardDescription className="text-slate-500 font-medium">{description}</CardDescription>
+                </CardHeader>
+            )}
+            <CardContent className={hideHeader ? "p-0" : ""}>
+                {/* Fixed height container controlled by prop */}
+                <div style={{ height: `${height}px` }} className="w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
                             data={chartData}
-                            margin={{ bottom: 10, top: 30, right: 20, left: 10 }}
+                            margin={{ bottom: 40, top: 30, right: 20, left: 10 }}
                             barGap={2}
                         >
                             <defs>
                                 <linearGradient id="barGradientVertical" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#3b82f6" />
                                     <stop offset="100%" stopColor="#06b6d4" />
+                                </linearGradient>
+                                <linearGradient id="barGradientHighlight" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#f97316" />
+                                    <stop offset="100%" stopColor="#fdba74" />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -83,23 +104,27 @@ export function RegionalComparisonChart({ data, title = "Perbandingan Per Daerah
                                 tickLine={false}
                                 axisLine={false}
                                 interval={0}
-                                height={160}
-                                tick={({ x, y, payload }) => (
-                                    <g transform={`translate(${x},${y})`}>
-                                        <text
-                                            x={0}
-                                            y={0}
-                                            dy={4} // Center vertically relative to tick line
-                                            dx={15} // Start 15px below the axis line for cleaner gap
-                                            textAnchor="start"
-                                            fill="#64748b"
-                                            transform="rotate(90)"
-                                            style={{ fontSize: '10px', fontWeight: 500 }}
-                                        >
-                                            {formatRegionName(payload.value)}
-                                        </text>
-                                    </g>
-                                )}
+                                height={200}
+                                tick={({ x, y, payload }) => {
+                                    const isHighlighted = highlightedRegion && payload.value === highlightedRegion
+                                    return (
+                                        <g transform={`translate(${x},${y})`}>
+                                            <text
+                                                x={0}
+                                                y={0}
+                                                dy={4} // Center vertically relative to tick line
+                                                dx={15} // Start 15px below the axis line for cleaner gap
+                                                textAnchor="start"
+                                                fill={isHighlighted ? "#f97316" : "#64748b"}
+                                                width={10}
+                                                transform="rotate(90)"
+                                                style={{ fontSize: '10px', fontWeight: isHighlighted ? 700 : 500 }}
+                                            >
+                                                {formatRegionName(payload.value)}
+                                            </text>
+                                        </g>
+                                    )
+                                }}
                             />
 
                             {/* Y Axis 0: Value (Hidden/Subtle) */}
@@ -135,11 +160,17 @@ export function RegionalComparisonChart({ data, title = "Perbandingan Per Daerah
                             {/* Foreground Value Bar */}
                             <Bar
                                 dataKey="value"
-                                fill="url(#barGradientVertical)"
                                 radius={[8, 8, 8, 8]}
                                 barSize={12}
                                 background={false}
-                            />
+                            >
+                                {chartData.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={highlightedRegion && entry.region === highlightedRegion ? "url(#barGradientHighlight)" : "url(#barGradientVertical)"}
+                                    />
+                                ))}
+                            </Bar>
                         </ComposedChart>
                     </ResponsiveContainer>
                 </div>
