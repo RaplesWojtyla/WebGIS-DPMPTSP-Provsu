@@ -1,198 +1,821 @@
 [
     {
-        "id": "1_2023",
-        "region": "Kota Medan",
-        "sector": "Perdagangan, Hotel, dan Restoran",
-        "value": 14000000000,
-        "year": 2023
-    },
-    {
-        "id": "1_2024",
-        "region": "Kota Medan",
-        "sector": "Perdagangan, Hotel, dan Restoran",
-        "value": 15500000000,
-        "year": 2024
-    },
-    {
-        "id": "2_2023",
+        "id": "medan_ind_2022",
         "region": "Kota Medan",
         "sector": "Industri Pengolahan",
-        "value": 8000000000,
-        "year": 2023
+        "value": 11500000000,
+        "year": 2022
     },
     {
-        "id": "2_2024",
+        "id": "medan_ind_2023",
         "region": "Kota Medan",
         "sector": "Industri Pengolahan",
-        "value": 8500000000,
-        "year": 2024
-    },
-    {
-        "id": "3_2023",
-        "region": "Kota Medan",
-        "sector": "Jasa-jasa",
-        "value": 4000000000,
+        "value": 14200000000,
         "year": 2023
     },
     {
-        "id": "3_2024",
+        "id": "medan_ind_2024",
         "region": "Kota Medan",
-        "sector": "Jasa-jasa",
-        "value": 4200000000,
+        "sector": "Industri Pengolahan",
+        "value": 15800000000,
         "year": 2024
     },
     {
-        "id": "4_2023",
+        "id": "deli_ind_2022",
         "region": "Kabupaten Deli Serdang",
         "sector": "Industri Pengolahan",
-        "value": 11000000000,
-        "year": 2023
+        "value": 10500000000,
+        "year": 2022
     },
     {
-        "id": "4_2024",
+        "id": "deli_ind_2023",
         "region": "Kabupaten Deli Serdang",
         "sector": "Industri Pengolahan",
         "value": 12500000000,
-        "year": 2024
-    },
-    {
-        "id": "5_2023",
-        "region": "Kabupaten Deli Serdang",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 6000000000,
         "year": 2023
     },
     {
-        "id": "5_2024",
+        "id": "deli_ind_2024",
         "region": "Kabupaten Deli Serdang",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 6200000000,
+        "sector": "Industri Pengolahan",
+        "value": 13900000000,
         "year": 2024
     },
     {
-        "id": "6_2023",
-        "region": "Kabupaten Deli Serdang",
-        "sector": "Konstruksi",
-        "value": 3000000000,
+        "id": "batubara_ind_2022",
+        "region": "Kabupaten Batubara",
+        "sector": "Industri Pengolahan",
+        "value": 15500000000,
+        "year": 2022
+    },
+    {
+        "id": "batubara_ind_2023",
+        "region": "Kabupaten Batubara",
+        "sector": "Industri Pengolahan",
+        "value": 18500000000,
         "year": 2023
     },
     {
-        "id": "6_2024",
-        "region": "Kabupaten Deli Serdang",
-        "sector": "Konstruksi",
-        "value": 3800000000,
+        "id": "batubara_ind_2024",
+        "region": "Kabupaten Batubara",
+        "sector": "Industri Pengolahan",
+        "value": 21000000000,
         "year": 2024
     },
     {
-        "id": "7_2023",
-        "region": "Kabupaten Karo",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 9000000000,
-        "year": 2023
+        "id": "asahan_ind_2022",
+        "region": "Kabupaten Asahan",
+        "sector": "Industri Pengolahan",
+        "value": 6800000000,
+        "year": 2022
     },
     {
-        "id": "7_2024",
-        "region": "Kabupaten Karo",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 9800000000,
-        "year": 2024
-    },
-    {
-        "id": "8_2023",
-        "region": "Kabupaten Karo",
-        "sector": "Pariwisata",
-        "value": 1800000000,
-        "year": 2023
-    },
-    {
-        "id": "8_2024",
-        "region": "Kabupaten Karo",
-        "sector": "Pariwisata",
-        "value": 2200000000,
-        "year": 2024
-    },
-    {
-        "id": "9_2023",
-        "region": "Kabupaten Langkat",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "id": "asahan_ind_2023",
+        "region": "Kabupaten Asahan",
+        "sector": "Industri Pengolahan",
         "value": 7500000000,
         "year": 2023
     },
     {
-        "id": "9_2024",
-        "region": "Kabupaten Langkat",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 7800000000,
+        "id": "asahan_ind_2024",
+        "region": "Kabupaten Asahan",
+        "sector": "Industri Pengolahan",
+        "value": 8200000000,
         "year": 2024
     },
     {
-        "id": "10_2023",
-        "region": "Kabupaten Langkat",
+        "id": "simalungun_ind_2022",
+        "region": "Kabupaten Simalungun",
         "sector": "Industri Pengolahan",
-        "value": 3000000000,
+        "value": 5900000000,
+        "year": 2022
+    },
+    {
+        "id": "simalungun_ind_2023",
+        "region": "Kabupaten Simalungun",
+        "sector": "Industri Pengolahan",
+        "value": 6800000000,
         "year": 2023
     },
     {
-        "id": "10_2024",
-        "region": "Kabupaten Langkat",
+        "id": "simalungun_ind_2024",
+        "region": "Kabupaten Simalungun",
         "sector": "Industri Pengolahan",
-        "value": 3300000000,
+        "value": 7400000000,
         "year": 2024
     },
     {
-        "id": "11_2023",
+        "id": "karo_ind_2022",
+        "region": "Kabupaten Karo",
+        "sector": "Industri Pengolahan",
+        "value": 2800000000,
+        "year": 2022
+    },
+    {
+        "id": "karo_ind_2023",
+        "region": "Kabupaten Karo",
+        "sector": "Industri Pengolahan",
+        "value": 3200000000,
+        "year": 2023
+    },
+    {
+        "id": "karo_ind_2024",
+        "region": "Kabupaten Karo",
+        "sector": "Industri Pengolahan",
+        "value": 3500000000,
+        "year": 2024
+    },
+    {
+        "id": "langkat_ind_2022",
+        "region": "Kabupaten Langkat",
+        "sector": "Industri Pengolahan",
+        "value": 4900000000,
+        "year": 2022
+    },
+    {
+        "id": "langkat_ind_2023",
+        "region": "Kabupaten Langkat",
+        "sector": "Industri Pengolahan",
+        "value": 5600000000,
+        "year": 2023
+    },
+    {
+        "id": "langkat_ind_2024",
+        "region": "Kabupaten Langkat",
+        "sector": "Industri Pengolahan",
+        "value": 6100000000,
+        "year": 2024
+    },
+    {
+        "id": "sergai_ind_2022",
+        "region": "Kabupaten Serdang Bedagai",
+        "sector": "Industri Pengolahan",
+        "value": 4200000000,
+        "year": 2022
+    },
+    {
+        "id": "sergai_ind_2023",
+        "region": "Kabupaten Serdang Bedagai",
+        "sector": "Industri Pengolahan",
+        "value": 4800000000,
+        "year": 2023
+    },
+    {
+        "id": "sergai_ind_2024",
+        "region": "Kabupaten Serdang Bedagai",
+        "sector": "Industri Pengolahan",
+        "value": 5200000000,
+        "year": 2024
+    },
+    {
+        "id": "binjai_ind_2022",
+        "region": "Kota Binjai",
+        "sector": "Industri Pengolahan",
+        "value": 2600000000,
+        "year": 2022
+    },
+    {
+        "id": "binjai_ind_2023",
+        "region": "Kota Binjai",
+        "sector": "Industri Pengolahan",
+        "value": 2900000000,
+        "year": 2023
+    },
+    {
+        "id": "binjai_ind_2024",
+        "region": "Kota Binjai",
+        "sector": "Industri Pengolahan",
+        "value": 3100000000,
+        "year": 2024
+    },
+    {
+        "id": "tebing_ind_2022",
+        "region": "Kota Tebing Tinggi",
+        "sector": "Industri Pengolahan",
+        "value": 2100000000,
+        "year": 2022
+    },
+    {
+        "id": "tebing_ind_2023",
+        "region": "Kota Tebing Tinggi",
+        "sector": "Industri Pengolahan",
+        "value": 2400000000,
+        "year": 2023
+    },
+    {
+        "id": "tebing_ind_2024",
+        "region": "Kota Tebing Tinggi",
+        "sector": "Industri Pengolahan",
+        "value": 2600000000,
+        "year": 2024
+    },
+    {
+        "id": "siantar_ind_2022",
         "region": "Kota Pematangsiantar",
+        "sector": "Industri Pengolahan",
+        "value": 4100000000,
+        "year": 2022
+    },
+    {
+        "id": "siantar_ind_2023",
+        "region": "Kota Pematangsiantar",
+        "sector": "Industri Pengolahan",
+        "value": 4500000000,
+        "year": 2023
+    },
+    {
+        "id": "siantar_ind_2024",
+        "region": "Kota Pematangsiantar",
+        "sector": "Industri Pengolahan",
+        "value": 4900000000,
+        "year": 2024
+    },
+    {
+        "id": "tanjungbalai_ind_2022",
+        "region": "Kota Tanjungbalai",
+        "sector": "Industri Pengolahan",
+        "value": 1600000000,
+        "year": 2022
+    },
+    {
+        "id": "tanjungbalai_ind_2023",
+        "region": "Kota Tanjungbalai",
+        "sector": "Industri Pengolahan",
+        "value": 1800000000,
+        "year": 2023
+    },
+    {
+        "id": "tanjungbalai_ind_2024",
+        "region": "Kota Tanjungbalai",
+        "sector": "Industri Pengolahan",
+        "value": 2000000000,
+        "year": 2024
+    },
+    {
+        "id": "labuhanbatu_ind_2022",
+        "region": "Kabupaten Labuhanbatu",
+        "sector": "Industri Pengolahan",
+        "value": 5900000000,
+        "year": 2022
+    },
+    {
+        "id": "labuhanbatu_ind_2023",
+        "region": "Kabupaten Labuhanbatu",
+        "sector": "Industri Pengolahan",
+        "value": 6500000000,
+        "year": 2023
+    },
+    {
+        "id": "labuhanbatu_ind_2024",
+        "region": "Kabupaten Labuhanbatu",
+        "sector": "Industri Pengolahan",
+        "value": 7100000000,
+        "year": 2024
+    },
+    {
+        "id": "labura_ind_2022",
+        "region": "Kabupaten Labuhanbatu Utara",
+        "sector": "Industri Pengolahan",
+        "value": 3900000000,
+        "year": 2022
+    },
+    {
+        "id": "labura_ind_2023",
+        "region": "Kabupaten Labuhanbatu Utara",
+        "sector": "Industri Pengolahan",
+        "value": 4200000000,
+        "year": 2023
+    },
+    {
+        "id": "labura_ind_2024",
+        "region": "Kabupaten Labuhanbatu Utara",
+        "sector": "Industri Pengolahan",
+        "value": 4600000000,
+        "year": 2024
+    },
+    {
+        "id": "labusel_ind_2022",
+        "region": "Kabupaten Labuhanbatu Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 3500000000,
+        "year": 2022
+    },
+    {
+        "id": "labusel_ind_2023",
+        "region": "Kabupaten Labuhanbatu Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 3800000000,
+        "year": 2023
+    },
+    {
+        "id": "labusel_ind_2024",
+        "region": "Kabupaten Labuhanbatu Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 4100000000,
+        "year": 2024
+    },
+    {
+        "id": "toba_ind_2022",
+        "region": "Kabupaten Toba",
+        "sector": "Industri Pengolahan",
+        "value": 2300000000,
+        "year": 2022
+    },
+    {
+        "id": "toba_ind_2023",
+        "region": "Kabupaten Toba",
+        "sector": "Industri Pengolahan",
+        "value": 2500000000,
+        "year": 2023
+    },
+    {
+        "id": "toba_ind_2024",
+        "region": "Kabupaten Toba",
+        "sector": "Industri Pengolahan",
+        "value": 2800000000,
+        "year": 2024
+    },
+    {
+        "id": "taput_ind_2022",
+        "region": "Kabupaten Tapanuli Utara",
+        "sector": "Industri Pengolahan",
+        "value": 1900000000,
+        "year": 2022
+    },
+    {
+        "id": "taput_ind_2023",
+        "region": "Kabupaten Tapanuli Utara",
+        "sector": "Industri Pengolahan",
+        "value": 2100000000,
+        "year": 2023
+    },
+    {
+        "id": "taput_ind_2024",
+        "region": "Kabupaten Tapanuli Utara",
+        "sector": "Industri Pengolahan",
+        "value": 2300000000,
+        "year": 2024
+    },
+    {
+        "id": "humbahas_ind_2022",
+        "region": "Kabupaten Humbang Hasundutan",
+        "sector": "Industri Pengolahan",
+        "value": 1300000000,
+        "year": 2022
+    },
+    {
+        "id": "humbahas_ind_2023",
+        "region": "Kabupaten Humbang Hasundutan",
+        "sector": "Industri Pengolahan",
+        "value": 1500000000,
+        "year": 2023
+    },
+    {
+        "id": "humbahas_ind_2024",
+        "region": "Kabupaten Humbang Hasundutan",
+        "sector": "Industri Pengolahan",
+        "value": 1700000000,
+        "year": 2024
+    },
+    {
+        "id": "samosir_ind_2022",
+        "region": "Kabupaten Samosir",
+        "sector": "Industri Pengolahan",
+        "value": 1100000000,
+        "year": 2022
+    },
+    {
+        "id": "samosir_ind_2023",
+        "region": "Kabupaten Samosir",
+        "sector": "Industri Pengolahan",
+        "value": 1200000000,
+        "year": 2023
+    },
+    {
+        "id": "samosir_ind_2024",
+        "region": "Kabupaten Samosir",
+        "sector": "Industri Pengolahan",
+        "value": 1400000000,
+        "year": 2024
+    },
+    {
+        "id": "dairi_ind_2022",
+        "region": "Kabupaten Dairi",
+        "sector": "Industri Pengolahan",
+        "value": 2500000000,
+        "year": 2022
+    },
+    {
+        "id": "dairi_ind_2023",
+        "region": "Kabupaten Dairi",
+        "sector": "Industri Pengolahan",
+        "value": 2800000000,
+        "year": 2023
+    },
+    {
+        "id": "dairi_ind_2024",
+        "region": "Kabupaten Dairi",
+        "sector": "Industri Pengolahan",
+        "value": 3100000000,
+        "year": 2024
+    },
+    {
+        "id": "pakpak_ind_2022",
+        "region": "Kabupaten Pakpak Bharat",
+        "sector": "Industri Pengolahan",
+        "value": 700000000,
+        "year": 2022
+    },
+    {
+        "id": "pakpak_ind_2023",
+        "region": "Kabupaten Pakpak Bharat",
+        "sector": "Industri Pengolahan",
+        "value": 800000000,
+        "year": 2023
+    },
+    {
+        "id": "pakpak_ind_2024",
+        "region": "Kabupaten Pakpak Bharat",
+        "sector": "Industri Pengolahan",
+        "value": 900000000,
+        "year": 2024
+    },
+    {
+        "id": "tapteng_ind_2022",
+        "region": "Kabupaten Tapanuli Tengah",
+        "sector": "Industri Pengolahan",
+        "value": 3200000000,
+        "year": 2022
+    },
+    {
+        "id": "tapteng_ind_2023",
+        "region": "Kabupaten Tapanuli Tengah",
+        "sector": "Industri Pengolahan",
+        "value": 3500000000,
+        "year": 2023
+    },
+    {
+        "id": "tapteng_ind_2024",
+        "region": "Kabupaten Tapanuli Tengah",
+        "sector": "Industri Pengolahan",
+        "value": 3900000000,
+        "year": 2024
+    },
+    {
+        "id": "sibolga_ind_2022",
+        "region": "Kota Sibolga",
+        "sector": "Industri Pengolahan",
+        "value": 2000000000,
+        "year": 2022
+    },
+    {
+        "id": "sibolga_ind_2023",
+        "region": "Kota Sibolga",
+        "sector": "Industri Pengolahan",
+        "value": 2200000000,
+        "year": 2023
+    },
+    {
+        "id": "sibolga_ind_2024",
+        "region": "Kota Sibolga",
+        "sector": "Industri Pengolahan",
+        "value": 2500000000,
+        "year": 2024
+    },
+    {
+        "id": "tapsel_ind_2022",
+        "region": "Kabupaten Tapanuli Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 3900000000,
+        "year": 2022
+    },
+    {
+        "id": "tapsel_ind_2023",
+        "region": "Kabupaten Tapanuli Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 4200000000,
+        "year": 2023
+    },
+    {
+        "id": "tapsel_ind_2024",
+        "region": "Kabupaten Tapanuli Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 4600000000,
+        "year": 2024
+    },
+    {
+        "id": "sidimpuan_ind_2022",
+        "region": "Kota Padangsidimpuan",
+        "sector": "Industri Pengolahan",
+        "value": 2600000000,
+        "year": 2022
+    },
+    {
+        "id": "sidimpuan_ind_2023",
+        "region": "Kota Padangsidimpuan",
+        "sector": "Industri Pengolahan",
+        "value": 2900000000,
+        "year": 2023
+    },
+    {
+        "id": "sidimpuan_ind_2024",
+        "region": "Kota Padangsidimpuan",
+        "sector": "Industri Pengolahan",
+        "value": 3200000000,
+        "year": 2024
+    },
+    {
+        "id": "madina_ind_2022",
+        "region": "Kabupaten Mandailing Natal",
+        "sector": "Industri Pengolahan",
+        "value": 5200000000,
+        "year": 2022
+    },
+    {
+        "id": "madina_ind_2023",
+        "region": "Kabupaten Mandailing Natal",
+        "sector": "Industri Pengolahan",
+        "value": 5800000000,
+        "year": 2023
+    },
+    {
+        "id": "madina_ind_2024",
+        "region": "Kabupaten Mandailing Natal",
+        "sector": "Industri Pengolahan",
+        "value": 6400000000,
+        "year": 2024
+    },
+    {
+        "id": "palas_ind_2022",
+        "region": "Kabupaten Padang Lawas",
+        "sector": "Industri Pengolahan",
+        "value": 3100000000,
+        "year": 2022
+    },
+    {
+        "id": "palas_ind_2023",
+        "region": "Kabupaten Padang Lawas",
+        "sector": "Industri Pengolahan",
+        "value": 3400000000,
+        "year": 2023
+    },
+    {
+        "id": "palas_ind_2024",
+        "region": "Kabupaten Padang Lawas",
+        "sector": "Industri Pengolahan",
+        "value": 3700000000,
+        "year": 2024
+    },
+    {
+        "id": "paluta_ind_2022",
+        "region": "Kabupaten Padang Lawas Utara",
+        "sector": "Industri Pengolahan",
+        "value": 2800000000,
+        "year": 2022
+    },
+    {
+        "id": "paluta_ind_2023",
+        "region": "Kabupaten Padang Lawas Utara",
+        "sector": "Industri Pengolahan",
+        "value": 3100000000,
+        "year": 2023
+    },
+    {
+        "id": "paluta_ind_2024",
+        "region": "Kabupaten Padang Lawas Utara",
+        "sector": "Industri Pengolahan",
+        "value": 3400000000,
+        "year": 2024
+    },
+    {
+        "id": "nias_ind_2022",
+        "region": "Kabupaten Nias",
+        "sector": "Industri Pengolahan",
+        "value": 1300000000,
+        "year": 2022
+    },
+    {
+        "id": "nias_ind_2023",
+        "region": "Kabupaten Nias",
+        "sector": "Industri Pengolahan",
+        "value": 1500000000,
+        "year": 2023
+    },
+    {
+        "id": "nias_ind_2024",
+        "region": "Kabupaten Nias",
+        "sector": "Industri Pengolahan",
+        "value": 1700000000,
+        "year": 2024
+    },
+    {
+        "id": "gunungsitoli_ind_2022",
+        "region": "Kota Gunungsitoli",
+        "sector": "Industri Pengolahan",
+        "value": 1900000000,
+        "year": 2022
+    },
+    {
+        "id": "gunungsitoli_ind_2023",
+        "region": "Kota Gunungsitoli",
+        "sector": "Industri Pengolahan",
+        "value": 2100000000,
+        "year": 2023
+    },
+    {
+        "id": "gunungsitoli_ind_2024",
+        "region": "Kota Gunungsitoli",
+        "sector": "Industri Pengolahan",
+        "value": 2400000000,
+        "year": 2024
+    },
+    {
+        "id": "niassel_ind_2022",
+        "region": "Kabupaten Nias Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 1600000000,
+        "year": 2022
+    },
+    {
+        "id": "niassel_ind_2023",
+        "region": "Kabupaten Nias Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 1800000000,
+        "year": 2023
+    },
+    {
+        "id": "niassel_ind_2024",
+        "region": "Kabupaten Nias Selatan",
+        "sector": "Industri Pengolahan",
+        "value": 2000000000,
+        "year": 2024
+    },
+    {
+        "id": "niasut_ind_2022",
+        "region": "Kabupaten Nias Utara",
+        "sector": "Industri Pengolahan",
+        "value": 800000000,
+        "year": 2022
+    },
+    {
+        "id": "niasut_ind_2023",
+        "region": "Kabupaten Nias Utara",
+        "sector": "Industri Pengolahan",
+        "value": 900000000,
+        "year": 2023
+    },
+    {
+        "id": "niasut_ind_2024",
+        "region": "Kabupaten Nias Utara",
+        "sector": "Industri Pengolahan",
+        "value": 1100000000,
+        "year": 2024
+    },
+    {
+        "id": "niasbar_ind_2022",
+        "region": "Kabupaten Nias Barat",
+        "sector": "Industri Pengolahan",
+        "value": 750000000,
+        "year": 2022
+    },
+    {
+        "id": "niasbar_ind_2023",
+        "region": "Kabupaten Nias Barat",
+        "sector": "Industri Pengolahan",
+        "value": 850000000,
+        "year": 2023
+    },
+    {
+        "id": "niasbar_ind_2024",
+        "region": "Kabupaten Nias Barat",
+        "sector": "Industri Pengolahan",
+        "value": 1000000000,
+        "year": 2024
+    },
+    {
+        "id": "medan_trd_2022",
+        "region": "Kota Medan",
         "sector": "Perdagangan, Hotel, dan Restoran",
-        "value": 4000000000,
+        "value": 13900000000,
+        "year": 2022
+    },
+    {
+        "id": "medan_trd_2023",
+        "region": "Kota Medan",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 15100000000,
         "year": 2023
     },
     {
-        "id": "11_2024",
-        "region": "Kota Pematangsiantar",
+        "id": "medan_trd_2024",
+        "region": "Kota Medan",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 16500000000,
+        "year": 2024
+    },
+    {
+        "id": "deli_trd_2023",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 12200000000,
+        "year": 2023
+    },
+    {
+        "id": "binjai_trd_2023",
+        "region": "Kota Binjai",
         "sector": "Perdagangan, Hotel, dan Restoran",
         "value": 4500000000,
-        "year": 2024
-    },
-    {
-        "id": "13_2023",
-        "region": "Kabupaten Simalungun",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
-        "value": 10500000000,
         "year": 2023
     },
     {
-        "id": "13_2024",
-        "region": "Kabupaten Simalungun",
-        "sector": "Pertanian, Peternakan, Kehutanan, dan Perikanan",
+        "id": "tebing_trd_2023",
+        "region": "Kota Tebing Tinggi",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 2800000000,
+        "year": 2023
+    },
+    {
+        "id": "siantar_trd_2023",
+        "region": "Kota Pematangsiantar",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 6500000000,
+        "year": 2023
+    },
+    {
+        "id": "toba_trd_2023",
+        "region": "Kabupaten Toba",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 3100000000,
+        "year": 2023
+    },
+    {
+        "id": "samosir_trd_2023",
+        "region": "Kabupaten Samosir",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 2800000000,
+        "year": 2023
+    },
+    {
+        "id": "karo_trd_2023",
+        "region": "Kabupaten Karo",
+        "sector": "Perdagangan, Hotel, dan Restoran",
+        "value": 3500000000,
+        "year": 2023
+    },
+    {
+        "id": "medan_tan_2023",
+        "region": "Kota Medan",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 1500000000,
+        "year": 2023
+    },
+    {
+        "id": "deli_tan_2023",
+        "region": "Kabupaten Deli Serdang",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 8500000000,
+        "year": 2023
+    },
+    {
+        "id": "sergai_tan_2023",
+        "region": "Kabupaten Serdang Bedagai",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 6500000000,
+        "year": 2023
+    },
+    {
+        "id": "langkat_tan_2023",
+        "region": "Kabupaten Langkat",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 9800000000,
+        "year": 2023
+    },
+    {
+        "id": "asahan_tan_2023",
+        "region": "Kabupaten Asahan",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 12500000000,
+        "year": 2023
+    },
+    {
+        "id": "labuhanbatu_tan_2023",
+        "region": "Kabupaten Labuhanbatu",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
         "value": 11500000000,
-        "year": 2024
-    },
-    {
-        "id": "15_2023",
-        "region": "Kabupaten Asahan",
-        "sector": "Perkebunan",
-        "value": 13000000000,
         "year": 2023
     },
     {
-        "id": "15_2024",
-        "region": "Kabupaten Asahan",
-        "sector": "Perkebunan",
-        "value": 14500000000,
-        "year": 2024
-    },
-    {
-        "id": "17_2023",
-        "region": "Kabupaten Batubara",
-        "sector": "Industri Pengolahan",
-        "value": 20000000000,
+        "id": "labura_tan_2023",
+        "region": "Kabupaten Labuhanbatu Utara",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 8200000000,
         "year": 2023
     },
     {
-        "id": "17_2024",
-        "region": "Kabupaten Batubara",
-        "sector": "Industri Pengolahan",
-        "value": 26000000000,
-        "year": 2024
+        "id": "labusel_tan_2023",
+        "region": "Kabupaten Labuhanbatu Selatan",
+        "sector": "Tanaman Pangan, Perkebunan, dan Peternakan",
+        "value": 9100000000,
+        "year": 2023
     }
 ]
