@@ -37,16 +37,32 @@ export function RegionalComparisonChart({
     const maxValue = maxValInSet * 1.1 // 10% buffer
     const chartData = sortedData.map(d => ({ ...d, max: maxValue }))
 
+    // Dynamic bar size based on data length
+    const barSize = data.length > 20 ? 12 : data.length > 10 ? 24 : 48
+
     const formatRegionName = (name: string) => {
         return name
             .replace("Kabupaten ", "Kab. ")
             .replace("Kota ", "Kota ")
     }
 
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    interface CustomTooltipProps {
+        active?: boolean
+        payload?: {
+            value: number
+            dataKey: string
+            payload: {
+                region: string
+                value: number
+            }
+        }[]
+        label?: string
+    }
+
+    const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         if (active && payload && payload.length) {
             // Find the correct payload item for 'value'
-            const dataItem = payload.find((p: any) => p.dataKey === "value")
+            const dataItem = payload.find((p) => p.dataKey === "value")
             if (!dataItem) return null
 
             const isHighlighted = highlightedRegion && label === highlightedRegion
@@ -151,7 +167,7 @@ export function RegionalComparisonChart({
                                 dataKey="max"
                                 fill="#f1f5f9"
                                 radius={[8, 8, 8, 8]}
-                                barSize={12} // Thinner bars to fit 33 items
+                                barSize={barSize} // Thinner bars to fit 33 items
                                 yAxisId={1}
                                 animationDuration={0}
                                 isAnimationActive={false}
@@ -161,7 +177,7 @@ export function RegionalComparisonChart({
                             <Bar
                                 dataKey="value"
                                 radius={[8, 8, 8, 8]}
-                                barSize={12}
+                                barSize={barSize}
                                 background={false}
                             >
                                 {chartData.map((entry, index) => (

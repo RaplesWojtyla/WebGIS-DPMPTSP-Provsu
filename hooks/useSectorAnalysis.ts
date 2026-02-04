@@ -5,14 +5,40 @@ import dummyData from "@/data/investment_dummy.json"
 export function useSectorAnalysis(sectorName: string, initialRegion: string = "all", initialYearStr?: string) {
     const [records] = React.useState<InvestmentRecord[]>(dummyData)
 
-    // Extract unique regions and years
+    // Extract unique regions and years based on the CURRENT SECTOR
+    const sectorRecords = React.useMemo(() => records.filter(r => r.sector === sectorName), [records, sectorName])
+
+    // If sectorRecords is empty (invalid sector), fallback to all records to avoid crashes, 
+    // but effectively the page handles "no sector" separately.
+    const validRecords = sectorRecords.length > 0 ? sectorRecords : records
+
+    // Get ALL regions from the entire dataset to ensure we always show 33 kabupaten/kota
     const regions = React.useMemo(() => Array.from(new Set(records.map(r => r.region))).sort(), [records])
-    const years = React.useMemo(() => Array.from(new Set(records.map(r => r.year))).sort(), [records])
+
+    // Years should still be specific to the sector to avoid selecting years with NO data at all
+    const years = React.useMemo(() => Array.from(new Set(validRecords.map(r => r.year))).sort(), [validRecords])
 
     // Filter States
     const [selectedRegion, setSelectedRegion] = React.useState<string>(initialRegion)
-    // Default to last year if not provided
-    const [selectedYear, setSelectedYear] = React.useState<string>(initialYearStr || years[years.length - 1]?.toString() || "")
+
+    // Smart default year: Find year with most data points
+    const defaultYear = React.useMemo(() => {
+        if (initialYearStr && years.includes(parseInt(initialYearStr))) return initialYearStr
+        if (years.length === 0) return ""
+
+        // Count records per year
+        const counts = years.map(year => ({
+            year,
+            count: validRecords.filter(r => r.year === year).length
+        }))
+
+        // Sort by count (desc) then year (desc)
+        counts.sort((a, b) => b.count - a.count || b.year - a.year)
+
+        return counts[0]?.year.toString() || years[years.length - 1].toString()
+    }, [years, validRecords, initialYearStr])
+
+    const [selectedYear, setSelectedYear] = React.useState<string>(defaultYear)
 
     // Update state if props/initial values change (e.g. from URL params)
     React.useEffect(() => {
@@ -20,8 +46,13 @@ export function useSectorAnalysis(sectorName: string, initialRegion: string = "a
     }, [initialRegion])
 
     React.useEffect(() => {
-        if (initialYearStr) setSelectedYear(initialYearStr)
-    }, [initialYearStr])
+        // Only override if strictly provided and different
+        if (initialYearStr && initialYearStr !== selectedYear) {
+            setSelectedYear(initialYearStr)
+        } else if (!selectedYear && defaultYear) {
+            setSelectedYear(defaultYear)
+        }
+    }, [initialYearStr, defaultYear])
 
     // Derived values
     const startYear = years[0]
@@ -132,10 +163,18 @@ export function useSectorAnalysis(sectorName: string, initialRegion: string = "a
 
     // 2. Regional Data
     const regionalData = React.useMemo(() => {
-        return records
+        // Create a map for quick lookup
+        const dataMap = new Map<string, number>()
+        records
             .filter(r => r.year === currentYear && r.sector === sectorName)
-            .map(r => ({ region: r.region, value: r.value }))
-    }, [currentYear, records, sectorName])
+            .forEach(r => dataMap.set(r.region, r.value))
+
+        // Return data for ALL regions (filling 0 if missing)
+        return regions.map(region => ({
+            region,
+            value: dataMap.get(region) || 0
+        }))
+    }, [currentYear, records, sectorName, regions])
 
     return {
         regions,
