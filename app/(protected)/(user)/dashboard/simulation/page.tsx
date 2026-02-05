@@ -106,13 +106,20 @@ export default function UserSimulationPage() {
 
     // Auth Check
     useEffect(() => {
-        const saved = localStorage.getItem("userProfile");
-        if (!saved || !JSON.parse(saved).isComplete) {
-            alert("You must complete your profile first!");
-            router.push("/dashboard/profile");
-        } else {
-            setIsAuthorized(true);
-        }
+        const timer = setTimeout(() => {
+            const saved = localStorage.getItem("userProfile");
+            try {
+                if (!saved || !JSON.parse(saved).isComplete) {
+                    alert("You must complete your profile first!");
+                    router.push("/dashboard/profile");
+                } else {
+                    setIsAuthorized(true);
+                }
+            } catch (e) {
+                router.push("/dashboard/profile");
+            }
+        }, 0);
+        return () => clearTimeout(timer);
     }, [router]);
 
     // Input Handlers

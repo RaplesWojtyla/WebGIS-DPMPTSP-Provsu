@@ -91,7 +91,7 @@ function PdrbFormContent() {
                     <ArrowLeft className="h-6 w-6 text-gray-600" />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
                         Input Data PDRB
                     </h1>
                     <p className="text-gray-500 mt-1 flex items-center gap-2">

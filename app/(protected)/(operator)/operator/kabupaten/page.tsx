@@ -331,7 +331,7 @@ export default function KabupatenPage() {
             {/* Header */}
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900">Data Wilayah Sumatera Utara</h1>
-                <p className="text-muted-foreground text-gray-500">Kelola data wilayah administratif provinsi hingga desa.</p>
+                <p className="text-gray-500">Kelola data wilayah administratif provinsi hingga desa.</p>
             </div>
 
             {/* Toolbar */}
