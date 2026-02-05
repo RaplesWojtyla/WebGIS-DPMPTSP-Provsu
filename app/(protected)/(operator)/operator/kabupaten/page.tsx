@@ -179,9 +179,7 @@ export default function KabupatenPage() {
     }, [data, searchTerm, selectedKabupaten, selectedKecamatan, selectedDesa]);
 
     // Reset page when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm, selectedKabupaten, selectedKecamatan, selectedDesa]);
+    // Reset page logic moved to event handlers to avoid useEffect warning
 
     // Pagination Logic
     const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -344,7 +342,7 @@ export default function KabupatenPage() {
                             type="text"
                             placeholder="Cari wilayah..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         />
                     </div>
@@ -356,21 +354,21 @@ export default function KabupatenPage() {
                 {/* Bottom Row: Filters & Exports */}
                 <div className="flex flex-col xl:flex-row gap-4 justify-between items-end xl:items-center">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full xl:w-auto flex-1">
-                        <Select value={selectedKabupaten} onValueChange={(val) => { setSelectedKabupaten(val); setSelectedKecamatan("all"); setSelectedDesa("all"); }}>
+                        <Select value={selectedKabupaten} onValueChange={(val) => { setSelectedKabupaten(val); setSelectedKecamatan("all"); setSelectedDesa("all"); setCurrentPage(1); }}>
                             <SelectTrigger className="w-full"><SelectValue placeholder="Semua Kabupaten" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Kabupaten</SelectItem>
                                 {kabupatenOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        <Select value={selectedKecamatan} onValueChange={(val) => { setSelectedKecamatan(val); setSelectedDesa("all"); }} disabled={selectedKabupaten === 'all'}>
+                        <Select value={selectedKecamatan} onValueChange={(val) => { setSelectedKecamatan(val); setSelectedDesa("all"); setCurrentPage(1); }} disabled={selectedKabupaten === 'all'}>
                             <SelectTrigger className="w-full"><SelectValue placeholder="Semua Kecamatan" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Kecamatan</SelectItem>
                                 {kecamatanOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        <Select value={selectedDesa} onValueChange={setSelectedDesa} disabled={selectedKecamatan === 'all'}>
+                        <Select value={selectedDesa} onValueChange={(val) => { setSelectedDesa(val); setCurrentPage(1); }} disabled={selectedKecamatan === 'all'}>
                             <SelectTrigger className="w-full"><SelectValue placeholder="Semua Desa" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Desa</SelectItem>

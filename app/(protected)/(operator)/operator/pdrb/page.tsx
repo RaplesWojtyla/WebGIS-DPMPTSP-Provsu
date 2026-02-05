@@ -74,7 +74,7 @@ export default function PdrbPage() {
                 }
             }
         });
-        setDataMap(newDataMap);
+        setTimeout(() => setDataMap(newDataMap), 0);
     }, [selectedYear]);
 
     // --- Helpers ---

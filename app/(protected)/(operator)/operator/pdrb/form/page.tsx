@@ -37,21 +37,23 @@ function PdrbFormContent() {
         const key = `${STORAGE_KEY_PREFIX}${year}-${regionId}`;
         const storedData = localStorage.getItem(key);
 
-        if (storedData) {
-            try {
-                const parsedData: PdrbValue[] = JSON.parse(storedData);
-                const values = new Array(SECTORS.length).fill(0);
-                parsedData.forEach(item => {
-                    if (item.sectorIndex >= 0 && item.sectorIndex < SECTORS.length) {
-                        values[item.sectorIndex] = item.value;
-                    }
-                });
-                setFormValues(values);
-            } catch (e) {
-                console.error("Failed to parse stored data", e);
+        setTimeout(() => {
+            if (storedData) {
+                try {
+                    const parsedData: PdrbValue[] = JSON.parse(storedData);
+                    const values = new Array(SECTORS.length).fill(0);
+                    parsedData.forEach(item => {
+                        if (item.sectorIndex >= 0 && item.sectorIndex < SECTORS.length) {
+                            values[item.sectorIndex] = item.value;
+                        }
+                    });
+                    setFormValues(values);
+                } catch (e) {
+                    console.error("Failed to parse stored data", e);
+                }
             }
-        }
-        setIsLoading(false);
+            setIsLoading(false);
+        }, 0);
     }, [regionId, year, router]);
 
     const handleValueChange = (index: number, valStr: string) => {
