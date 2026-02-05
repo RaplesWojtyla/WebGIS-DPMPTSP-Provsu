@@ -88,7 +88,7 @@ export default function MapSidePanel({
                             {/* Sector Filters */}
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-bold text-blue-900 uppercase tracking-wider">Sektor Potensi</Label>
-                                <div className="grid grid-cols-1 gap-1.5">
+                                <div className="grid grid-cols-1 gap-1.5 max-h-[300px] overflow-y-auto pr-2">
                                     {[
                                         { id: "pariwisata", label: "Pariwisata" },
                                         { id: "industri", label: "Industri & Manufaktur" },
