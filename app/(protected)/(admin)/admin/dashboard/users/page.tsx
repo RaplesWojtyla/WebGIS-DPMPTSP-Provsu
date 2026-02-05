@@ -1,310 +1,397 @@
 "use client";
 
-import { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiX, FiUsers, FiFilter, FiCheckCircle } from "react-icons/fi";
+import React, { useState } from "react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+    Search,
+    MoreHorizontal,
+    Mail,
+    Plus
+} from "lucide-react";
 
-// User Type Definition
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    role: "Admin" | "User" | "Investor";
-    status: "Active" | "Inactive";
-    joinDate: string;
-}
-
-// Dummy Data
-const initialUsers: User[] = [
-    { id: 1, name: "Admin Utama", email: "admin@provsu.go.id", role: "Admin", status: "Active", joinDate: "2023-01-01" },
-    { id: 2, name: "PT. Sawit Jaya", email: "contact@sawitjaya.com", role: "Investor", status: "Active", joinDate: "2023-05-12" },
-    { id: 3, name: "Budi Santoso", email: "budi.s@gmail.com", role: "User", status: "Inactive", joinDate: "2023-08-20" },
-    { id: 4, name: "CV. Nelayan Makmur", email: "info@nelayanmakmur.id", role: "Investor", status: "Active", joinDate: "2023-11-05" },
-    { id: 5, name: "Dina Pertiwi", email: "dina.p@outlook.com", role: "User", status: "Active", joinDate: "2024-01-15" },
-    { id: 6, name: "Investor Asing Corp", email: "invest@corp.sg", role: "Investor", status: "Active", joinDate: "2024-02-01" },
-];
+// --- Dummy Data ---
+const DUMMY_USERS = Array.from({ length: 35 }).map((_, i) => ({
+    id: `USR-${i + 1}`,
+    name: `User ${i + 1}`,
+    email: `user${i + 1}@example.com`,
+    role: i % 3 === 0 ? "Admin" : i % 3 === 1 ? "Operator" : "Investor",
+    status: i % 4 === 0 ? "Inactive" : "Active",
+    registeredAt: "2024-01-15",
+}));
 
 export default function UsersPage() {
-    const [users, setUsers] = useState<User[]>(initialUsers);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
 
-    // Form State
-    const [formData, setFormData] = useState<Omit<User, "id" | "joinDate">>({
-        name: "",
-        email: "",
-        role: "User",
-        status: "Active",
-    });
-
-    const filteredUsers = users.filter(
-        (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    // Filter Logic
+    const filteredUsers = DUMMY_USERS.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleOpenModal = (user?: User) => {
-        if (user) {
-            setEditingUser(user);
-            setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
-        } else {
-            setEditingUser(null);
-            setFormData({ name: "", email: "", role: "User", status: "Active" });
-        }
-        setIsModalOpen(true);
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+    const paginatedUsers = filteredUsers.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    // Modal States
+    const [selectedUser, setSelectedUser] = useState<typeof DUMMY_USERS[0] | null>(null);
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isAddOpen, setIsAddOpen] = useState(false); // For adding new user
+
+    // Handlers
+    const handleEditClick = (user: typeof DUMMY_USERS[0]) => {
+        setSelectedUser(user);
+        setIsEditOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setEditingUser(null);
+    const handlePasswordClick = (user: typeof DUMMY_USERS[0]) => {
+        setSelectedUser(user);
+        setIsPasswordOpen(true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (editingUser) {
-            // Update existing user
-            setUsers(users.map((u) => (u.id === editingUser.id ? { ...u, ...formData } : u)));
-        } else {
-            // Add new user
-            const newUser: User = {
-                id: users.length > 0 ? Math.max(...users.map((u) => u.id)) + 1 : 1,
-                ...formData,
-                joinDate: new Date().toISOString().split('T')[0]
-            };
-            setUsers([...users, newUser]);
-        }
-        handleCloseModal();
-    };
-
-    const handleDelete = (id: number) => {
-        if (confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
-            setUsers(users.filter((user) => user.id !== id));
-        }
+    const handleDeleteClick = (user: typeof DUMMY_USERS[0]) => {
+        setSelectedUser(user);
+        setIsDeleteOpen(true);
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-slate-800">Manajemen Pengguna</h1>
-                    <p className="text-slate-500 mt-1">Kelola data pengguna, hak akses, dan status akun.</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-blue-200 font-bold"
-                >
-                    <FiPlus size={20} />
-                    Tambah Pengguna
-                </button>
+        <div className="space-y-8">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold tracking-tight">Manajemen Pengguna</h1>
+                <p className="text-muted-foreground">Kelola data pengguna, role, dan status akun.</p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-slate-500 text-sm font-medium">Total Pengguna</p>
-                        <p className="text-3xl font-bold text-slate-800 mt-1">{users.length}</p>
-                    </div>
-                    <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><FiUsers size={24} /></div>
+            {/* Toolbar */}
+            <div className="flex items-center justify-between gap-4">
+                <div className="relative w-full md:w-[300px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                        placeholder="Cari pengguna..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1); // Reset to page 1 on search
+                        }}
+                        className="pl-9"
+                    />
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-slate-500 text-sm font-medium">Investor Aktif</p>
-                        <p className="text-3xl font-bold text-slate-800 mt-1">{users.filter(u => u.role === 'Investor' && u.status === 'Active').length}</p>
-                    </div>
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><FiCheckCircle size={24} /></div>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-slate-500 text-sm font-medium">Menunggu Verifikasi</p>
-                        <p className="text-3xl font-bold text-slate-800 mt-1">0</p>
-                    </div>
-                    <div className="p-3 bg-amber-50 text-amber-600 rounded-xl"><FiFilter size={24} /></div>
-                </div>
+                <Button onClick={() => setIsAddOpen(true)}>
+                    <Plus className="mr-2 h-4 w-4" /> Tambah Pengguna
+                </Button>
             </div>
 
-            {/* Search and Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row gap-4 justify-between items-center">
-                    <h2 className="text-lg font-bold text-slate-800">Daftar Pengguna</h2>
-                    <div className="relative w-full md:w-80">
-                        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Cari nama atau email..."
-                            className="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase text-xs font-semibold tracking-wider">
-                            <tr>
-                                <th className="p-5">Pengguna</th>
-                                <th className="p-5">Peran</th>
-                                <th className="p-5">Status</th>
-                                <th className="p-5">Tanggal Gabung</th>
-                                <th className="p-5 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filteredUsers.length > 0 ? (
-                                filteredUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="p-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-sm">
-                                                    {user.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-slate-800 text-sm">{user.name}</p>
-                                                    <p className="text-xs text-slate-500">{user.email}</p>
+            {/* Table */}
+            <div className="rounded-md border bg-white">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[50px] text-center">No</TableHead>
+                            <TableHead>Pengguna</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Aksi</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {paginatedUsers.length > 0 ? (
+                            paginatedUsers.map((user, index) => (
+                                <TableRow key={user.id}>
+                                    <TableCell className="text-center font-medium">
+                                        {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium text-sm">{user.name}</span>
+                                                <div className="flex items-center text-xs text-muted-foreground">
+                                                    <Mail className="h-3 w-3 mr-1" />
+                                                    {user.email}
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="p-5">
-                                            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${user.role === 'Admin' ? 'bg-purple-50 text-purple-700 border-purple-100' :
-                                                user.role === 'Investor' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                                                    'bg-blue-50 text-blue-700 border-blue-100'
-                                                }`}>
-                                                {user.role}
-                                            </span>
-                                        </td>
-                                        <td className="p-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`w-2 h-2 rounded-full ${user.status === 'Active' ? 'bg-green-500' : 'bg-slate-300'}`}></span>
-                                                <span className={`text-sm font-medium ${user.status === 'Active' ? 'text-green-700' : 'text-slate-500'}`}>
-                                                    {user.status === 'Active' ? 'Aktif' : 'Non-Aktif'}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="p-5 text-sm text-slate-500">
-                                            {user.joinDate}
-                                        </td>
-                                        <td className="p-5 text-right">
-                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    onClick={() => handleOpenModal(user)}
-                                                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <FiEdit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(user.id)}
-                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Hapus"
-                                                >
-                                                    <FiTrash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={5} className="p-10 text-center text-slate-500">
-                                        Tidak ada pengguna dengan kata kunci tersebut.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            {user.role}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant={user.status === "Active" ? "default" : "secondary"}
+                                            className={user.status === "Active" ? "bg-green-100 text-green-700 hover:bg-green-100" : "bg-gray-100 text-gray-700 hover:bg-gray-100"}
+                                        >
+                                            {user.status === "Active" ? "Aktif" : "Non-Aktif"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Open menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => handleEditClick(user)}>Edit Detail</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handlePasswordClick(user)}>Ubah Password</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(user)}>Hapus Akun</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center">
+                                    Tidak ada pengguna ditemukan.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between gap-4">
+                <div className="text-sm text-gray-500">
+                    Menampilkan <span className="font-medium">{Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredUsers.length)}</span> sampai <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredUsers.length)}</span> dari <span className="font-medium">{filteredUsers.length}</span> data
                 </div>
-                <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500 text-center">
-                    Menampilkan {filteredUsers.length} dari {users.length} total pengguna
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronsLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm font-medium px-2">
+                        Halaman {currentPage} dari {totalPages || 1}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronsRight className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
-                            <h3 className="font-bold text-lg text-slate-800">
-                                {editingUser ? "Edit Pengguna" : "Tambah Pengguna Baru"}
-                            </h3>
-                            <button
-                                onClick={handleCloseModal}
-                                className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition-colors"
-                            >
-                                <FiX size={20} />
-                            </button>
+            {/* --- Modals --- */}
+
+            {/* Edit Detail Modal */}
+            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit Detail Pengguna</DialogTitle>
+                        <DialogDescription>Perbarui informasi detail untuk pengguna ini.</DialogDescription>
+                    </DialogHeader>
+                    {selectedUser && (
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">Nama Lengkap</Label>
+                                <Input id="name" defaultValue={selectedUser.name} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" defaultValue={selectedUser.email} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="role">Role</Label>
+                                <Select defaultValue={selectedUser.role}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih Role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Admin">Admin</SelectItem>
+                                        <SelectItem value="Operator">Operator</SelectItem>
+                                        <SelectItem value="Investor">Investor</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="status">Status</Label>
+                                <Select defaultValue={selectedUser.status}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Active">Aktif</SelectItem>
+                                        <SelectItem value="Inactive">Non-Aktif</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsEditOpen(false)}>Batal</Button>
+                        <Button onClick={() => setIsEditOpen(false)}>Simpan Perubahan</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Contoh: John Doe"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Alamat Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="Contoh: john@example.com"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Peran (Role)</label>
-                                    <select
-                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all bg-white"
-                                        value={formData.role}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, role: e.target.value as "Admin" | "User" | "Investor" })}
-                                    >
-                                        <option value="User">User</option>
-                                        <option value="Investor">Investor</option>
-                                        <option value="Admin">Admin</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Status Akun</label>
-                                    <select
-                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all bg-white"
-                                        value={formData.status}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, status: e.target.value as "Active" | "Inactive" })}
-                                    >
-                                        <option value="Active">Aktif</option>
-                                        <option value="Inactive">Non-Aktif</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseModal}
-                                    className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all transform active:scale-95"
-                                >
-                                    {editingUser ? "Simpan Perubahan" : "Buat Pengguna"}
-                                </button>
-                            </div>
-                        </form>
+            {/* Change Password Modal */}
+            <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Ubah Password</DialogTitle>
+                        <DialogDescription>Masukkan password baru untuk pengguna <strong>{selectedUser?.name}</strong>.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-password">Password Baru</Label>
+                            <Input id="new-password" type="password" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="confirm-password">Konfirmasi Password</Label>
+                            <Input id="confirm-password" type="password" />
+                        </div>
                     </div>
-                </div>
-            )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsPasswordOpen(false)}>Batal</Button>
+                        <Button onClick={() => setIsPasswordOpen(false)}>Simpan Password</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Account Modal */}
+            <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Hapus Akun Pengguna?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tindakan ini tidak dapat dibatalkan. Akun pengguna <strong>{selectedUser?.name}</strong> ({selectedUser?.email}) akan dihapus permanen dari sistem.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={() => setIsDeleteOpen(false)}>Hapus Akun</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Add User Modal */}
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Tambah Pengguna Baru</DialogTitle>
+                        <DialogDescription>Masukkan informasi untuk menambahkan pengguna baru.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-name">Nama Lengkap</Label>
+                            <Input id="new-name" placeholder="Nama Lengkap" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-email">Email</Label>
+                            <Input id="new-email" placeholder="example@mail.com" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-role">Role</Label>
+                            <Select>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih Role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Admin">Admin</SelectItem>
+                                    <SelectItem value="Operator">Operator</SelectItem>
+                                    <SelectItem value="Investor">Investor</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-pass">Password</Label>
+                            <Input id="new-pass" type="password" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAddOpen(false)}>Batal</Button>
+                        <Button onClick={() => setIsAddOpen(false)}>Tambah Pengguna</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
+
+// --- Imports needed for modals ---
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+

@@ -21,7 +21,6 @@ export const SECTORS = [
 ];
 
 export const REGIONS = [
-    { id: "12", name: "PROVINSI SUMATERA UTARA", type: "Provinsi" },
     { id: "1201", name: "KAB. NIAS", type: "Kabupaten" },
     { id: "1202", name: "KAB. MANDAILING NATAL", type: "Kabupaten" },
     { id: "1203", name: "KAB. TAPANULI SELATAN", type: "Kabupaten" },
