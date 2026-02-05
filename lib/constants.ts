@@ -1,4 +1,4 @@
-import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, SettingsIcon, UsersIcon } from "lucide-react";
+import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, SettingsIcon, UsersIcon, Briefcase } from "lucide-react";
 import { FiActivity } from "react-icons/fi";
 
 
@@ -17,6 +17,7 @@ export const NAVIGATION_CONFIG = {
         items: [
             { name: "Dashboard Operator", href: "/operator/dashboard", icon: LayoutDashboardIcon },
             { name: "Data Kabupaten", href: "/operator/kabupaten", icon: MapIcon },
+            { name: "Data Sektor", href: "/operator/sektor", icon: Briefcase },
             { name: "Data PDRB", href: "/operator/pdrb", icon: PieChartIcon },
         ]
     },
@@ -24,10 +25,11 @@ export const NAVIGATION_CONFIG = {
         name: "Area Admin",
         items: [
             { name: "Ringkasan", href: "/admin/dashboard", icon: LayoutDashboardIcon },
-            { name: "Pengguna", href: "/admin/dashboard/users", icon: UsersIcon },
-            { name: "Investasi", href: "/admin/dashboard/invest", icon: PieChartIcon },
-            { name: "Data Peta", href: "/maps", icon: MapIcon },
-            { name: "Pengaturan", href: "/admin/dashboard/settings", icon: SettingsIcon },
+            { name: "Data Pengguna", href: "/admin/dashboard/users", icon: UsersIcon },
+            { name: "Data Kabupaten", href: "/admin/dashboard/kabupaten", icon: MapIcon },
+            { name: "Data Sektor", href: "/admin/dashboard/sektor", icon: Briefcase },
+            { name: "Data PDRB", href: "/admin/dashboard/pdrb", icon: PieChartIcon },
         ]
     }
 }
+

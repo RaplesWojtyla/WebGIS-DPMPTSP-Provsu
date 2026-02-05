@@ -55,7 +55,7 @@ const ProtectedSidebar = ({ role, user }: ProtectedSidebarProps) => {
     )
 
     const UserProfile = () => (
-        <Link href="/profile" className="flex items-center gap-3 p-2.5 mb-2 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-blue-100 transition-all duration-200 cursor-pointer w-full group">
+        <Link href="/admin/dashboard/profile" className="flex items-center gap-3 p-2.5 mb-2 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-blue-100 transition-all duration-200 cursor-pointer w-full group">
             <Avatar className="size-10 border border-blue-100 shadow-sm group-hover:scale-105 transition-transform duration-200">
                 <AvatarImage src={user?.image || ''} />
                 <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
