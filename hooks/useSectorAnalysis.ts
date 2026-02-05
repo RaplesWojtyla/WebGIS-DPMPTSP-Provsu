@@ -52,7 +52,7 @@ export function useSectorAnalysis(sectorName: string, initialRegion: string = "a
         } else if (!selectedYear && defaultYear) {
             setSelectedYear(defaultYear)
         }
-    }, [initialYearStr, defaultYear])
+    }, [initialYearStr, defaultYear, selectedYear])
 
     // Derived values
     const startYear = years[0]

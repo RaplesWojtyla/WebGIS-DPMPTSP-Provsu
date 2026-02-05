@@ -88,34 +88,36 @@ export default function MapSidePanel({
                             {/* Sector Filters */}
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-bold text-blue-900 uppercase tracking-wider">Sektor Potensi</Label>
-                                <div className="grid grid-cols-1 gap-1.5">
-                                    {[
-                                        { id: "pariwisata", label: "Pariwisata" },
-                                        { id: "industri", label: "Industri & Manufaktur" },
-                                        { id: "pertanian", label: "Pertanian & Perkebunan" },
-                                        { id: "energi", label: "Energi & SDM" },
-                                        { id: "infrastruktur", label: "Infrastruktur" },
-                                        { id: "perdagangan", label: "Perdagangan & Jasa" },
-                                        { id: "kelautan", label: "Kelautan & Perikanan" },
-                                        { id: "pertambangan", label: "Pertambangan & Mineral" },
-                                        { id: "teknologi", label: "Teknologi & Informasi" },
-                                        { id: "kesehatan", label: "Kesehatan" },
-                                        { id: "pendidikan", label: "Pendidikan" }
-                                    ].map((sector) => (
-                                        <div key={sector.id} className="flex items-center space-x-3 p-1.5 rounded-md hover:bg-gray-50 transition-colors">
-                                            <Checkbox
-                                                id={sector.id}
-                                                className="data-[state=checked]:bg-blue-900 data-[state=checked]:border-blue-900 border-gray-300 h-4 w-4"
-                                            />
-                                            <label
-                                                htmlFor={sector.id}
-                                                className="text-xs font-medium leading-none text-gray-700 cursor-pointer flex-1"
-                                            >
-                                                {sector.label}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
+                                <ScrollArea className="h-72 pr-4">
+                                    <div className="grid grid-cols-1 gap-1.5">
+                                        {[
+                                            { id: "pariwisata", label: "Pariwisata" },
+                                            { id: "industri", label: "Industri & Manufaktur" },
+                                            { id: "pertanian", label: "Pertanian & Perkebunan" },
+                                            { id: "energi", label: "Energi & SDM" },
+                                            { id: "infrastruktur", label: "Infrastruktur" },
+                                            { id: "perdagangan", label: "Perdagangan & Jasa" },
+                                            { id: "kelautan", label: "Kelautan & Perikanan" },
+                                            { id: "pertambangan", label: "Pertambangan & Mineral" },
+                                            { id: "teknologi", label: "Teknologi & Informasi" },
+                                            { id: "kesehatan", label: "Kesehatan" },
+                                            { id: "pendidikan", label: "Pendidikan" }
+                                        ].map((sector) => (
+                                            <div key={sector.id} className="flex items-center space-x-3 p-1.5 rounded-md hover:bg-gray-50 transition-colors">
+                                                <Checkbox
+                                                    id={sector.id}
+                                                    className="data-[state=checked]:bg-blue-900 data-[state=checked]:border-blue-900 border-gray-300 h-4 w-4"
+                                                />
+                                                <label
+                                                    htmlFor={sector.id}
+                                                    className="text-xs font-medium leading-none text-gray-700 cursor-pointer flex-1"
+                                                >
+                                                    {sector.label}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
                             </div>
                         </div>
                     </ScrollArea>

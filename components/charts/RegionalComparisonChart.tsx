@@ -17,6 +17,47 @@ interface RegionalComparisonChartProps {
     hideHeader?: boolean
 }
 
+
+
+interface CustomTooltipProps {
+    active?: boolean
+    payload?: {
+        value: number
+        dataKey: string
+        payload: {
+            region: string
+            value: number
+        }
+    }[]
+    label?: string
+    highlightedRegion?: string
+    formatCurrency: (val: number) => string
+}
+
+const CustomTooltip = ({ active, payload, label, highlightedRegion, formatCurrency }: CustomTooltipProps) => {
+    if (active && payload && payload.length) {
+        // Find the correct payload item for 'value'
+        const dataItem = payload.find((p) => p.dataKey === "value")
+        if (!dataItem) return null
+
+        const isHighlighted = highlightedRegion && label === highlightedRegion
+
+        // Use explicit inline styles for background and colors to avoid 'lab' parsing errors
+        return (
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 50 }}>
+                <p style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: isHighlighted ? '#c2410c' : '#1e293b' }}>{label}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '9999px', backgroundColor: isHighlighted ? '#f97316' : '#3b82f6' }} />
+                    <p style={{ color: '#475569', fontWeight: 500, fontSize: '14px' }}>
+                        Investasi: <span style={{ fontWeight: 'bold', color: isHighlighted ? '#ea580c' : '#2563eb' }}>{formatCurrency(dataItem.value)}</span>
+                    </p>
+                </div>
+            </div>
+        )
+    }
+    return null
+}
+
 export function RegionalComparisonChart({
     data,
     title = "Perbandingan Per Daerah",
@@ -46,42 +87,7 @@ export function RegionalComparisonChart({
             .replace("Kota ", "Kota ")
     }
 
-    interface CustomTooltipProps {
-        active?: boolean
-        payload?: {
-            value: number
-            dataKey: string
-            payload: {
-                region: string
-                value: number
-            }
-        }[]
-        label?: string
-    }
 
-    const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-        if (active && payload && payload.length) {
-            // Find the correct payload item for 'value'
-            const dataItem = payload.find((p) => p.dataKey === "value")
-            if (!dataItem) return null
-
-            const isHighlighted = highlightedRegion && label === highlightedRegion
-
-            // Use explicit inline styles for background and colors to avoid 'lab' parsing errors
-            return (
-                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 50 }}>
-                    <p style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: isHighlighted ? '#c2410c' : '#1e293b' }}>{label}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '9999px', backgroundColor: isHighlighted ? '#f97316' : '#3b82f6' }} />
-                        <p style={{ color: '#475569', fontWeight: 500, fontSize: '14px' }}>
-                            Investasi: <span style={{ fontWeight: 'bold', color: isHighlighted ? '#ea580c' : '#2563eb' }}>{formatCurrency(dataItem.value)}</span>
-                        </p>
-                    </div>
-                </div>
-            )
-        }
-        return null
-    }
 
     return (
         <Card className={`col-span-1 md:col-span-2 ${className || ''}`} style={{ boxShadow: 'none', border: 'none', background: 'transparent' }}>
@@ -143,7 +149,8 @@ export function RegionalComparisonChart({
                                 }}
                             />
 
-                            {/* Y Axis 0: Value (Hidden/Subtle) */}
+
+
                             <YAxis
                                 tickFormatter={formatCurrency}
                                 stroke="#94a3b8"
@@ -160,7 +167,15 @@ export function RegionalComparisonChart({
                                 domain={[0, maxValue]}
                             />
 
-                            <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc', opacity: 0.5 }} />
+                            <Tooltip
+                                content={
+                                    <CustomTooltip
+                                        formatCurrency={formatCurrency}
+                                        highlightedRegion={highlightedRegion}
+                                    />
+                                }
+                                cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+                            />
 
                             {/* Background Track Bar */}
                             <Bar
