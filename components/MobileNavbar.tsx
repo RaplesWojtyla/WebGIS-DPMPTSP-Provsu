@@ -19,8 +19,14 @@ import {
 import { signOut } from "@/lib/actions/auth.actions"
 import { useRouter } from "next/navigation"
 
+interface UserData {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+}
+
 interface MobileMenuProps {
-    user: any
+    user: UserData | null
     isTransparent: boolean
 }
 

@@ -23,7 +23,6 @@ const MobileMenu = dynamic(() => import("./MobileNavbar"), { ssr: false })
 export function Navbar({ user }: { user: User | null }) {
 	// const isMobile = useIsMobile()
 	const pathname = usePathname()
-	const router = useRouter()
 	const [isScrolled, setIsScrolled] = React.useState(false)
 
 	const isHome = pathname === "/"
