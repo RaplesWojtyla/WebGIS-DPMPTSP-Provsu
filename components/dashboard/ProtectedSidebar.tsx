@@ -2,13 +2,13 @@
 
 import { signOut } from "@/lib/actions/auth.actions"
 import { NAVIGATION_CONFIG } from "@/lib/constants"
-import { LogOutIcon } from "lucide-react"
+import { LogOutIcon, HomeIcon, BriefcaseIcon, MapIcon, InfoIcon, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 
-import { Drawer, DrawerContent, DrawerTrigger, DrawerDescription, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer"
 import { Menu } from "lucide-react"
 import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -97,11 +97,35 @@ const ProtectedSidebar = ({ role, user }: ProtectedSidebarProps) => {
                     <UserProfile />
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">
-                        {config.name}
+                <nav className="flex-1 p-4 space-y-6 overflow-y-auto scrollbar-hide">
+                    {/* Dashboard Menu */}
+                    <div>
+                        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
+                            {config.name}
+                        </div>
+                        <NavLinks />
                     </div>
-                    <NavLinks />
+
+                    {/* Public Menu */}
+                    <div>
+                        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
+                            Menu Utama
+                        </div>
+                        <div className="space-y-1">
+                            <Link href="/" className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:translate-x-1 transition-all duration-200">
+                                <HomeIcon className="size-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                <span>Beranda</span>
+                            </Link>
+                            <Link href="/invest" className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:translate-x-1 transition-all duration-200">
+                                <BriefcaseIcon className="size-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                <span>Sektor Unggulan</span>
+                            </Link>
+                            <Link href="/maps" className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:translate-x-1 transition-all duration-200">
+                                <MapIcon className="size-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                <span>Peta Daerah</span>
+                            </Link>
+                        </div>
+                    </div>
                 </nav>
 
                 <div className="p-4 mt-auto border-t border-blue-50 bg-white/50 backdrop-blur-sm">
@@ -122,39 +146,104 @@ const ProtectedSidebar = ({ role, user }: ProtectedSidebarProps) => {
                     <Logo />
                 </Link>
 
-                <Drawer>
+                <Drawer direction="left">
                     <DrawerTrigger asChild>
                         <Button variant="ghost" size="icon">
                             <Menu className="w-6 h-6" />
                         </Button>
                     </DrawerTrigger>
-                    <DrawerContent className="h-[85vh] flex flex-col">
-                        <DrawerHeader className="text-left border-b pb-4">
-                            <DrawerTitle className="font-bold text-xl flex items-center gap-2">
-                                <Logo />
-                            </DrawerTitle>
-                            <div className="mt-4 pl-1">
-                                <UserProfile />
+                    <DrawerContent className="h-full w-[85%] max-w-sm rounded-r-2xl border-r-0 outline-none flex flex-col">
+                        <DrawerHeader className="border-b pb-6 pt-6 px-6">
+                            <DrawerTitle className="sr-only">Navigasi Mobile</DrawerTitle>
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <Image
+                                        src="/DPMPTSP_Provsu.png"
+                                        alt="Logo"
+                                        className="h-10 w-auto"
+                                        width={100}
+                                        height={40}
+                                    />
+                                    <div className="flex flex-col items-start">
+                                        <span className="text-sm font-bold text-blue-950 leading-tight">DPMPTSP</span>
+                                        <span className="text-xs font-medium text-blue-600/80">Sumatera Utara</span>
+                                    </div>
+                                </div>
+                                <DrawerClose asChild>
+                                    <Button variant="ghost" size="icon" className="md:hidden text-gray-400 hover:text-gray-900">
+                                        <ChevronRight className="rotate-180 size-6" />
+                                    </Button>
+                                </DrawerClose>
                             </div>
-                            <DrawerDescription className="sr-only">
-                                Menu Navigasi
-                            </DrawerDescription>
+
+                            {/* User Profile Header (Custom for Mobile) */}
+                            <Link href="/profile" className="flex items-center gap-4 pt-2 pb-2 hover:bg-blue-50/50 rounded-xl px-2 -mx-2 transition-colors group">
+                                <Avatar className="size-12 border border-gray-100 shadow-sm group-hover:border-blue-200 transition-colors">
+                                    <AvatarImage src={user?.image || ''} />
+                                    <AvatarFallback className="bg-blue-600 text-white font-medium text-lg">{user?.name?.[0]?.toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col overflow-hidden">
+                                    <span className="font-bold text-base text-gray-900 truncate group-hover:text-blue-700 transition-colors">{user?.name}</span>
+                                    <span className="text-sm text-gray-500 truncate font-medium group-hover:text-blue-500/80 transition-colors">{user?.email}</span>
+                                </div>
+                            </Link>
                         </DrawerHeader>
-                        <div className="p-4 flex-1 overflow-y-auto">
-                            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">
-                                Menu Navigasi
-                            </div>
-                            <NavLinks />
+
+                        <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-hide">
+                            <nav className="flex flex-col space-y-8">
+                                {/* Dashboard Menu (AKUN SAYA) */}
+                                <div>
+                                    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        AKUN SAYA
+                                    </div>
+                                    <div className="space-y-1">
+                                        {config.items.map(item => {
+                                            const Icon = item.icon
+                                            const isActive = pathname === item.href
+                                            return (
+                                                <Link
+                                                    key={item.href}
+                                                    href={item.href}
+                                                    className={`flex items-center gap-3 px-0 py-2 text-sm font-medium transition-colors ${isActive ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
+                                                >
+                                                    <Icon className={`size-5 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-500'}`} />
+                                                    <span>{item.name}</span>
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Public Menu (MENU UTAMA) */}
+                                <div>
+                                    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        MENU UTAMA
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Link href="/" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                                            <HomeIcon className="size-5 text-gray-400" /> <span>Beranda</span>
+                                        </Link>
+                                        <Link href="/invest" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                                            <BriefcaseIcon className="size-5 text-gray-400" /> <span>Sektor Unggulan</span>
+                                        </Link>
+                                        <Link href="/maps" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                                            <MapIcon className="size-5 text-gray-400" /> <span>Peta Daerah</span>
+                                        </Link>
+                                        <Link href="#" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                                            <InfoIcon className="size-5 text-gray-400" /> <span>Informasi</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </nav>
                         </div>
-                        <DrawerFooter className="p-4 border-t border-blue-50">
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700 h-11 rounded-xl"
+
+                        <DrawerFooter className="border-t pb-6 pt-4 px-6 bg-white">
+                            <button
                                 onClick={handleSignOut}
+                                className="flex items-center justify-center gap-2 w-full h-11 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors"
                             >
-                                <LogOutIcon className="size-4" />
-                                <span className="font-medium">Keluar Akun</span>
-                            </Button>
+                                <LogOutIcon className="size-4" /> Keluar Akun
+                            </button>
                         </DrawerFooter>
                     </DrawerContent>
                 </Drawer>
