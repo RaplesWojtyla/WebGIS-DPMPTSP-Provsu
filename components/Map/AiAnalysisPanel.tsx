@@ -31,6 +31,7 @@ const AiAnalysisPanel = ({
                         size="icon"
                         className="h-6 w-6 text-blue-900 hover:bg-blue-50 hover:text-blue-700 mr-1"
                         onClick={onClose}
+                        aria-label="Kembali"
                     >
                         <ArrowLeft className="h-4 w-4 rotate-180" />
                     </Button>

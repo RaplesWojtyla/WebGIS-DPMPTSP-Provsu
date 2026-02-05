@@ -148,7 +148,7 @@ const ProtectedSidebar = ({ role, user }: ProtectedSidebarProps) => {
 
                 <Drawer direction="left">
                     <DrawerTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" aria-label="Toggle navigation menu">
                             <Menu className="w-6 h-6" />
                         </Button>
                     </DrawerTrigger>
@@ -170,7 +170,7 @@ const ProtectedSidebar = ({ role, user }: ProtectedSidebarProps) => {
                                     </div>
                                 </div>
                                 <DrawerClose asChild>
-                                    <Button variant="ghost" size="icon" className="md:hidden text-gray-400 hover:text-gray-900">
+                                    <Button variant="ghost" size="icon" className="md:hidden text-gray-400 hover:text-gray-900" aria-label="Close navigation menu">
                                         <ChevronRight className="rotate-180 size-6" />
                                     </Button>
                                 </DrawerClose>

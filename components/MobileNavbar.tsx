@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, ChevronRight, Home, Briefcase, Map, Info, LayoutDashboard, User, LogIn, LogOut } from "lucide-react"
+import { Menu, ChevronRight, Home, Briefcase, Map as MapIcon, Info, LayoutDashboard, User, LogIn, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -113,7 +113,7 @@ export default function MobileMenu({ user, isTransparent }: MobileMenuProps) {
                                 <Briefcase className="size-5 text-gray-400" /> Sektor Unggulan
                             </Link>
                             <Link href="/maps" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                                <Map className="size-5 text-gray-400" /> Peta Daerah
+                                <MapIcon className="size-5 text-gray-400" /> Peta Daerah
                             </Link>
                             <Link href="#" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                                 <Info className="size-5 text-gray-400" /> Informasi
