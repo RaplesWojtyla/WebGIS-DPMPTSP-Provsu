@@ -132,7 +132,7 @@ export function Navbar({ user }: { user: User | null }) {
 							</NavigationMenuItem>
 							<NavigationMenuItem>
 								<NavigationMenuLink asChild>
-									<Link href="#" className={cn(navigationMenuTriggerStyle(), triggerClass, "bg-transparent")}>
+									<Link href="/info" className={cn(navigationMenuTriggerStyle(), triggerClass, "bg-transparent", pathname === "/info" && activeLinkClass)}>
 										Informasi
 									</Link>
 								</NavigationMenuLink>
