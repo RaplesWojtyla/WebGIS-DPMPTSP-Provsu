@@ -1,4 +1,4 @@
-import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, SettingsIcon, UsersIcon, Briefcase } from "lucide-react";
+import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, UsersIcon, Briefcase } from "lucide-react";
 import { FiActivity } from "react-icons/fi";
 
 

@@ -42,7 +42,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 // Adjusted import path for constants
-import { SECTORS, REGIONS, YEARS, STORAGE_KEY_PREFIX, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
+import { SECTORS, REGIONS, YEARS, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
