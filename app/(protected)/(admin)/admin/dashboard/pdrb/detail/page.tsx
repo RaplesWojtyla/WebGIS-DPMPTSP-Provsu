@@ -12,8 +12,14 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { ArrowLeft} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { SECTORS, REGIONS, STORAGE_KEY_PREFIX, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
+
+// Initial DB (Mock) - Same as in admin/dashboard/pdrb/page.tsx
+// In a real app this would be in a consistent shared state or DB
+const INITIAL_DB: Record<string, PdrbValue[]> = {
+    "2023-1275": SECTORS.map((_, idx) => ({ sectorIndex: idx, value: Math.random() * 1000000 }))
+};
 
 function PdrbDetailContent() {
     const router = useRouter();
@@ -25,12 +31,6 @@ function PdrbDetailContent() {
     const [isLoading, setIsLoading] = useState(true);
 
     const region = REGIONS.find(r => r.id === regionId);
-
-    // Initial DB (Mock) - Same as in admin/dashboard/pdrb/page.tsx
-    // In a real app this would be in a consistent shared state or DB
-    const INITIAL_DB: Record<string, PdrbValue[]> = {
-        "2023-1275": SECTORS.map((_, idx) => ({ sectorIndex: idx, value: Math.random() * 1000000 }))
-    };
 
     useEffect(() => {
         if (!regionId || !year) {
@@ -82,7 +82,7 @@ function PdrbDetailContent() {
             }
         }
         setIsLoading(false);
-    }, [regionId, year, router]);
+    }, [regionId, year, router, INITIAL_DB]);
 
     const formatCurrency = (val: number) => {
         return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 2 }).format(val);
@@ -104,7 +104,7 @@ function PdrbDetailContent() {
                         <ArrowLeft className="h-6 w-6 text-gray-600" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
                             Detail Data PDRB
                         </h1>
                         <p className="text-gray-500 mt-1 flex items-center gap-2">

@@ -42,7 +42,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 // Adjusted import path for constants
-import { SECTORS, REGIONS, YEARS, STORAGE_KEY_PREFIX, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
+import { SECTORS, REGIONS, YEARS, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -61,7 +61,7 @@ export default function PdrbAdminPage() {
 
 
     // Local state to force re-render when returning from form and to hold merged data
-    const [dataMap, setDataMap] = useState<Record<string, PdrbValue[]>>({ ...INITIAL_DB });
+    const [dataMap] = useState<Record<string, PdrbValue[]>>(INITIAL_DB);
 
     // Load data from localStorage on mount and when year changes
     // NOTE: User requested dummy data for now, but keeping this structure for potential future use or consistency with operator page logic
@@ -287,7 +287,7 @@ export default function PdrbAdminPage() {
         <div className="space-y-8">
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight">Data PDRB Wilayah </h1>
-                <p className="text-muted-foreground text-gray-500">Kelola data PDRB per sektor untuk setiap Kabupaten/Kota.</p>
+                <p className="text-gray-500">Kelola data PDRB per sektor untuk setiap Kabupaten/Kota.</p>
             </div>
 
             {/* Toolbar */}

@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { LogInIcon } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
 	NavigationMenu,
@@ -132,7 +132,7 @@ export function Navbar({ user }: { user: User | null }) {
 							</NavigationMenuItem>
 							<NavigationMenuItem>
 								<NavigationMenuLink asChild>
-									<Link href="#" className={cn(navigationMenuTriggerStyle(), triggerClass, "bg-transparent")}>
+									<Link href="/info" className={cn(navigationMenuTriggerStyle(), triggerClass, "bg-transparent", pathname === "/info" && activeLinkClass)}>
 										Informasi
 									</Link>
 								</NavigationMenuLink>

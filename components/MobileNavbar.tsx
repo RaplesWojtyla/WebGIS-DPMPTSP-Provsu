@@ -115,7 +115,7 @@ export default function MobileMenu({ user, isTransparent }: MobileMenuProps) {
                             <Link href="/maps" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                                 <Map className="size-5 text-gray-400" /> Peta Daerah
                             </Link>
-                            <Link href="#" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                            <Link href="/info" className="flex items-center gap-3 px-0 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                                 <Info className="size-5 text-gray-400" /> Informasi
                             </Link>
                         </div>

@@ -5,9 +5,6 @@ import {
     Search,
     FileText,
     FileSpreadsheet,
-    Plus,
-    Pencil,
-    Trash,
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
@@ -23,15 +20,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from "@/components/ui/dialog";
+
 import { toast } from "sonner"; // Assuming sonner is installed as per package.json
 
 // Initial Mock Data
@@ -127,7 +116,7 @@ type DataItem = typeof INITIAL_DATA[0];
 const ITEMS_PER_PAGE = 5;
 
 export default function KabupatenPage() {
-    const [data, setData] = useState<DataItem[]>(INITIAL_DATA);
+    const [data] = useState<DataItem[]>(INITIAL_DATA);
     const [searchTerm, setSearchTerm] = useState("");
 
     // Filters
@@ -137,24 +126,6 @@ export default function KabupatenPage() {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-
-    // Dialog State
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [deletingId, setDeletingId] = useState<string | null>(null);
-
-    // Form State
-    const [formData, setFormData] = useState<Omit<DataItem, "id" | "no">>({
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "",
-        kode_kabupaten: "",
-        nama_kecamatan: "",
-        kode_kecamatan: "",
-        nama_desa: "",
-        kode_desa: "",
-    });
 
     // Filter Logic
     const filteredData = useMemo(() => {
@@ -208,78 +179,6 @@ export default function KabupatenPage() {
     }, [data, selectedKabupaten, selectedKecamatan]);
 
 
-    // CRUD Handlers
-    const handleAddNew = () => {
-        setEditingId(null);
-        setFormData({
-            nama_provinsi: "SUMATERA UTARA",
-            kode_provinsi: "12",
-            nama_kabupaten: "",
-            kode_kabupaten: "",
-            nama_kecamatan: "",
-            kode_kecamatan: "",
-            nama_desa: "",
-            kode_desa: "",
-        });
-        setIsDialogOpen(true);
-    };
-
-    const handleEdit = (item: DataItem) => {
-        setEditingId(item.id);
-        setFormData({
-            nama_provinsi: item.nama_provinsi,
-            kode_provinsi: item.kode_provinsi,
-            nama_kabupaten: item.nama_kabupaten,
-            kode_kabupaten: item.kode_kabupaten,
-            nama_kecamatan: item.nama_kecamatan,
-            kode_kecamatan: item.kode_kecamatan,
-            nama_desa: item.nama_desa,
-            kode_desa: item.kode_desa,
-        });
-        setIsDialogOpen(true);
-    };
-
-    const handleDeleteClick = (id: string) => {
-        setDeletingId(id);
-        setIsDeleteDialogOpen(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        if (deletingId) {
-            setData((prev) => prev.filter((item) => item.id !== deletingId));
-            toast.success("Data berhasil dihapus");
-            setIsDeleteDialogOpen(false);
-            setDeletingId(null);
-        }
-    };
-
-    const handleSave = () => {
-        if (editingId) {
-            // Update
-            setData((prev) =>
-                prev.map((item) =>
-                    item.id === editingId ? { ...item, ...formData } : item
-                )
-            );
-            toast.success("Data berhasil diperbarui");
-        } else {
-            // Create
-            const newId = Math.random().toString(36).substr(2, 9);
-            const newNo = data.length > 0 ? Math.max(...data.map((d) => d.no)) + 1 : 1;
-            setData((prev) => [
-                ...prev,
-                { id: newId, no: newNo, ...formData } as DataItem,
-            ]);
-            toast.success("Data berhasil ditambahkan");
-        }
-        setIsDialogOpen(false);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
     // Export Handlers
     const downloadCSV = () => {
         const headers = [
@@ -331,7 +230,7 @@ export default function KabupatenPage() {
             {/* Header */}
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900">Data Wilayah Sumatera Utara</h1>
-                <p className="text-muted-foreground text-gray-500">Kelola data wilayah administratif provinsi hingga desa.</p>
+                <p className="text-gray-500">Kelola data wilayah administratif provinsi hingga desa.</p>
             </div>
 
             {/* Toolbar */}
@@ -348,9 +247,6 @@ export default function KabupatenPage() {
                             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         />
                     </div>
-                    <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700 text-white">
-                        <Plus className="mr-2 h-4 w-4" /> Tambah Data
-                    </Button>
                 </div>
 
                 {/* Bottom Row: Filters & Exports */}
@@ -416,16 +312,6 @@ export default function KabupatenPage() {
                                         <td className="px-6 py-4 text-gray-500 font-mono text-xs">{item.kode_kecamatan}</td>
                                         <td className="px-6 py-4 text-gray-700">{item.nama_desa}</td>
                                         <td className="px-6 py-4 text-gray-500 font-mono text-xs">{item.kode_desa}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex justify-center gap-2">
-                                                <Button variant="ghost" size="icon" onClick={() => handleEdit(item)} className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(item.id)} className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50">
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </td>
                                     </tr>
                                 ))
                             ) : (
@@ -498,61 +384,6 @@ export default function KabupatenPage() {
                     </div>
                 </div>
             </div>
-
-            {/* Create/Edit Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>{editingId ? "Edit Data Wilayah" : "Tambah Data Wilayah"}</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Kabupaten</Label>
-                            <Input name="nama_kabupaten" value={formData.nama_kabupaten} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: KAB. DELI SERDANG" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Kode Kab</Label>
-                            <Input name="kode_kabupaten" value={formData.kode_kabupaten} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: 12.07" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Kecamatan</Label>
-                            <Input name="nama_kecamatan" value={formData.nama_kecamatan} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: Percut Sei Tuan" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Kode Kec</Label>
-                            <Input name="kode_kecamatan" value={formData.kode_kecamatan} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: 12.07.02" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Desa</Label>
-                            <Input name="nama_desa" value={formData.nama_desa} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: Bandar Klippa" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Kode Desa</Label>
-                            <Input name="kode_desa" value={formData.kode_desa} onChange={handleInputChange} className="col-span-3" placeholder="Contoh: 12.07.02.2005" />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Batal</Button>
-                        <Button type="submit" onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">Simpan</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="sm:max-w-sm">
-                    <DialogHeader>
-                        <DialogTitle>Hapus Data?</DialogTitle>
-                        <div className="text-sm text-muted-foreground">
-                            Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
-                        </div>
-                    </DialogHeader>
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Batal</Button>
-                        <Button variant="destructive" onClick={handleDeleteConfirm}>Hapus</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
