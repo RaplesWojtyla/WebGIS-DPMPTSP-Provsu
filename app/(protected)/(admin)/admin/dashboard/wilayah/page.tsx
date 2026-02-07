@@ -126,12 +126,32 @@ const INITIAL_FLAT_DATA = [
     },
 ];
 
+// Types
+interface FlatWilayahData {
+    id: string;
+    nama_provinsi: string;
+    kode_provinsi: string;
+    nama_kabupaten: string;
+    kode_kabupaten: string;
+    nama_kecamatan: string;
+    kode_kecamatan: string;
+    nama_desa: string;
+    kode_desa: string;
+    [key: string]: string; // Index signature for dynamic access
+}
+
+interface CommonItem {
+    code: string;
+    name: string;
+    [key: string]: any;
+}
+
 // Helper to extract unique items
-const extractUnique = (data: any[], key: string, labelKey: string, extraKeys: string[] = []) => {
-    const map = new Map();
+const extractUnique = (data: FlatWilayahData[], key: string, labelKey: string, extraKeys: string[] = []): CommonItem[] => {
+    const map = new Map<string, CommonItem>();
     data.forEach(item => {
         if (!map.has(item[key])) {
-            const obj: any = { code: item[key], name: item[labelKey] };
+            const obj: CommonItem = { code: item[key], name: item[labelKey] };
             extraKeys.forEach(k => {
                 obj[k] = item[k];
             });
@@ -165,7 +185,7 @@ export default function AdminWilayahPage() {
     // Dialog States
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<any>(null);
+    const [editingItem, setEditingItem] = useState<CommonItem | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     // Form Data
@@ -218,7 +238,7 @@ export default function AdminWilayahPage() {
         setIsDialogOpen(true);
     };
 
-    const handleEdit = (item: any) => {
+    const handleEdit = (item: CommonItem) => {
         setEditingItem(item);
         if (activeTab === "kabupaten") {
             setFormState({ code: item.code, name: item.name, parentCode: "", grandParentCode: "" });
@@ -742,7 +762,7 @@ const TableActions = ({ onEdit, onDelete }: { onEdit: () => void, onDelete: () =
 );
 
 // Reusable Table Component
-const Table = ({ columns, data }: { columns: string[], data: any[][] }) => (
+const Table = ({ columns, data }: { columns: string[], data: (string | number | React.ReactNode)[][] }) => (
     <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">

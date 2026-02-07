@@ -12,7 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { ArrowLeft} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { SECTORS, REGIONS, STORAGE_KEY_PREFIX, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
 
 function PdrbDetailContent() {
@@ -82,7 +82,7 @@ function PdrbDetailContent() {
             }
         }
         setIsLoading(false);
-    }, [regionId, year, router]);
+    }, [regionId, year, router, INITIAL_DB]);
 
     const formatCurrency = (val: number) => {
         return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 2 }).format(val);
@@ -104,7 +104,7 @@ function PdrbDetailContent() {
                         <ArrowLeft className="h-6 w-6 text-gray-600" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
                             Detail Data PDRB
                         </h1>
                         <p className="text-gray-500 mt-1 flex items-center gap-2">

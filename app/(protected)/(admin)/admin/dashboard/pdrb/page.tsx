@@ -61,7 +61,7 @@ export default function PdrbAdminPage() {
 
 
     // Local state to force re-render when returning from form and to hold merged data
-    const [dataMap, setDataMap] = useState<Record<string, PdrbValue[]>>({ ...INITIAL_DB });
+    const [dataMap] = useState<Record<string, PdrbValue[]>>(INITIAL_DB);
 
     // Load data from localStorage on mount and when year changes
     // NOTE: User requested dummy data for now, but keeping this structure for potential future use or consistency with operator page logic
