@@ -58,9 +58,15 @@ export function Regulations() {
                                 <div className="p-3 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
                                     <FileText className="w-6 h-6 text-blue-600" />
                                 </div>
-                                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-blue-600">
+                                <a
+                                    href={item.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition-colors"
+                                    aria-label={`Download ${item.title}`}
+                                >
                                     <Download className="w-5 h-5" />
-                                </Button>
+                                </a>
                             </div>
                             <div className="space-y-2 mb-auto">
                                 <h3 className="font-semibold text-gray-900 leading-tight group-hover:text-blue-700 transition-colors">

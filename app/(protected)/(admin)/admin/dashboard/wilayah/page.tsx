@@ -132,7 +132,9 @@ const extractUnique = (data: any[], key: string, labelKey: string, extraKeys: st
     data.forEach(item => {
         if (!map.has(item[key])) {
             const obj: any = { code: item[key], name: item[labelKey] };
-            extraKeys.forEach(k => obj[k] = item[k]);
+            extraKeys.forEach(k => {
+                obj[k] = item[k];
+            });
             map.set(item[key], obj);
         }
     });
@@ -259,16 +261,54 @@ export default function AdminWilayahPage() {
         toast.success("Data berhasil dihapus");
         setIsDeleteDialogOpen(false);
         setDeletingId(null);
+        setCurrentPage(1); // Reset pagination after delete
     };
 
     const handleSave = () => {
-        if (activeTab === "kabupaten") {
+        // Validation
+        if (!formState.code.trim() || !formState.name.trim()) {
+            toast.error("Kode dan Nama wajib diisi");
+            return;
+        }
+
+        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab;
+
+        // Check for duplicates
+        if (effectiveTab === "kabupaten") {
+            const exists = kabupatens.some(k => k.code === formState.code && (!editingItem || editingItem.code !== formState.code));
+            if (exists) {
+                toast.error("Kode Kabupaten sudah ada");
+                return;
+            }
+        } else if (effectiveTab === "kecamatan") {
+            if (!formState.parentCode) {
+                toast.error("Kabupaten wajib dipilih");
+                return;
+            }
+            const exists = kecamatans.some(k => k.code === formState.code && (!editingItem || editingItem.code !== formState.code));
+            if (exists) {
+                toast.error("Kode Kecamatan sudah ada");
+                return;
+            }
+        } else { // desa
+            if (!formState.parentCode || !formState.grandParentCode) {
+                toast.error("Kabupaten dan Kecamatan wajib dipilih");
+                return;
+            }
+            const exists = desas.some(d => d.code === formState.code && (!editingItem || editingItem.code !== formState.code));
+            if (exists) {
+                toast.error("Kode Desa sudah ada");
+                return;
+            }
+        }
+
+        if (effectiveTab === "kabupaten") {
             if (editingItem) {
                 setKabupatens(prev => prev.map(k => k.code === editingItem.code ? { ...k, name: formState.name, code: formState.code } : k));
             } else {
                 setKabupatens(prev => [...prev, { code: formState.code, name: formState.name, nama_provinsi: "SUMATERA UTARA", kode_provinsi: "12" }]);
             }
-        } else if (activeTab === "kecamatan") {
+        } else if (effectiveTab === "kecamatan") {
             const newItem = {
                 code: formState.code,
                 name: formState.name,
@@ -362,14 +402,33 @@ export default function AdminWilayahPage() {
 
     const downloadCSV = () => {
         const { headers, data, filename } = getExportData();
-        const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + data.map(e => e.join(",")).join("\n");
-        const encodedUri = encodeURI(csvContent);
+
+        // Helper to escape CSV cells
+        const escapeCell = (cell: any) => {
+            if (cell === null || cell === undefined) return "";
+            let str = String(cell);
+            // Sanitize injection
+            if (/^[=+\-@]/.test(str)) {
+                str = "'" + str;
+            }
+            // Escape quotes and wrap in quotes
+            return `"${str.replace(/"/g, '""')}"`;
+        };
+
+        const csvContent = [
+            headers.map(escapeCell).join(","),
+            ...data.map(row => row.map(escapeCell).join(","))
+        ].join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", `${filename}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
     const downloadPDF = () => {
@@ -500,7 +559,10 @@ export default function AdminWilayahPage() {
                             <Input
                                 placeholder={`Cari ${activeTab}...`}
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1); // Reset pagination on search
+                                }}
                                 className="pl-9 bg-white"
                             />
                         </div>
@@ -654,7 +716,7 @@ export default function AdminWilayahPage() {
                         <DialogTitle>Hapus Data?</DialogTitle>
                         <div className="text-sm text-muted-foreground">
                             Apakah Anda yakin ingin menghapus data ini?
-                            {activeTab !== "desa" && " Data anak (kecamatan/desa) yang terkait juga akan terhapus."}
+                            {(activeTab === "kabupaten" || activeTab === "kecamatan") && " Data anak (kecamatan/desa) yang terkait juga akan terhapus."}
                         </div>
                     </DialogHeader>
                     <DialogFooter>

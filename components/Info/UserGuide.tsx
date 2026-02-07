@@ -1,4 +1,4 @@
-import { Map, Layers, Search, MousePointerClick, Info as InfoIcon } from "lucide-react"
+import { Map as MapIcon, Layers, Search, MousePointerClick, Info as InfoIcon } from "lucide-react"
 
 const guideSteps = [
     {
@@ -31,7 +31,7 @@ export function UserGuide() {
                     <div className="space-y-8">
                         <div className="space-y-4">
                             <div className="inline-flex items-center justify-center p-2 bg-green-100 rounded-full mb-2">
-                                <Map className="w-5 h-5 text-green-600" />
+                                <MapIcon className="w-5 h-5 text-green-600" />
                             </div>
                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-blue-950">
                                 Panduan WebGIS
@@ -62,7 +62,7 @@ export function UserGuide() {
                                 href="/maps"
                                 className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
                             >
-                                <Map className="w-4 h-4 mr-2" />
+                                <MapIcon className="w-4 h-4 mr-2" />
                                 Buka Peta Interaktif
                             </a>
                         </div>
@@ -82,7 +82,7 @@ export function UserGuide() {
                             <div className="p-1 pt-9 bg-gray-100 aspect-video flex items-center justify-center text-gray-400">
                                 {/* Here we would normally use an Image, but using a placeholder for the component creation */}
                                 <div className="text-center">
-                                    <Map className="w-16 h-16 mx-auto mb-2 text-gray-300" />
+                                    <MapIcon className="w-16 h-16 mx-auto mb-2 text-gray-300" />
                                     <span className="text-xs">Preview WebGIS Interface</span>
                                 </div>
                             </div>
