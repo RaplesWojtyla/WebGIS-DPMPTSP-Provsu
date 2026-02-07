@@ -1,5 +1,5 @@
 import * as React from "react"
-import { InvestmentRecord, calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
+import { calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
 import dummyData from "@/data/investment_dummy.json"
 
 export function useSectorAnalysis(sectorName: string, initialRegion: string = "all", initialYearStr?: string) {

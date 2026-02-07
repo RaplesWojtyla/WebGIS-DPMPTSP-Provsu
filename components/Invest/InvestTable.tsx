@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { InvestmentRecord, exportToCSV } from "@/lib/lq-utils"
+import { exportToCSV } from "@/lib/lq-utils"
 import { Trash2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
