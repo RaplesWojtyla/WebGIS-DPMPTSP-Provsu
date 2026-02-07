@@ -1,19 +1,3 @@
-
-export interface InvestmentRecord {
-    id: string;
-    region: string;
-    sector: string;
-    value: number; // Investment value (e.g., in IDR or USD)
-    year: number;
-}
-
-export interface LQResult {
-    region: string;
-    sector: string;
-    lq: number;
-    isReliable: boolean; // True if LQ > 1
-}
-
 /**
  * Calculates Location Quotient (LQ) for the given records.
  * LQ = (vi / vt) / (Vi / Vt)

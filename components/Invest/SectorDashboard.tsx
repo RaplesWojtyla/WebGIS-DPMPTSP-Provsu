@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { InvestmentRecord, calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
+import { calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowUpRight, ArrowDownRight, Activity, TrendingUp, Layers } from "lucide-react"
