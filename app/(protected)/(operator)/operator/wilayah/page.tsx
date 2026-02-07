@@ -116,7 +116,7 @@ type DataItem = typeof INITIAL_DATA[0];
 const ITEMS_PER_PAGE = 5;
 
 export default function KabupatenPage() {
-    const [data, setData] = useState<DataItem[]>(INITIAL_DATA);
+    const [data] = useState<DataItem[]>(INITIAL_DATA);
     const [searchTerm, setSearchTerm] = useState("");
 
     // Filters
@@ -126,24 +126,6 @@ export default function KabupatenPage() {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-
-    // Dialog State
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [deletingId, setDeletingId] = useState<string | null>(null);
-
-    // Form State
-    const [formData, setFormData] = useState<Omit<DataItem, "id" | "no">>({
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "",
-        kode_kabupaten: "",
-        nama_kecamatan: "",
-        kode_kecamatan: "",
-        nama_desa: "",
-        kode_desa: "",
-    });
 
     // Filter Logic
     const filteredData = useMemo(() => {

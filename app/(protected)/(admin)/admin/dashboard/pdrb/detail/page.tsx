@@ -15,6 +15,12 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { SECTORS, REGIONS, STORAGE_KEY_PREFIX, PdrbValue } from "@/app/(protected)/(operator)/operator/pdrb/constants";
 
+// Initial DB (Mock) - Same as in admin/dashboard/pdrb/page.tsx
+// In a real app this would be in a consistent shared state or DB
+const INITIAL_DB: Record<string, PdrbValue[]> = {
+    "2023-1275": SECTORS.map((_, idx) => ({ sectorIndex: idx, value: Math.random() * 1000000 }))
+};
+
 function PdrbDetailContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -25,12 +31,6 @@ function PdrbDetailContent() {
     const [isLoading, setIsLoading] = useState(true);
 
     const region = REGIONS.find(r => r.id === regionId);
-
-    // Initial DB (Mock) - Same as in admin/dashboard/pdrb/page.tsx
-    // In a real app this would be in a consistent shared state or DB
-    const INITIAL_DB: Record<string, PdrbValue[]> = {
-        "2023-1275": SECTORS.map((_, idx) => ({ sectorIndex: idx, value: Math.random() * 1000000 }))
-    };
 
     useEffect(() => {
         if (!regionId || !year) {

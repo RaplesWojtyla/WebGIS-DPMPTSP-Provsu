@@ -143,6 +143,7 @@ interface FlatWilayahData {
 interface CommonItem {
     code: string;
     name: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 
@@ -207,6 +208,7 @@ export default function AdminWilayahPage() {
     // Filter Logic
     const filteredData = useMemo(() => {
         const term = searchTerm.toLowerCase();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let data: any[] = [];
         if (activeTab === "all") {
             data = desas.filter(d =>
@@ -424,6 +426,7 @@ export default function AdminWilayahPage() {
         const { headers, data, filename } = getExportData();
 
         // Helper to escape CSV cells
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const escapeCell = (cell: any) => {
             if (cell === null || cell === undefined) return "";
             let str = String(cell);
