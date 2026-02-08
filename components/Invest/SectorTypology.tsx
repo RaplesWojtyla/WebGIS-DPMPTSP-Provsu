@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { InvestmentRecord, calculateKlassen } from "@/lib/lq-utils"
+import { calculateKlassen } from "@/lib/lq-utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 

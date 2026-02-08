@@ -1,119 +1,125 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-    Search,
-    Pencil,
-    Trash2,
-    Plus
-} from "lucide-react";
-
-// Import initial data
-import { SECTORS as INITIAL_SECTORS_RAW } from "@/app/(protected)/(operator)/operator/pdrb/constants";
-import { toast } from "sonner";
-
-// Transform raw strings into objects
-const INITIAL_SECTORS = INITIAL_SECTORS_RAW.map((name, index) => ({
-    id: `SECTOR-${index + 1}`,
-    name: name
-}));
-
-type Sector = {
-    id: string;
-    name: string;
-};
+import React, { useState, useEffect, useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, Pencil, Trash2, Plus, Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import { getSectors, createSector, updateSector, deleteSector } from "@/lib/actions/sector.actions"
+import { sectorSchema, type SectorFormData } from "@/lib/zod/sector-schema"
 
 export default function SektorPage() {
-    // In-memory state
-    const [sectors, setSectors] = useState<Sector[]>(INITIAL_SECTORS);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 10;
+    const [sectors, setSectors] = useState<Sector[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isPending, startTransition] = useTransition()
 
-    // Form State
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState<Sector>({ id: "", name: "" });
+    const [searchTerm, setSearchTerm] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
+    const ITEMS_PER_PAGE = 10
 
-    // Filter Logic
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [editingId, setEditingId] = useState<string | null>(null)
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<SectorFormData>({
+        resolver: zodResolver(sectorSchema),
+        defaultValues: { code: "", name: "", nameEn: "", description: "" }
+    })
+
+    useEffect(() => {
+        loadSectors()
+    }, [])
+
+    const loadSectors = async () => {
+        setIsLoading(true)
+        
+        const result = await getSectors()
+        
+        if (result.success && result.data) {
+            setSectors(result.data)
+        } else {
+            toast.error(result.error || "Gagal memuat data")
+        }
+        
+        setIsLoading(false)
+    }
+
     const filteredSectors = sectors.filter(r =>
-        r.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.code.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
-    // Pagination Logic
-    const totalPages = Math.ceil(filteredSectors.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(filteredSectors.length / ITEMS_PER_PAGE)
     const paginatedSectors = filteredSectors.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
-    );
+    )
 
-    // Handlers
     const handleAdd = () => {
-        setIsEditing(false);
-        setFormData({ id: Math.random().toString(36).substr(2, 9), name: "" });
-        setIsDialogOpen(true);
-    };
+        setIsEditing(false)
+        setEditingId(null)
+        reset({ 
+            code: "", 
+            name: "", 
+            nameEn: "", 
+            description: "" 
+        })
+        setIsDialogOpen(true)
+    }
 
     const handleEdit = (sector: Sector) => {
-        setIsEditing(true);
-        setFormData({ ...sector });
-        setIsDialogOpen(true);
-    };
+        setIsEditing(true)
+        setEditingId(sector.id)
+        reset({
+            code: sector.code,
+            name: sector.name,
+            nameEn: sector.nameEn || "",
+            description: sector.description || "",
+        })
+        setIsDialogOpen(true)
+    }
 
-    const handleDelete = (id: string) => {
-        setSectors(prev => prev.filter(r => r.id !== id));
-        toast.success("Sektor berhasil dihapus");
-    };
+    const handleDelete = async (id: string) => {
+        startTransition(async () => {
+            const result = await deleteSector(id)
+            if (result.success) {
+                toast.success("Sektor berhasil dihapus")
+                loadSectors()
+            } else {
+                toast.error(result.error || "Gagal menghapus sektor")
+            }
+        })
+    }
 
-    const handleSave = () => {
-        if (!formData.name) {
-            toast.error("Nama sektor harus diisi");
-            return;
-        }
+    const onSubmit = async (data: SectorFormData) => {
+        startTransition(async () => {
+            let result
+            if (isEditing && editingId) {
+                result = await updateSector(editingId, data)
+            } else {
+                result = await createSector(data)
+            }
 
-        if (isEditing) {
-            setSectors(prev => prev.map(r => r.id === formData.id ? formData : r));
-            toast.success("Perubahan disimpan");
-        } else {
-            setSectors(prev => [formData, ...prev]);
-            toast.success("Sektor baru ditambahkan");
-        }
-        setIsDialogOpen(false);
-    };
+            if (result.success) {
+                toast.success(isEditing ? "Perubahan disimpan" : "Sektor baru ditambahkan")
+                setIsDialogOpen(false)
+                loadSectors()
+            } else {
+                toast.error(result.error || "Gagal menyimpan data")
+            }
+        })
+    }
 
     return (
         <div className="space-y-8">
@@ -130,13 +136,13 @@ export default function SektorPage() {
                         placeholder="Cari sektor..."
                         value={searchTerm}
                         onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            setCurrentPage(1);
+                            setSearchTerm(e.target.value)
+                            setCurrentPage(1)
                         }}
                         className="pl-9"
                     />
                 </div>
-                <Button onClick={handleAdd}>
+                <Button onClick={handleAdd} disabled={isPending}>
                     <Plus className="mr-2 h-4 w-4" /> Tambah Sektor
                 </Button>
             </div>
@@ -147,31 +153,39 @@ export default function SektorPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[50px] text-center">No</TableHead>
+                            <TableHead className="w-[80px]">Kode</TableHead>
                             <TableHead>Nama Sektor</TableHead>
                             <TableHead className="text-right">Aksi</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {paginatedSectors.length > 0 ? (
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">
+                                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                                </TableCell>
+                            </TableRow>
+                        ) : paginatedSectors.length > 0 ? (
                             paginatedSectors.map((sector, index) => (
                                 <TableRow key={sector.id}>
                                     <TableCell className="text-center font-medium">
                                         {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                                     </TableCell>
+                                    <TableCell className="font-mono text-sm">
+                                        {sector.code}
+                                    </TableCell>
                                     <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-medium text-sm">{sector.name}</span>
-                                        </div>
+                                        <span className="font-medium text-sm">{sector.name}</span>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => handleEdit(sector)}>
+                                            <Button variant="ghost" size="icon" onClick={() => handleEdit(sector)} disabled={isPending}>
                                                 <Pencil className="h-4 w-4 text-gray-500 hover:text-blue-600" />
                                             </Button>
 
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
+                                                    <Button variant="ghost" size="icon" disabled={isPending}>
                                                         <Trash2 className="h-4 w-4 text-gray-500 hover:text-red-600" />
                                                     </Button>
                                                 </AlertDialogTrigger>
@@ -179,7 +193,7 @@ export default function SektorPage() {
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Hapus Sektor?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            Sektor <strong>{sector.name}</strong> akan dihapus sementara dari daftar ini.
+                                                            Sektor <strong>{sector.name}</strong> akan dihapus permanen dari database.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
@@ -196,7 +210,7 @@ export default function SektorPage() {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={3} className="h-24 text-center">
+                                <TableCell colSpan={4} className="h-24 text-center">
                                     Tidak ada data sektor ditemukan.
                                 </TableCell>
                             </TableRow>
@@ -237,7 +251,7 @@ export default function SektorPage() {
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || totalPages === 0}
                     >
                         <ChevronRight className="h-4 w-4" />
                     </Button>
@@ -246,42 +260,67 @@ export default function SektorPage() {
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => setCurrentPage(totalPages)}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || totalPages === 0}
                     >
                         <ChevronsRight className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
 
-            {/* Input Dialog */}
+            {/* Input Dialog with React Hook Form */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{isEditing ? "Edit Sektor" : "Tambah Sektor Baru"}</DialogTitle>
                         <DialogDescription>
-                            Isi nama sektor lapangan usaha di bawah ini.
+                            Isi data sektor lapangan usaha di bawah ini.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
-                                Nama Sektor
-                            </Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="col-span-3"
-                                placeholder="Contoh: Pertanian, Kehutanan dan Perikanan"
-                            />
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="code" className="text-right">
+                                    Kode
+                                </Label>
+                                <div className="col-span-3 space-y-1">
+                                    <Input
+                                        id="code"
+                                        placeholder="Contoh: A, B, C"
+                                        {...register("code")}
+                                    />
+                                    {errors.code && (
+                                        <p className="text-sm text-red-500">{errors.code.message}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="name" className="text-right">
+                                    Nama Sektor
+                                </Label>
+                                <div className="col-span-3 space-y-1">
+                                    <Input
+                                        id="name"
+                                        placeholder="Contoh: Pertanian, Kehutanan dan Perikanan"
+                                        {...register("name")}
+                                    />
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">{errors.name.message}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Batal</Button>
-                        <Button onClick={handleSave}>Simpan</Button>
-                    </DialogFooter>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>
+                                Batal
+                            </Button>
+                            <Button type="submit" disabled={isPending}>
+                                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Simpan
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
         </div>
-    );
+    )
 }

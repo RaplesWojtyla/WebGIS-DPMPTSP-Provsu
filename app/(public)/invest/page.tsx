@@ -3,7 +3,6 @@
 import * as React from "react"
 import { SectorDashboard } from "@/components/Invest/SectorDashboard"
 import { SectorTypology } from "@/components/Invest/SectorTypology"
-import { InvestmentRecord } from "@/lib/lq-utils"
 import dummyData from "@/data/investment_dummy.json"
 
 

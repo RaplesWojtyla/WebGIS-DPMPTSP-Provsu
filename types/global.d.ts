@@ -65,6 +65,36 @@ declare global {
     interface AnalysisResult {
         text: string
         reasoning?: string
-        sources?: Array<{ title?: string, url?: string }>   
+        sources?: Array<{ title?: string, url?: string }>
+    }
+
+    interface InvestmentRecord {
+        id: string
+        region: string
+        sector: string
+        value: number // Investment value (e.g., in IDR or USD)
+        year: number
+    }
+
+    interface LQResult {
+        region: string
+        sector: string
+        lq: number
+        isReliable: boolean // True if LQ > 1
+    }
+
+    type SectorData = {
+        code: string
+        name: string
+        nameEn?: string
+        description?: string
+    }
+
+    type Sector = {
+        id: string
+        code: string
+        name: string
+        nameEn: string | null
+        description: string | null
     }
 }
