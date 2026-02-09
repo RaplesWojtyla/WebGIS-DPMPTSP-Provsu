@@ -176,4 +176,53 @@ declare global {
         suspendedAt: Date | null
         createdAt: Date
     }
+
+    interface PdrbSubmission {
+        regencyId: string
+        regencyName: string
+        regencyCode: string
+        year: number
+        status: string
+        submittedAt: Date
+        approvedAt: Date | null
+        notes: string | null
+        sectorCount: number
+    }
+
+    interface AnalysisResultLQ {
+        lq: string
+        status: "Basis" | "Non-Basis"
+        description: string
+    }
+
+    interface AnalysisResultSSA {
+        nij: string
+        mij: string
+        cij: string
+        dij: string
+    }
+
+    interface AnalysisResultKlassen {
+        quadrant: "Prima" | "Berkembang" | "Potensial" | "Terbelakang"
+        growthRate: string
+        share: string
+    }
+
+    interface AnalysisResultDLQ {
+        dlq: string
+        status: "Potensial" | "Belum Potensial"
+        description: string
+    }
+
+    interface Region {
+        id: string
+        code: string
+        name: string
+    }
+
+    interface Sector {
+        id: string
+        code: string
+        name: string
+    }
 }

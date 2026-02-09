@@ -21,9 +21,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-import { toast } from "sonner"; // Assuming sonner is installed as per package.json
+import { toast } from "sonner";
 
-// Initial Mock Data
 const INITIAL_DATA = [
     {
         id: "1",
@@ -149,7 +148,7 @@ export default function KabupatenPage() {
         });
     }, [data, searchTerm, selectedKabupaten, selectedKecamatan, selectedDesa]);
 
-    // Reset page when filters change
+
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, selectedKabupaten, selectedKecamatan, selectedDesa]);
