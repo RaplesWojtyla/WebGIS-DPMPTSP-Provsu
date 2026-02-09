@@ -16,6 +16,8 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   role          Role      @default(user)
+  suspended     Boolean   @default(false)
+  suspendedAt   DateTime?
   accounts      Account[]
   sessions      Session[]
 
@@ -116,15 +118,20 @@ model Sector {
 }
 
 model PdrbValue {
-  id        String   @id @default(cuid())
-  value     Float
-  year      Int
-  regencyId String
-  sectorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  regency   Regency  @relation(fields: [regencyId], references: [id])
-  sector    Sector   @relation(fields: [sectorId], references: [id])
+  id          String     @id @default(cuid())
+  value       Float
+  year        Int
+  regencyId   String
+  sectorId    String
+  status      PdrbStatus @default(PENDING)
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  approvedBy  String?
+  notes       String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  regency     Regency    @relation(fields: [regencyId], references: [id])
+  sector      Sector     @relation(fields: [sectorId], references: [id])
 
   @@unique([regencyId, sectorId, year])
   @@map("pdrb_value")
@@ -149,4 +156,10 @@ enum Role {
   user
   admin
   operator
+}
+
+enum PdrbStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

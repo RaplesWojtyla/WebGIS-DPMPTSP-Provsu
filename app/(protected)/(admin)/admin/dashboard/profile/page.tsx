@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect, useTransition } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Card,
     CardContent,
@@ -11,52 +11,139 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import { User, Mail, Lock, Shield } from "lucide-react";
+} from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { toast } from "sonner"
+import { User, Mail, Lock, Shield, Loader2 } from "lucide-react"
+
+import {
+    getCurrentUser,
+    updateProfile,
+    changePassword
+} from "@/lib/actions/profile.actions"
+
+type UserProfile = {
+    id: string
+    name: string
+    email: string
+    emailVerified: boolean
+    image: string | null
+    role: string
+    createdAt: Date
+}
 
 export default function AdminProfilePage() {
-    // Dummy initial state - in real app, fetch from auth session
-    const [profile, setProfile] = useState({
-        name: "Administrator",
-        email: "admin@provsu.go.id",
-        role: "Administrator",
-        avatarUrl: "", // Optional
-    });
+    const [isLoading, setIsLoading] = useState(true)
+    const [isPending, startTransition] = useTransition()
+
+    const [profile, setProfile] = useState<UserProfile | null>(null)
+    const [name, setName] = useState("")
 
     const [passwordData, setPasswordData] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
-    });
+    })
 
-    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProfile({ ...profile, [e.target.id]: e.target.value });
-    };
+    useEffect(() => {
+        loadProfile()
+    }, [])
+
+    const loadProfile = async () => {
+        setIsLoading(true)
+
+        const result = await getCurrentUser()
+
+        if (result.success && result.data) {
+            setProfile(result.data as UserProfile)
+            setName(result.data.name)
+        } else {
+            toast.error(result.error || "Gagal memuat profil")
+        }
+
+        setIsLoading(false)
+    }
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPasswordData({ ...passwordData, [e.target.id]: e.target.value });
-    };
+        setPasswordData({ ...passwordData, [e.target.id]: e.target.value })
+    }
 
     const handleSaveProfile = () => {
-        // Logic to update profile
-        toast.success("Profil berhasil diperbarui");
-    };
+        if (!name.trim()) {
+            toast.error("Nama tidak boleh kosong")
+            return
+        }
+
+        startTransition(async () => {
+            const result = await updateProfile(name)
+
+            if (result.success) {
+                toast.success("Profil berhasil diperbarui")
+                loadProfile()
+            } else {
+                toast.error(result.error || "Gagal memperbarui profil")
+            }
+        })
+    }
 
     const handleSavePassword = () => {
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
-            toast.error("Password baru dan konfirmasi tidak cocok");
-            return;
-        }
         if (!passwordData.currentPassword) {
-            toast.error("Masukkan password saat ini");
-            return;
+            toast.error("Masukkan password saat ini")
+            return
         }
-        // Logic to change password
-        toast.success("Password berhasil diubah");
-        setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    };
+
+        if (passwordData.newPassword.length < 8) {
+            toast.error("Password baru minimal 8 karakter")
+            return
+        }
+
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            toast.error("Password baru dan konfirmasi tidak cocok")
+            return
+        }
+
+        startTransition(async () => {
+            const result = await changePassword(
+                passwordData.currentPassword,
+                passwordData.newPassword
+            )
+
+            if (result.success) {
+                toast.success("Password berhasil diubah")
+                setPasswordData({
+                    currentPassword: "",
+                    newPassword: "",
+                    confirmPassword: ""
+                })
+            } else {
+                toast.error(result.error || "Gagal mengubah password")
+            }
+        })
+    }
+
+    const getRoleLabel = (role: string) => {
+        switch (role) {
+            case 'admin': return 'Administrator'
+            case 'operator': return 'Operator'
+            default: return 'User'
+        }
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+        )
+    }
+
+    if (!profile) {
+        return (
+            <div className="text-center py-12 text-gray-500">
+                Gagal memuat profil. Silakan refresh halaman.
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-10">
@@ -77,7 +164,7 @@ export default function AdminProfilePage() {
                     <CardContent className="space-y-6">
                         <div className="flex items-center gap-6">
                             <Avatar className="h-20 w-20">
-                                <AvatarImage src={profile.avatarUrl} alt={profile.name} />
+                                <AvatarImage src={profile.image || ""} alt={profile.name} />
                                 <AvatarFallback className="text-xl bg-blue-100 text-blue-700">
                                     {profile.name.substring(0, 2).toUpperCase()}
                                 </AvatarFallback>
@@ -86,7 +173,7 @@ export default function AdminProfilePage() {
                                 <h3 className="font-medium text-lg text-gray-900">{profile.name}</h3>
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-md w-fit">
                                     <Shield className="h-3 w-3" />
-                                    {profile.role}
+                                    {getRoleLabel(profile.role)}
                                 </div>
                             </div>
                         </div>
@@ -98,8 +185,8 @@ export default function AdminProfilePage() {
                                     <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                                     <Input
                                         id="name"
-                                        value={profile.name}
-                                        onChange={handleProfileChange}
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                         className="pl-9"
                                         placeholder="Nama Lengkap"
                                     />
@@ -112,17 +199,19 @@ export default function AdminProfilePage() {
                                     <Input
                                         id="email"
                                         value={profile.email}
-                                        onChange={handleProfileChange}
-                                        className="pl-9"
-                                        placeholder="Email"
-                                        type="email"
+                                        className="pl-9 bg-gray-50"
+                                        disabled
                                     />
                                 </div>
+                                <p className="text-xs text-muted-foreground">Email tidak dapat diubah</p>
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end border-t px-6 py-4 bg-gray-50/50 rounded-b-xl">
-                        <Button onClick={handleSaveProfile}>Simpan Perubahan</Button>
+                        <Button onClick={handleSaveProfile} disabled={isPending}>
+                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Simpan Perubahan
+                        </Button>
                     </CardFooter>
                 </Card>
 
@@ -178,11 +267,21 @@ export default function AdminProfilePage() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end border-t px-6 py-4 bg-gray-50/50 rounded-b-xl">
-                        <Button variant="outline" onClick={() => setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })} className="mr-2">Batal</Button>
-                        <Button onClick={handleSavePassword}>Update Password</Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })}
+                            className="mr-2"
+                            disabled={isPending}
+                        >
+                            Batal
+                        </Button>
+                        <Button onClick={handleSavePassword} disabled={isPending}>
+                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Update Password
+                        </Button>
                     </CardFooter>
                 </Card>
             </div>
         </div>
-    );
+    )
 }
