@@ -97,4 +97,83 @@ declare global {
         nameEn: string | null
         description: string | null
     }
+
+    type Province = {
+        id: string
+        code: string
+        name: string
+    }
+
+    type Regency = {
+        id: string
+        code: string
+        name: string
+        provinceId: string
+        province: Province
+    }
+
+    type District = {
+        id: string
+        code: string
+        name: string
+        regencyId: string
+        regency: Regency
+    }
+
+    type Village = {
+        id: string
+        code: string
+        name: string
+        districtId: string
+        district: District & { regency: Regency }
+    }
+
+    type PdrbStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+
+    type PdrbData = {
+        id: string
+        value: number
+        year: number
+        status: PdrbStatus
+        submittedAt: Date | null
+        approvedAt: Date | null
+        approvedBy: string | null
+        notes: string | null
+        regencyId: string
+        sectorId: string
+        regency: {
+            id: string
+            name: string
+            code: string
+            province: { name: string }
+        }
+        sector: {
+            id: string
+            name: string
+            code: string
+        }
+    }
+
+    type GroupedPdrb = {
+        regencyId: string
+        regencyName: string
+        regencyCode: string
+        year: number
+        totalValue: number
+        sectorCount: number
+        status: PdrbStatus
+        submittedAt: Date | null
+    }
+
+    type UserData = {
+        id: string
+        name: string
+        email: string
+        emailVerified: boolean
+        image: string | null
+        role: 'user' | 'operator' | 'admin'
+        suspended: boolean
+        suspendedAt: Date | null
+        createdAt: Date
+    }
 }

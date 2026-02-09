@@ -29,6 +29,20 @@ const sectors = [
 ]
 
 async function main() {
+    // Seed Province
+    console.log('🌱 Seeding provinces...')
+
+    const province = await prisma.province.upsert({
+        where: { code: '12' },
+        update: {},
+        create: {
+            code: '12',
+            name: 'SUMATERA UTARA',
+        },
+    })
+    console.log(`  ✓ ${province.code}: ${province.name}`)
+
+    // Seed Sectors
     console.log('🌱 Seeding sectors...')
 
     for (const sector of sectors) {

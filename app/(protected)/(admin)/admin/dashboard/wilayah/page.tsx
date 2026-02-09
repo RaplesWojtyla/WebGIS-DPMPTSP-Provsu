@@ -1,476 +1,372 @@
-"use client";
+"use client"
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Search, Plus, Pencil, Trash, Building2, MapPin, Home, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileSpreadsheet, FileText, LayoutGrid, Loader2 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
+
 import {
-    Search,
-    Plus,
-    Pencil,
-    Trash,
-    Building2,
-    MapPin,
-    Home,
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-    FileSpreadsheet,
-    FileText,
-    LayoutGrid
-} from "lucide-react";
+    getProvinces,
+    getRegencies,
+    createRegency,
+    updateRegency,
+    deleteRegency,
+    getDistricts,
+    createDistrict,
+    updateDistrict,
+    deleteDistrict,
+    getVillages,
+    createVillage,
+    updateVillage,
+    deleteVillage,
+} from "@/lib/actions/wilayah.actions"
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+    regencySchema,
+    districtSchema,
+    villageSchema,
+    type RegencyFormData,
+    type DistrictFormData,
+    type VillageFormData,
+} from "@/lib/zod/wilayah-schema"
 
-// Initial Mock Data (Flat)
-// Using an expanded dataset for demonstration
-const INITIAL_FLAT_DATA = [
-    {
-        id: "1",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KAB. DELI SERDANG",
-        kode_kabupaten: "12.07",
-        nama_kecamatan: "Percut Sei Tuan",
-        kode_kecamatan: "12.07.02",
-        nama_desa: "Bandar Klippa",
-        kode_desa: "12.07.02.2005",
-    },
-    {
-        id: "2",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KAB. DELI SERDANG",
-        kode_kabupaten: "12.07",
-        nama_kecamatan: "Percut Sei Tuan",
-        kode_kecamatan: "12.07.02",
-        nama_desa: "Bandar Khalipah",
-        kode_desa: "12.07.02.2006",
-    },
-    {
-        id: "3",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KAB. DELI SERDANG",
-        kode_kabupaten: "12.07",
-        nama_kecamatan: "Batang Kuis",
-        kode_kecamatan: "12.07.03",
-        nama_desa: "Batang Kuis Pekan",
-        kode_desa: "12.07.03.2001",
-    },
-    {
-        id: "4",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KOTA MEDAN",
-        kode_kabupaten: "12.71",
-        nama_kecamatan: "Medan Barat",
-        kode_kecamatan: "12.71.01",
-        nama_desa: "Kesawan",
-        kode_desa: "12.71.01.1001",
-    },
-    {
-        id: "5",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KOTA MEDAN",
-        kode_kabupaten: "12.71",
-        nama_kecamatan: "Medan Barat",
-        kode_kecamatan: "12.71.01",
-        nama_desa: "Silalas",
-        kode_desa: "12.71.01.1002",
-    },
-    {
-        id: "6",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KOTA MEDAN",
-        kode_kabupaten: "12.71",
-        nama_kecamatan: "Medan Petisah",
-        kode_kecamatan: "12.71.02",
-        nama_desa: "Petisah Tengah",
-        kode_desa: "12.71.02.1001",
-    },
-    {
-        id: "7",
-        nama_provinsi: "SUMATERA UTARA",
-        kode_provinsi: "12",
-        nama_kabupaten: "KAB. LANGKAT",
-        kode_kabupaten: "12.05",
-        nama_kecamatan: "Babalan",
-        kode_kecamatan: "12.05.01",
-        nama_desa: "Pelawi Selatan",
-        kode_desa: "12.05.01.2001",
-    },
-];
+// Types from database (Saya pindahkan ke dalam global.d.ts)
 
-// Types
-interface FlatWilayahData {
-    id: string;
-    nama_provinsi: string;
-    kode_provinsi: string;
-    nama_kabupaten: string;
-    kode_kabupaten: string;
-    nama_kecamatan: string;
-    kode_kecamatan: string;
-    nama_desa: string;
-    kode_desa: string;
-    [key: string]: string; // Index signature for dynamic access
-}
 
-interface CommonItem {
-    code: string;
-    name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-}
-
-// Helper to extract unique items
-const extractUnique = (data: FlatWilayahData[], key: string, labelKey: string, extraKeys: string[] = []): CommonItem[] => {
-    const map = new Map<string, CommonItem>();
-    data.forEach(item => {
-        if (!map.has(item[key])) {
-            const obj: CommonItem = { code: item[key], name: item[labelKey] };
-            extraKeys.forEach(k => {
-                obj[k] = item[k];
-            });
-            map.set(item[key], obj);
-        }
-    });
-    return Array.from(map.values());
-};
-
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10
 
 export default function AdminWilayahPage() {
-    // Standardizing Data State
-    const [kabupatens, setKabupatens] = useState(extractUnique(INITIAL_FLAT_DATA, 'kode_kabupaten', 'nama_kabupaten', ['nama_provinsi', 'kode_provinsi']));
-    const [kecamatans, setKecamatans] = useState(extractUnique(INITIAL_FLAT_DATA, 'kode_kecamatan', 'nama_kecamatan', ['kode_kabupaten', 'nama_kabupaten'])); // Added nama_kabupaten for ease
-    const [desas, setDesas] = useState(INITIAL_FLAT_DATA.map(d => ({
-        id: d.id,
-        code: d.kode_desa,
-        name: d.nama_desa,
-        kecamatanCode: d.kode_kecamatan,
-        kabupatenCode: d.kode_kabupaten,
-        // Helper fields for display
-        kecamatanName: d.nama_kecamatan,
-        kabupatenName: d.nama_kabupaten,
-    })));
+    const [isLoading, setIsLoading] = useState(true)
+    const [isPending, startTransition] = useTransition()
 
-    const [activeTab, setActiveTab] = useState("all");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
+    // Data State
+    const [provinces, setProvinces] = useState<Province[]>([])
+    const [regencies, setRegencies] = useState<Regency[]>([])
+    const [districts, setDistricts] = useState<District[]>([])
+    const [villages, setVillages] = useState<Village[]>([])
+
+    const [activeTab, setActiveTab] = useState("all")
+    const [searchTerm, setSearchTerm] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
 
     // Dialog States
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<CommonItem | null>(null);
-    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [editingItem, setEditingItem] = useState<Regency | District | Village | null>(null)
+    const [deletingItem, setDeletingItem] = useState<{ id: string; type: string } | null>(null)
 
-    // Form Data
-    const [formState, setFormState] = useState({
-        code: "",
-        name: "",
-        parentCode: "",    // Generic parent (Kabupaten for Kec, Kecamatan for Desa)
-        grandParentCode: "" // For Desa (Kabupaten)
-    });
+    const regencyForm = useForm<RegencyFormData>({
+        resolver: zodResolver(regencySchema),
+        defaultValues: { 
+            code: "", 
+            name: "", 
+            provinceId: "" 
+        }
+    })
+
+    const districtForm = useForm<DistrictFormData>({
+        resolver: zodResolver(districtSchema),
+        defaultValues: { 
+            code: "", 
+            name: "", 
+            regencyId: "" 
+        }
+    })
+
+    const villageForm = useForm<VillageFormData>({
+        resolver: zodResolver(villageSchema),
+        defaultValues: { 
+            code: "", 
+            name: "", 
+            districtId: "" 
+        }
+    })
+
+    useEffect(() => {
+        loadAllData()
+    }, [])
+
+    const loadAllData = async () => {
+        setIsLoading(true)
+
+        const [provResult, regResult, distResult, vilResult] = await Promise.all([
+            getProvinces(),
+            getRegencies(),
+            getDistricts(),
+            getVillages()
+        ])
+
+        if (provResult.success && provResult.data) setProvinces(provResult.data)
+        if (regResult.success && regResult.data) setRegencies(regResult.data as Regency[])
+        if (distResult.success && distResult.data) setDistricts(distResult.data as District[])
+        if (vilResult.success && vilResult.data) setVillages(vilResult.data as Village[])
+
+        setIsLoading(false)
+    }
 
     // Reset when tab changes
     const handleTabChange = (val: string) => {
-        setActiveTab(val);
-        setSearchTerm("");
-        setEditingItem(null);
-        setCurrentPage(1);
-    };
+        setActiveTab(val)
+        setSearchTerm("")
+        setEditingItem(null)
+        setCurrentPage(1)
+    }
 
     // Filter Logic
     const filteredData = useMemo(() => {
-        const term = searchTerm.toLowerCase();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let data: any[] = [];
-        if (activeTab === "all") {
-            data = desas.filter(d =>
+        const term = searchTerm.toLowerCase()
+
+        if (activeTab === "all" || activeTab === "desa") {
+            return villages.filter(v =>
+                v.name.toLowerCase().includes(term) ||
+                v.code.includes(term) ||
+                v.district?.name.toLowerCase().includes(term) ||
+                v.district?.regency?.name.toLowerCase().includes(term)
+            )
+        } else if (activeTab === "kabupaten") {
+            return regencies.filter(r =>
+                r.name.toLowerCase().includes(term) ||
+                r.code.includes(term)
+            )
+        } else if (activeTab === "kecamatan") {
+            return districts.filter(d =>
                 d.name.toLowerCase().includes(term) ||
                 d.code.includes(term) ||
-                (d.kecamatanName || "").toLowerCase().includes(term) ||
-                (d.kabupatenName || "").toLowerCase().includes(term)
-            );
-        } else if (activeTab === "kabupaten") {
-            data = kabupatens.filter(k => k.name.toLowerCase().includes(term) || k.code.includes(term));
-        } else if (activeTab === "kecamatan") {
-            data = kecamatans.filter(k => k.name.toLowerCase().includes(term) || k.code.includes(term));
-        } else {
-            data = desas.filter(d => d.name.toLowerCase().includes(term) || d.code.includes(term));
+                d.regency?.name.toLowerCase().includes(term)
+            )
         }
-        return data;
-    }, [activeTab, searchTerm, kabupatens, kecamatans, desas]);
+        return []
+    }, [activeTab, searchTerm, regencies, districts, villages])
 
     // Pagination Logic
-    const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE)
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    const paginatedData = filteredData.slice(startIndex, endIndex)
 
-    // CRUD Handlers
+
     const handleAddNew = () => {
-        setEditingItem(null);
-        setFormState({ code: "", name: "", parentCode: "", grandParentCode: "" });
-        setIsDialogOpen(true);
-    };
+        setEditingItem(null)
+        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab
 
-    const handleEdit = (item: CommonItem) => {
-        setEditingItem(item);
-        if (activeTab === "kabupaten") {
-            setFormState({ code: item.code, name: item.name, parentCode: "", grandParentCode: "" });
-        } else if (activeTab === "kecamatan") {
-            setFormState({ code: item.code, name: item.name, parentCode: item.kode_kabupaten, grandParentCode: "" });
+        if (effectiveTab === 'kabupaten') {
+            regencyForm.reset({ code: "", name: "", provinceId: provinces[0]?.id || "" })
+        } else if (effectiveTab === 'kecamatan') {
+            districtForm.reset({ code: "", name: "", regencyId: "" })
         } else {
-            setFormState({
-                code: item.code,
-                name: item.name,
-                parentCode: item.kecamatanCode,
-                grandParentCode: item.kabupatenCode
-            });
+            villageForm.reset({ code: "", name: "", districtId: "" })
         }
-        setIsDialogOpen(true);
-    };
 
-    const handleDelete = (id: string, code?: string) => {
-        if (activeTab === 'kabupaten' || activeTab === 'kecamatan') {
-            setDeletingId(code || id);
+        setIsDialogOpen(true)
+    }
+
+    const handleEdit = (item: Regency | District | Village) => {
+        setEditingItem(item)
+        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab
+
+        if (effectiveTab === 'kabupaten') {
+            const reg = item as Regency
+            regencyForm.reset({ code: reg.code, name: reg.name, provinceId: reg.provinceId })
+        } else if (effectiveTab === 'kecamatan') {
+            const dist = item as District
+            districtForm.reset({ code: dist.code, name: dist.name, regencyId: dist.regencyId })
         } else {
-            setDeletingId(id);
+            const vil = item as Village
+            villageForm.reset({ code: vil.code, name: vil.name, districtId: vil.districtId })
         }
-        setIsDeleteDialogOpen(true);
-    };
+        setIsDialogOpen(true)
+    }
 
-    const confirmDelete = () => {
-        if (!deletingId) return;
+    const handleDelete = (id: string, type: string) => {
+        setDeletingItem({ id, type })
+        setIsDeleteDialogOpen(true)
+    }
 
-        if (activeTab === "kabupaten") {
-            setKabupatens(prev => prev.filter(k => k.code !== deletingId));
-            // Cascade delete (mock)
-            setKecamatans(prev => prev.filter(k => k.kode_kabupaten !== deletingId));
-            setDesas(prev => prev.filter(d => d.kabupatenCode !== deletingId));
-        } else if (activeTab === "kecamatan") {
-            setKecamatans(prev => prev.filter(k => k.code !== deletingId));
-            setDesas(prev => prev.filter(d => d.kecamatanCode !== deletingId));
-        } else {
-            setDesas(prev => prev.filter(d => d.id !== deletingId));
-        }
-        toast.success("Data berhasil dihapus");
-        setIsDeleteDialogOpen(false);
-        setDeletingId(null);
-        setCurrentPage(1); // Reset pagination after delete
-    };
+    const confirmDelete = async () => {
+        if (!deletingItem) return
 
-    const handleSave = () => {
-        // Validation
-        if (!formState.code.trim() || !formState.name.trim()) {
-            toast.error("Kode dan Nama wajib diisi");
-            return;
-        }
+        startTransition(async () => {
+            let result
 
-        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab;
-
-        // Check for duplicates
-        if (effectiveTab === "kabupaten") {
-            const exists = kabupatens.some(k => k.code === formState.code && (!editingItem || editingItem.code !== formState.code));
-            if (exists) {
-                toast.error("Kode Kabupaten sudah ada");
-                return;
-            }
-        } else if (effectiveTab === "kecamatan") {
-            if (!formState.parentCode) {
-                toast.error("Kabupaten wajib dipilih");
-                return;
-            }
-            const exists = kecamatans.some(k => k.code === formState.code && (!editingItem || editingItem.code !== formState.code));
-            if (exists) {
-                toast.error("Kode Kecamatan sudah ada");
-                return;
-            }
-        } else { // desa
-            if (!formState.parentCode || !formState.grandParentCode) {
-                toast.error("Kabupaten dan Kecamatan wajib dipilih");
-                return;
-            }
-            const exists = desas.some(d => d.code === formState.code && (!editingItem || editingItem.code !== formState.code));
-            if (exists) {
-                toast.error("Kode Desa sudah ada");
-                return;
-            }
-        }
-
-        if (effectiveTab === "kabupaten") {
-            if (editingItem) {
-                setKabupatens(prev => prev.map(k => k.code === editingItem.code ? { ...k, name: formState.name, code: formState.code } : k));
+            if (deletingItem.type === 'kabupaten') {
+                result = await deleteRegency(deletingItem.id)
+            } else if (deletingItem.type === 'kecamatan') {
+                result = await deleteDistrict(deletingItem.id)
             } else {
-                setKabupatens(prev => [...prev, { code: formState.code, name: formState.name, nama_provinsi: "SUMATERA UTARA", kode_provinsi: "12" }]);
+                result = await deleteVillage(deletingItem.id)
             }
-        } else if (effectiveTab === "kecamatan") {
-            const newItem = {
-                code: formState.code,
-                name: formState.name,
-                kode_kabupaten: formState.parentCode,
-                nama_kabupaten: kabupatens.find(k => k.code === formState.parentCode)?.name || ""
-            };
-            if (editingItem) {
-                setKecamatans(prev => prev.map(k => k.code === editingItem.code ? newItem : k));
-            } else {
-                setKecamatans(prev => [...prev, newItem]);
-            }
-        } else {
-            const newItem = {
-                id: editingItem ? editingItem.id : Math.random().toString(36).substr(2, 9),
-                code: formState.code,
-                name: formState.name,
-                kecamatanCode: formState.parentCode,
-                kabupatenCode: formState.grandParentCode,
-                kecamatanName: kecamatans.find(k => k.code === formState.parentCode)?.name || "",
-                kabupatenName: kabupatens.find(k => k.code === formState.grandParentCode)?.name || ""
-            };
-            if (editingItem) {
-                setDesas(prev => prev.map(d => d.id === editingItem.id ? newItem : d));
-            } else {
-                setDesas(prev => [...prev, newItem]);
-            }
-        }
-        setIsDialogOpen(false);
-        toast.success("Data berhasil disimpan");
-    };
 
-    // Helper fields logic
-    const getKabupatenName = (code: string) => kabupatens.find(k => k.code === code)?.name || "-";
-    const getKecamatanName = (code: string) => kecamatans.find(k => k.code === code)?.name || "-";
+            if (result.success) {
+                toast.success("Data berhasil dihapus")
+                loadAllData()
+            } else {
+                toast.error(result.error || "Gagal menghapus data")
+            }
 
-    // Download Logic
+            setIsDeleteDialogOpen(false)
+            setDeletingItem(null)
+            setCurrentPage(1)
+        })
+    }
+
+    const handleSaveRegency = async (data: RegencyFormData) => {
+        startTransition(async () => {
+            let result
+
+            if (editingItem) {
+                result = await updateRegency(editingItem.id, data)
+            } else {
+                result = await createRegency(data)
+            }
+
+            if (result.success) {
+                toast.success(editingItem ? "Perubahan disimpan" : "Kabupaten baru ditambahkan")
+                setIsDialogOpen(false)
+                loadAllData()
+            } else {
+                toast.error(result.error || "Gagal menyimpan data")
+            }
+        })
+    }
+
+    const handleSaveDistrict = async (data: DistrictFormData) => {
+        startTransition(async () => {
+            let result
+
+            if (editingItem) {
+                result = await updateDistrict(editingItem.id, data)
+            } else {
+                result = await createDistrict(data)
+            }
+
+            if (result.success) {
+                toast.success(editingItem ? "Perubahan disimpan" : "Kecamatan baru ditambahkan")
+                setIsDialogOpen(false)
+                loadAllData()
+            } else {
+                toast.error(result.error || "Gagal menyimpan data")
+            }
+        })
+    }
+
+    const handleSaveVillage = async (data: VillageFormData) => {
+        startTransition(async () => {
+            let result
+
+            if (editingItem) {
+                result = await updateVillage(editingItem.id, data)
+            } else {
+                result = await createVillage(data)
+            }
+
+            if (result.success) {
+                toast.success(editingItem ? "Perubahan disimpan" : "Desa baru ditambahkan")
+                setIsDialogOpen(false)
+                loadAllData()
+            } else {
+                toast.error(result.error || "Gagal menyimpan data")
+            }
+        })
+    }
+
+    // Export Logic
     const getExportData = () => {
         switch (activeTab) {
             case "all":
+            case "desa":
                 return {
                     headers: ["No", "Kabupaten", "Kode Kab", "Kecamatan", "Kode Kec", "Desa", "Kode Desa"],
-                    data: filteredData.map((d, i) => [
+                    data: (filteredData as Village[]).map((v, i) => [
                         i + 1,
-                        d.kabupatenName || getKabupatenName(d.kabupatenCode),
-                        d.kabupatenCode,
-                        d.kecamatanName || getKecamatanName(d.kecamatanCode),
-                        d.kecamatanCode,
-                        d.name,
-                        d.code
+                        v.district?.regency?.name || "-",
+                        v.district?.regency?.code || "-",
+                        v.district?.name || "-",
+                        v.district?.code || "-",
+                        v.name,
+                        v.code
                     ]),
-                    filename: "data_semua_wilayah"
-                };
+                    filename: activeTab === "all" ? "data_semua_wilayah" : "data_desa"
+                }
             case "kabupaten":
                 return {
                     headers: ["No", "Kode Kabupaten", "Nama Kabupaten", "Provinsi"],
-                    data: filteredData.map((d, i) => [
+                    data: (filteredData as Regency[]).map((r, i) => [
                         i + 1,
-                        d.code,
-                        d.name,
-                        "SUMATERA UTARA"
+                        r.code,
+                        r.name,
+                        r.province?.name || "SUMATERA UTARA"
                     ]),
                     filename: "data_kabupaten"
-                };
+                }
             case "kecamatan":
                 return {
                     headers: ["No", "Kode Kecamatan", "Nama Kecamatan", "Kabupaten Induk"],
-                    data: filteredData.map((d, i) => [
+                    data: (filteredData as District[]).map((d, i) => [
                         i + 1,
                         d.code,
                         d.name,
-                        d.nama_kabupaten || getKabupatenName(d.kode_kabupaten)
+                        d.regency?.name || "-"
                     ]),
                     filename: "data_kecamatan"
-                };
-            case "desa":
-                return {
-                    headers: ["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten"],
-                    data: filteredData.map((d, i) => [
-                        i + 1,
-                        d.code,
-                        d.name,
-                        d.kecamatanName || getKecamatanName(d.kecamatanCode),
-                        d.kabupatenName || getKabupatenName(d.kabupatenCode)
-                    ]),
-                    filename: "data_desa"
-                };
+                }
             default:
-                return { headers: [], data: [], filename: "data" };
+                return { headers: [], data: [], filename: "data" }
         }
-    };
+    }
 
     const downloadCSV = () => {
-        const { headers, data, filename } = getExportData();
+        const { headers, data, filename } = getExportData()
 
-        // Helper to escape CSV cells
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const escapeCell = (cell: any) => {
-            if (cell === null || cell === undefined) return "";
-            let str = String(cell);
-            // Sanitize injection
-            if (/^[=+\-@]/.test(str)) {
-                str = "'" + str;
-            }
-            // Escape quotes and wrap in quotes
-            return `"${str.replace(/"/g, '""')}"`;
-        };
+            if (cell === null || cell === undefined) return ""
+            let str = String(cell)
+            if (/^[=+\-@]/.test(str)) str = "'" + str
+            return `"${str.replace(/"/g, '""')}"`
+        }
 
         const csvContent = [
             headers.map(escapeCell).join(","),
             ...data.map(row => row.map(escapeCell).join(","))
-        ].join("\n");
+        ].join("\n")
 
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `${filename}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    };
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", `${filename}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+    }
 
     const downloadPDF = () => {
-        const { headers, data, filename } = getExportData();
-        const doc = new jsPDF();
+        const { headers, data, filename } = getExportData()
+        const doc = new jsPDF()
 
-        doc.setFontSize(18);
-        doc.text("Laporan Data Wilayah Administratif", 14, 22);
-        doc.setFontSize(11);
-        doc.setTextColor(100);
+        doc.setFontSize(18)
+        doc.text("Laporan Data Wilayah Administratif", 14, 22)
+        doc.setFontSize(11)
+        doc.setTextColor(100)
 
-        let subTitle = "";
-        if (activeTab === "all") subTitle = "Semua Data Wilayah";
-        else if (activeTab === "kabupaten") subTitle = "Data Kabupaten";
-        else if (activeTab === "kecamatan") subTitle = "Data Kecamatan";
-        else if (activeTab === "desa") subTitle = "Data Desa";
+        let subTitle = ""
+        if (activeTab === "all") subTitle = "Semua Data Wilayah"
+        else if (activeTab === "kabupaten") subTitle = "Data Kabupaten"
+        else if (activeTab === "kecamatan") subTitle = "Data Kecamatan"
+        else if (activeTab === "desa") subTitle = "Data Desa"
 
-        doc.text(subTitle, 14, 30);
-        doc.text(`Total Data: ${filteredData.length}`, 14, 36);
+        doc.text(subTitle, 14, 30)
+        doc.text(`Total Data: ${filteredData.length}`, 14, 36)
 
         autoTable(doc, {
             head: [headers],
@@ -478,79 +374,179 @@ export default function AdminWilayahPage() {
             startY: 44,
             styles: { fontSize: 8 },
             headStyles: { fillColor: [41, 128, 185] },
-        });
-        doc.save(`${filename}.pdf`);
-    };
+        })
+        doc.save(`${filename}.pdf`)
+    }
 
+    // Form render based on active tab
     const renderForm = () => {
-        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab;
-        return (
-            <div className="grid gap-4 py-4">
-                {effectiveTab === "desa" && (
+        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab
+
+        if (effectiveTab === 'kabupaten') {
+            return (
+                <form onSubmit={regencyForm.handleSubmit(handleSaveRegency)} className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Kabupaten</Label>
+                        <Label className="text-left">Provinsi</Label>
                         <Select
-                            value={formState.grandParentCode}
-                            onValueChange={(val) => setFormState(prev => ({ ...prev, grandParentCode: val, parentCode: "" }))}
+                            value={regencyForm.watch("provinceId")}
+                            onValueChange={(val) => regencyForm.setValue("provinceId", val)}
+                        >
+                            <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="Pilih Provinsi" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {provinces.map(p => (
+                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-left">Nama Kabupaten</Label>
+                        <div className="col-span-3 space-y-1">
+                            <Input {...regencyForm.register("name")} placeholder="Nama Kabupaten" />
+                            {regencyForm.formState.errors.name && (
+                                <p className="text-sm text-red-500">{regencyForm.formState.errors.name.message}</p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-left">Kode</Label>
+                        <div className="col-span-3 space-y-1">
+                            <Input {...regencyForm.register("code")} placeholder="Contoh: 12.07" />
+                            {regencyForm.formState.errors.code && (
+                                <p className="text-sm text-red-500">{regencyForm.formState.errors.code.message}</p>
+                            )}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
+                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Simpan
+                        </Button>
+                    </DialogFooter>
+                </form>
+            )
+        }
+
+        if (effectiveTab === 'kecamatan') {
+            return (
+                <form onSubmit={districtForm.handleSubmit(handleSaveDistrict)} className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-left">Kabupaten</Label>
+                        <Select
+                            value={districtForm.watch("regencyId")}
+                            onValueChange={(val) => districtForm.setValue("regencyId", val)}
                         >
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Pilih Kabupaten" />
                             </SelectTrigger>
                             <SelectContent>
-                                {kabupatens.map(k => (
-                                    <SelectItem key={k.code} value={k.code}>{k.name}</SelectItem>
+                                {regencies.map(r => (
+                                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
-                )}
-
-                {(effectiveTab === "kecamatan" || effectiveTab === "desa") && (
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">{effectiveTab === "kecamatan" ? "Kabupaten" : "Kecamatan"}</Label>
-                        <Select
-                            value={formState.parentCode}
-                            onValueChange={(val) => setFormState(prev => ({ ...prev, parentCode: val }))}
-                            disabled={effectiveTab === "desa" && !formState.grandParentCode}
-                        >
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder={`Pilih ${effectiveTab === "kecamatan" ? "Kabupaten" : "Kecamatan"}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {effectiveTab === "kecamatan"
-                                    ? kabupatens.map(k => (
-                                        <SelectItem key={k.code} value={k.code}>{k.name}</SelectItem>
-                                    ))
-                                    : kecamatans.filter(k => k.kode_kabupaten === formState.grandParentCode).map(k => (
-                                        <SelectItem key={k.code} value={k.code}>{k.name}</SelectItem>
-                                    ))
-                                }
-                            </SelectContent>
-                        </Select>
+                        <Label className="text-right">Nama Kecamatan</Label>
+                        <div className="col-span-3 space-y-1">
+                            <Input {...districtForm.register("name")} placeholder="Nama Kecamatan" />
+                            {districtForm.formState.errors.name && (
+                                <p className="text-sm text-red-500">{districtForm.formState.errors.name.message}</p>
+                            )}
+                        </div>
                     </div>
-                )}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Kode</Label>
+                        <div className="col-span-3 space-y-1">
+                            <Input {...districtForm.register("code")} placeholder="Contoh: 12.07.02" />
+                            {districtForm.formState.errors.code && (
+                                <p className="text-sm text-red-500">{districtForm.formState.errors.code.message}</p>
+                            )}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
+                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Simpan
+                        </Button>
+                    </DialogFooter>
+                </form>
+            )
+        }
 
+        // Village form
+        const selectedRegencyId = villageForm.watch("districtId")
+            ? districts.find(d => d.id === villageForm.watch("districtId"))?.regencyId
+            : ""
+
+        return (
+            <form onSubmit={villageForm.handleSubmit(handleSaveVillage)} className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Nama {effectiveTab === "kabupaten" ? "Kab" : effectiveTab === "kecamatan" ? "Kec" : "Desa"}</Label>
-                    <Input
-                        value={formState.name}
-                        onChange={(e) => setFormState(prev => ({ ...prev, name: e.target.value }))}
-                        className="col-span-3"
-                        placeholder={`Masukkan Nama ${effectiveTab}`}
-                    />
+                    <Label className="text-right">Kabupaten</Label>
+                    <Select
+                        value={selectedRegencyId}
+                        onValueChange={() => villageForm.setValue("districtId", "")}
+                    >
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Pilih Kabupaten" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {regencies.map(r => (
+                                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Kecamatan</Label>
+                    <Select
+                        value={villageForm.watch("districtId")}
+                        onValueChange={(val) => villageForm.setValue("districtId", val)}
+                    >
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Pilih Kecamatan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {districts
+                                .filter(d => !selectedRegencyId || d.regencyId === selectedRegencyId)
+                                .map(d => (
+                                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                                ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Nama Desa</Label>
+                    <div className="col-span-3 space-y-1">
+                        <Input {...villageForm.register("name")} placeholder="Nama Desa" />
+                        {villageForm.formState.errors.name && (
+                            <p className="text-sm text-red-500">{villageForm.formState.errors.name.message}</p>
+                        )}
+                    </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Kode</Label>
-                    <Input
-                        value={formState.code}
-                        onChange={(e) => setFormState(prev => ({ ...prev, code: e.target.value }))}
-                        className="col-span-3"
-                        placeholder="Contoh: 12.07..."
-                    />
+                    <div className="col-span-3 space-y-1">
+                        <Input {...villageForm.register("code")} placeholder="Contoh: 12.07.02.2001" />
+                        {villageForm.formState.errors.code && (
+                            <p className="text-sm text-red-500">{villageForm.formState.errors.code.message}</p>
+                        )}
+                    </div>
                 </div>
-            </div>
-        );
-    };
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
+                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Simpan
+                    </Button>
+                </DialogFooter>
+            </form>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 md:p-8 space-y-8">
@@ -583,13 +579,13 @@ export default function AdminWilayahPage() {
                                 placeholder={`Cari ${activeTab}...`}
                                 value={searchTerm}
                                 onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setCurrentPage(1); // Reset pagination on search
+                                    setSearchTerm(e.target.value)
+                                    setCurrentPage(1)
                                 }}
                                 className="pl-9 bg-white"
                             />
                         </div>
-                        <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
+                        <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700 text-white shrink-0" disabled={isPending}>
                             <Plus className="h-4 w-4 mr-2" /> Tambah
                         </Button>
                         <div className="flex gap-1 shrink-0">
@@ -604,61 +600,69 @@ export default function AdminWilayahPage() {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px] hover:shadow-md transition-shadow">
-                    <TabsContent value="all" className="m-0 border-none">
-                        <Table
-                            columns={["No", "Kabupaten", "Kode", "Kecamatan", "Kode", "Desa", "Kode", "Aksi"]}
-                            data={paginatedData.map((item, i) => [
-                                startIndex + i + 1,
-                                <span key="kab" className="font-medium text-gray-900">{item.kabupatenName || kabupatens.find(k => k.code === item.kabupatenCode)?.name || "-"}</span>,
-                                <span key="kab_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.kabupatenCode}</span>,
-                                <span key="kec" className="font-medium text-gray-900">{item.kecamatanName || kecamatans.find(k => k.code === item.kecamatanCode)?.name || "-"}</span>,
-                                <span key="kec_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.kecamatanCode}</span>,
-                                <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id)} />
-                            ])}
-                        />
-                    </TabsContent>
+                    {isLoading ? (
+                        <div className="flex items-center justify-center h-64">
+                            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                        </div>
+                    ) : (
+                        <>
+                            <TabsContent value="all" className="m-0 border-none">
+                                <DataTable
+                                    columns={["No", "Kabupaten", "Kode", "Kecamatan", "Kode", "Desa", "Kode", "Aksi"]}
+                                    data={(paginatedData as Village[]).map((item, i) => [
+                                        startIndex + i + 1,
+                                        <span key="kab" className="font-medium text-gray-900">{item.district?.regency?.name || "-"}</span>,
+                                        <span key="kab_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.regency?.code || "-"}</span>,
+                                        <span key="kec" className="font-medium text-gray-900">{item.district?.name || "-"}</span>,
+                                        <span key="kec_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.code || "-"}</span>,
+                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'desa')} disabled={isPending} />
+                                    ])}
+                                />
+                            </TabsContent>
 
-                    <TabsContent value="kabupaten" className="m-0 border-none">
-                        <Table
-                            columns={["No", "Kode Kab", "Nama Kabupaten", "Provinsi", "Aksi"]}
-                            data={paginatedData.map((item, i) => [
-                                startIndex + i + 1,
-                                <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                <span key="prov" className="text-gray-500 text-sm">SUMATERA UTARA</span>,
-                                <TableActions key={item.code} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.code, item.code)} />
-                            ])}
-                        />
-                    </TabsContent>
+                            <TabsContent value="kabupaten" className="m-0 border-none">
+                                <DataTable
+                                    columns={["No", "Kode Kab", "Nama Kabupaten", "Provinsi", "Aksi"]}
+                                    data={(paginatedData as Regency[]).map((item, i) => [
+                                        startIndex + i + 1,
+                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                        <span key="prov" className="text-gray-500 text-sm">{item.province?.name || "SUMATERA UTARA"}</span>,
+                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'kabupaten')} disabled={isPending} />
+                                    ])}
+                                />
+                            </TabsContent>
 
-                    <TabsContent value="kecamatan" className="m-0 border-none">
-                        <Table
-                            columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
-                            data={paginatedData.map((item, i) => [
-                                startIndex + i + 1,
-                                <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                <span key="kab" className="text-gray-600">{item.nama_kabupaten || kabupatens.find(k => k.code === item.kode_kabupaten)?.name || "-"}</span>,
-                                <TableActions key={item.code} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.code, item.code)} />
-                            ])}
-                        />
-                    </TabsContent>
+                            <TabsContent value="kecamatan" className="m-0 border-none">
+                                <DataTable
+                                    columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
+                                    data={(paginatedData as District[]).map((item, i) => [
+                                        startIndex + i + 1,
+                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                        <span key="kab" className="text-gray-600">{item.regency?.name || "-"}</span>,
+                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'kecamatan')} disabled={isPending} />
+                                    ])}
+                                />
+                            </TabsContent>
 
-                    <TabsContent value="desa" className="m-0 border-none">
-                        <Table
-                            columns={["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten", "Aksi"]}
-                            data={paginatedData.map((item, i) => [
-                                startIndex + i + 1,
-                                <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                <span key="kec" className="text-gray-600">{item.kecamatanName || kecamatans.find(k => k.code === item.kecamatanCode)?.name || "-"}</span>,
-                                <span key="kab" className="text-gray-600">{item.kabupatenName || kabupatens.find(k => k.code === item.kabupatenCode)?.name || "-"}</span>,
-                                <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id)} />
-                            ])}
-                        />
-                    </TabsContent>
+                            <TabsContent value="desa" className="m-0 border-none">
+                                <DataTable
+                                    columns={["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten", "Aksi"]}
+                                    data={(paginatedData as Village[]).map((item, i) => [
+                                        startIndex + i + 1,
+                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                        <span key="kec" className="text-gray-600">{item.district?.name || "-"}</span>,
+                                        <span key="kab" className="text-gray-600">{item.district?.regency?.name || "-"}</span>,
+                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'desa')} disabled={isPending} />
+                                    ])}
+                                />
+                            </TabsContent>
+                        </>
+                    )}
 
                     {/* Pagination Footer */}
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/30">
@@ -667,50 +671,22 @@ export default function AdminWilayahPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setCurrentPage(1)}
-                                disabled={currentPage === 1}
-                            >
+                            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
                                 <ChevronsLeft className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
-                            >
+                            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
 
                             <div className="flex items-center gap-1 mx-2">
-                                <span className="text-sm font-medium text-gray-900">
-                                    {currentPage}
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                    / {totalPages || 1}
-                                </span>
+                                <span className="text-sm font-medium text-gray-900">{currentPage}</span>
+                                <span className="text-sm text-gray-500">/ {totalPages || 1}</span>
                             </div>
 
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages || totalPages === 0}
-                            >
+                            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setCurrentPage(totalPages)}
-                                disabled={currentPage === totalPages || totalPages === 0}
-                            >
+                            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages || totalPages === 0}>
                                 <ChevronsRight className="h-4 w-4" />
                             </Button>
                         </div>
@@ -722,50 +698,53 @@ export default function AdminWilayahPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingItem ? "Edit Data" : "Tambah Data"} {activeTab === "all" ? "Data Lengkap" : activeTab}</DialogTitle>
+                        <DialogTitle>{editingItem ? "Edit Data" : "Tambah Data"} {activeTab === "all" ? "Desa" : activeTab}</DialogTitle>
+                        <DialogDescription>
+                            Isi data wilayah di bawah ini.
+                        </DialogDescription>
                     </DialogHeader>
                     {renderForm()}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Batal</Button>
-                        <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">Simpan</Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="sm:max-w-sm">
-                    <DialogHeader>
-                        <DialogTitle>Hapus Data?</DialogTitle>
-                        <div className="text-sm text-muted-foreground">
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Hapus Data?</AlertDialogTitle>
+                        <AlertDialogDescription>
                             Apakah Anda yakin ingin menghapus data ini?
-                            {(activeTab === "kabupaten" || activeTab === "kecamatan") && " Data anak (kecamatan/desa) yang terkait juga akan terhapus."}
-                        </div>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Batal</Button>
-                        <Button variant="destructive" onClick={confirmDelete}>Hapus</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                            {deletingItem?.type === "kabupaten" && " Semua kecamatan dan desa di dalamnya juga akan terhapus."}
+                            {deletingItem?.type === "kecamatan" && " Semua desa di dalamnya juga akan terhapus."}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isPending}>Batal</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700" disabled={isPending}>
+                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Hapus
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
-    );
+    )
 }
 
-// Simple Action Buttons Component
-const TableActions = ({ onEdit, onDelete }: { onEdit: () => void, onDelete: () => void }) => (
+// Table Actions Component
+const TableActions = ({ onEdit, onDelete, disabled }: { onEdit: () => void; onDelete: () => void; disabled?: boolean }) => (
     <div className="flex gap-2">
-        <Button variant="ghost" size="icon" onClick={onEdit} className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+        <Button variant="ghost" size="icon" onClick={onEdit} disabled={disabled} className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
             <Pencil className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50">
+        <Button variant="ghost" size="icon" onClick={onDelete} disabled={disabled} className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50">
             <Trash className="h-4 w-4" />
         </Button>
     </div>
-);
+)
 
-// Reusable Table Component
-const Table = ({ columns, data }: { columns: string[], data: (string | number | React.ReactNode)[][] }) => (
+// Reusable DataTable Component
+const DataTable = ({ columns, data }: { columns: string[]; data: (string | number | React.ReactNode)[][] }) => (
     <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">
@@ -794,4 +773,4 @@ const Table = ({ columns, data }: { columns: string[], data: (string | number | 
             </tbody>
         </table>
     </div>
-);
+)
