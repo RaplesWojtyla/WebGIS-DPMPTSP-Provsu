@@ -17,7 +17,6 @@ export const NAVIGATION_CONFIG = {
         items: [
             { name: "Dashboard Operator", href: "/operator/dashboard", icon: LayoutDashboardIcon },
             { name: "Data Wilayah", href: "/operator/wilayah", icon: MapIcon },
-            { name: "Data Sektor", href: "/operator/sektor", icon: Briefcase },
             { name: "Data PDRB", href: "/operator/pdrb", icon: PieChartIcon },
         ]
     },
@@ -27,7 +26,6 @@ export const NAVIGATION_CONFIG = {
             { name: "Ringkasan", href: "/admin/dashboard", icon: LayoutDashboardIcon },
             { name: "Data Pengguna", href: "/admin/dashboard/users", icon: UsersIcon },
             { name: "Data Wilayah", href: "/admin/dashboard/wilayah", icon: MapIcon },
-            { name: "Data Sektor", href: "/admin/dashboard/sektor", icon: Briefcase },
             { name: "Data PDRB", href: "/admin/dashboard/pdrb", icon: PieChartIcon },
         ]
     }

@@ -60,9 +60,9 @@ export async function upsertPdrbValues(data: PdrbBulkFormData) {
     const validation = pdrbBulkSchema.safeParse(data)
 
     if (!validation.success) {
-        return { 
-            success: false, 
-            error: validation.error.issues[0]?.message || 'Data tidak valid' 
+        return {
+            success: false,
+            error: validation.error.issues[0]?.message || 'Data tidak valid'
         }
     }
 
@@ -110,9 +110,9 @@ export async function upsertPdrbValues(data: PdrbBulkFormData) {
 
 export async function submitPdrbForApproval(regencyId: string, year: number) {
     if (!regencyId || !year) {
-        return { 
-            success: false, 
-            error: 'Data tidak lengkap' 
+        return {
+            success: false,
+            error: 'Data tidak lengkap'
         }
     }
 
@@ -136,6 +136,215 @@ export async function submitPdrbForApproval(regencyId: string, year: number) {
     }
 }
 
+export async function getPdrbSummaryByYear(year: number) {
+    try {
+        const pdrbValues = await prisma.pdrbValue.findMany({
+            where: { year },
+            select: {
+                regencyId: true,
+                value: true,
+                status: true,
+                submittedAt: true
+            }
+        })
+
+        const groupedData = pdrbValues.reduce((acc, curr) => {
+            if (!acc[curr.regencyId]) {
+                acc[curr.regencyId] = {
+                    total: 0,
+                    sectorCount: 0,
+                    status: curr.status,
+                    submittedAt: curr.submittedAt
+                }
+            }
+
+            acc[curr.regencyId].total += curr.value
+            acc[curr.regencyId].sectorCount += 1
+            return acc
+        }, {} as Record<string, {
+            total: number;
+            sectorCount: number;
+            status: string;
+            submittedAt: Date | null
+        }>)
+
+        return {
+            success: true,
+            data: groupedData
+        }
+    } catch (error) {
+        console.error('Failed to get PDRB summary:', error)
+        return {
+            success: false, error: 'Gagal mengambil ringkasan PDRB'
+        }
+    }
+}
+
+export async function getPdrbValueForAnalysis(regencyId: string, sectorId: string, year: number) {
+    try {
+        const pdrbValue = await prisma.pdrbValue.findUnique({
+            where: {
+                regencyId_sectorId_year: { regencyId, sectorId, year }
+            },
+            select: { value: true }
+        })
+
+        return { success: true, data: pdrbValue?.value ?? 0 }
+    } catch (error) {
+        console.error('Failed to get PDRB value:', error)
+        return { success: false, error: 'Gagal mengambil nilai PDRB' }
+    }
+}
+
+export async function getTotalPdrbByRegencyYear(regencyId: string, year: number) {
+    try {
+        const result = await prisma.pdrbValue.aggregate({
+            where: { regencyId, year },
+            _sum: { value: true }
+        })
+
+        return { success: true, data: result._sum.value ?? 0 }
+    } catch (error) {
+        console.error('Failed to get total PDRB:', error)
+        return { success: false, error: 'Gagal mengambil total PDRB' }
+    }
+}
+
+export async function getProvincePdrbByYear(year: number, sectorId?: string) {
+    try {
+        const where = sectorId ? { year, sectorId } : { year }
+        const result = await prisma.pdrbValue.aggregate({
+            where,
+            _sum: { value: true }
+        })
+
+        return { success: true, data: result._sum.value ?? 0 }
+    } catch (error) {
+        console.error('Failed to get province PDRB:', error)
+        return { success: false, error: 'Gagal mengambil PDRB Provinsi' }
+    }
+}
+
+export async function getLQAnalysisData(regencyId: string, sectorId: string, year: number) {
+    try {
+        const [pdrbSector, totalPdrb, pdbSector, totalPdb] = await Promise.all([
+            getPdrbValueForAnalysis(regencyId, sectorId, year),
+            getTotalPdrbByRegencyYear(regencyId, year),
+            getProvincePdrbByYear(year, sectorId),
+            getProvincePdrbByYear(year)
+        ])
+
+        return {
+            success: true,
+            data: {
+                pdrbSector: pdrbSector.data ?? 0,
+                totalPdrb: totalPdrb.data ?? 0,
+                pdbSector: pdbSector.data ?? 0,
+                totalPdb: totalPdb.data ?? 0
+            }
+        }
+    } catch (error) {
+        console.error('Failed to get LQ analysis data:', error)
+        return { success: false, error: 'Gagal mengambil data analisis LQ' }
+    }
+}
+
+export async function getTimeSeriesAnalysisData(regencyId: string, sectorId: string, startYear: number, endYear: number) {
+    try {
+        const [
+            regionSectorStart, regionSectorEnd,
+            regionTotalStart, regionTotalEnd,
+            provSectorStart, provSectorEnd,
+            provTotalStart, provTotalEnd
+        ] = await Promise.all([
+            getPdrbValueForAnalysis(regencyId, sectorId, startYear),
+            getPdrbValueForAnalysis(regencyId, sectorId, endYear),
+            getTotalPdrbByRegencyYear(regencyId, startYear),
+            getTotalPdrbByRegencyYear(regencyId, endYear),
+            getProvincePdrbByYear(startYear, sectorId),
+            getProvincePdrbByYear(endYear, sectorId),
+            getProvincePdrbByYear(startYear),
+            getProvincePdrbByYear(endYear)
+        ])
+
+        return {
+            success: true,
+            data: {
+                regionSectorStart: regionSectorStart.data ?? 0,
+                regionSectorEnd: regionSectorEnd.data ?? 0,
+                regionTotalStart: regionTotalStart.data ?? 0,
+                regionTotalEnd: regionTotalEnd.data ?? 0,
+                provSectorStart: provSectorStart.data ?? 0,
+                provSectorEnd: provSectorEnd.data ?? 0,
+                provTotalStart: provTotalStart.data ?? 0,
+                provTotalEnd: provTotalEnd.data ?? 0
+            }
+        }
+    } catch (error) {
+        console.error('Failed to get time series analysis data:', error)
+        return { success: false, error: 'Gagal mengambil data analisis time series' }
+    }
+}
+
+export async function getOperatorPdrbSubmissions() {
+    try {
+        const submissions = await prisma.pdrbValue.findMany({
+            where: {
+                submittedAt: { not: null }
+            },
+            select: {
+                regencyId: true,
+                year: true,
+                status: true,
+                submittedAt: true,
+                approvedAt: true,
+                notes: true,
+                regency: {
+                    select: { name: true, code: true }
+                }
+            },
+            orderBy: { submittedAt: 'desc' }
+        })
+
+        const groupedMap = new Map<string, {
+            regencyId: string
+            regencyName: string
+            regencyCode: string
+            year: number
+            status: string
+            submittedAt: Date
+            approvedAt: Date | null
+            notes: string | null
+            sectorCount: number
+        }>()
+
+        for (const sub of submissions) {
+            const key = `${sub.regencyId}-${sub.year}`
+            if (!groupedMap.has(key)) {
+                groupedMap.set(key, {
+                    regencyId: sub.regencyId,
+                    regencyName: sub.regency.name,
+                    regencyCode: sub.regency.code,
+                    year: sub.year,
+                    status: sub.status,
+                    submittedAt: sub.submittedAt!,
+                    approvedAt: sub.approvedAt,
+                    notes: sub.notes,
+                    sectorCount: 1
+                })
+            } else {
+                const existing = groupedMap.get(key)!
+                existing.sectorCount++
+            }
+        }
+
+        return { success: true, data: Array.from(groupedMap.values()) }
+    } catch (error) {
+        console.error('Failed to get PDRB submissions:', error)
+        return { success: false, error: 'Gagal mengambil data pengajuan' }
+    }
+}
+
 // ==================== ADMIN ACTIONS ====================
 
 export async function getAllPdrbForReview(status?: 'PENDING' | 'APPROVED' | 'REJECTED') {
@@ -146,7 +355,10 @@ export async function getAllPdrbForReview(status?: 'PENDING' | 'APPROVED' | 'REJ
                 regency: { include: { province: true } },
                 sector: true
             },
-            orderBy: [{ year: 'desc' }, { regency: { code: 'asc' } }]
+            orderBy: [
+                { year: 'desc' },
+                { regency: { code: 'asc' } }
+            ]
         })
 
         return { success: true, data: pdrbValues }
@@ -159,9 +371,9 @@ export async function getAllPdrbForReview(status?: 'PENDING' | 'APPROVED' | 'REJ
 
 export async function approvePdrb(regencyId: string, year: number, userId: string) {
     if (!regencyId || !year || !userId) {
-        return { 
-            success: false, 
-            error: 'Data tidak lengkap' 
+        return {
+            success: false,
+            error: 'Data tidak lengkap'
         }
     }
 
@@ -189,9 +401,9 @@ export async function approvePdrb(regencyId: string, year: number, userId: strin
 
 export async function rejectPdrb(regencyId: string, year: number, userId: string, notes: string) {
     if (!regencyId || !year || !userId) {
-        return { 
-            success: false, 
-            error: 'Data tidak lengkap' 
+        return {
+            success: false,
+            error: 'Data tidak lengkap'
         }
     }
 
@@ -245,7 +457,7 @@ export async function getPdrbSummaryByRegency(year: number) {
         return { success: true, data: summary }
     } catch (error) {
         console.error('Failed to get PDRB summary:', error)
-        
+
         return { success: false, error: 'Gagal mengambil ringkasan PDRB' }
     }
 }
