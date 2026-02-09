@@ -91,7 +91,6 @@ export default function PdrbPage() {
     const [statusFilter, setStatusFilter] = useState<string>("all")
     const [currentPage, setCurrentPage] = useState(1)
 
-    // Load all data in one effect
     useEffect(() => {
         loadAllData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,7 +99,6 @@ export default function PdrbPage() {
     const loadAllData = async () => {
         setIsLoading(true)
 
-        // Fetch all data in parallel
         const [regenciesResult, sectorsResult, pdrbSummaryResult] = await Promise.all([
             getRegenciesWithProvince(),
             getSectors(),
@@ -120,7 +118,6 @@ export default function PdrbPage() {
             setSectors(sectorsResult.data as Sector[])
         }
 
-        // Map regencies to PDRB data
         const pdrbSummary = pdrbSummaryResult.success && pdrbSummaryResult.data
             ? pdrbSummaryResult.data
             : {}

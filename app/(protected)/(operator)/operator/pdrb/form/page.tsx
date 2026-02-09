@@ -75,7 +75,7 @@ function PdrbFormContent() {
     const hasFetched = useRef(false)
 
     const { control, handleSubmit, reset, getValues, setValue, watch } = useForm<PdrbFormValues>({
-        resolver: zodResolver(pdrbFormSchema) as any,
+        resolver: zodResolver(pdrbFormSchema),
         defaultValues: {
             values: []
         }
