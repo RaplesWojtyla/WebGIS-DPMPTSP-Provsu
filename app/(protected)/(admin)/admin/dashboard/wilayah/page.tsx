@@ -1,15 +1,11 @@
 "use client"
 
 import React, { useState, useMemo, useEffect, useTransition } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Search, Plus, Pencil, Trash, Building2, MapPin, Home, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileSpreadsheet, FileText, LayoutGrid, Loader2 } from "lucide-react"
+import { Search, Plus, Building2, MapPin, Home, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileSpreadsheet, FileText, LayoutGrid, Loader2 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import jsPDF from "jspdf"
@@ -30,17 +26,13 @@ import {
     updateVillage,
     deleteVillage,
 } from "@/lib/actions/wilayah.actions"
-import {
-    regencySchema,
-    districtSchema,
-    villageSchema,
-    type RegencyFormData,
-    type DistrictFormData,
-    type VillageFormData,
-} from "@/lib/zod/wilayah-schema"
+import type { RegencyFormData, DistrictFormData, VillageFormData } from "@/lib/zod/wilayah-schema"
 
-// Types from database (Saya pindahkan ke dalam global.d.ts)
-
+// Import our new components
+import { RegencyForm } from "@/components/dashboard/operator/RegencyForm"
+import { DistrictForm } from "@/components/dashboard/operator/DistrictForm"
+import { VillageForm } from "@/components/dashboard/operator/VillageForm"
+import { WilayahTable } from "@/components/dashboard/operator/WilayahTable"
 
 const ITEMS_PER_PAGE = 10
 
@@ -64,32 +56,6 @@ export default function AdminWilayahPage() {
     const [editingItem, setEditingItem] = useState<Regency | District | Village | null>(null)
     const [deletingItem, setDeletingItem] = useState<{ id: string; type: string } | null>(null)
 
-    const regencyForm = useForm<RegencyFormData>({
-        resolver: zodResolver(regencySchema),
-        defaultValues: { 
-            code: "", 
-            name: "", 
-            provinceId: "" 
-        }
-    })
-
-    const districtForm = useForm<DistrictFormData>({
-        resolver: zodResolver(districtSchema),
-        defaultValues: { 
-            code: "", 
-            name: "", 
-            regencyId: "" 
-        }
-    })
-
-    const villageForm = useForm<VillageFormData>({
-        resolver: zodResolver(villageSchema),
-        defaultValues: { 
-            code: "", 
-            name: "", 
-            districtId: "" 
-        }
-    })
 
     useEffect(() => {
         loadAllData()
@@ -156,33 +122,11 @@ export default function AdminWilayahPage() {
 
     const handleAddNew = () => {
         setEditingItem(null)
-        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab
-
-        if (effectiveTab === 'kabupaten') {
-            regencyForm.reset({ code: "", name: "", provinceId: provinces[0]?.id || "" })
-        } else if (effectiveTab === 'kecamatan') {
-            districtForm.reset({ code: "", name: "", regencyId: "" })
-        } else {
-            villageForm.reset({ code: "", name: "", districtId: "" })
-        }
-
         setIsDialogOpen(true)
     }
 
     const handleEdit = (item: Regency | District | Village) => {
         setEditingItem(item)
-        const effectiveTab = activeTab === 'all' ? 'desa' : activeTab
-
-        if (effectiveTab === 'kabupaten') {
-            const reg = item as Regency
-            regencyForm.reset({ code: reg.code, name: reg.name, provinceId: reg.provinceId })
-        } else if (effectiveTab === 'kecamatan') {
-            const dist = item as District
-            districtForm.reset({ code: dist.code, name: dist.name, regencyId: dist.regencyId })
-        } else {
-            const vil = item as Village
-            villageForm.reset({ code: vil.code, name: vil.name, districtId: vil.districtId })
-        }
         setIsDialogOpen(true)
     }
 
@@ -384,167 +328,37 @@ export default function AdminWilayahPage() {
 
         if (effectiveTab === 'kabupaten') {
             return (
-                <form onSubmit={regencyForm.handleSubmit(handleSaveRegency)} className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Provinsi</Label>
-                        <Select
-                            value={regencyForm.watch("provinceId")}
-                            onValueChange={(val) => regencyForm.setValue("provinceId", val)}
-                        >
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Pilih Provinsi" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {provinces.map(p => (
-                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Nama Kabupaten</Label>
-                        <div className="col-span-3 space-y-1">
-                            <Input {...regencyForm.register("name")} placeholder="Nama Kabupaten" />
-                            {regencyForm.formState.errors.name && (
-                                <p className="text-sm text-red-500">{regencyForm.formState.errors.name.message}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Kode</Label>
-                        <div className="col-span-3 space-y-1">
-                            <Input {...regencyForm.register("code")} placeholder="Contoh: 12.07" />
-                            {regencyForm.formState.errors.code && (
-                                <p className="text-sm text-red-500">{regencyForm.formState.errors.code.message}</p>
-                            )}
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
-                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
-                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Simpan
-                        </Button>
-                    </DialogFooter>
-                </form>
+                <RegencyForm
+                    initialData={editingItem as Regency | null}
+                    provinces={provinces}
+                    onSubmit={handleSaveRegency}
+                    onCancel={() => setIsDialogOpen(false)}
+                    isPending={isPending}
+                />
             )
         }
 
         if (effectiveTab === 'kecamatan') {
             return (
-                <form onSubmit={districtForm.handleSubmit(handleSaveDistrict)} className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Kabupaten</Label>
-                        <Select
-                            value={districtForm.watch("regencyId")}
-                            onValueChange={(val) => districtForm.setValue("regencyId", val)}
-                        >
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Pilih Kabupaten" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {regencies.map(r => (
-                                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Nama Kecamatan</Label>
-                        <div className="col-span-3 space-y-1">
-                            <Input {...districtForm.register("name")} placeholder="Nama Kecamatan" />
-                            {districtForm.formState.errors.name && (
-                                <p className="text-sm text-red-500">{districtForm.formState.errors.name.message}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Kode</Label>
-                        <div className="col-span-3 space-y-1">
-                            <Input {...districtForm.register("code")} placeholder="Contoh: 12.07.02" />
-                            {districtForm.formState.errors.code && (
-                                <p className="text-sm text-red-500">{districtForm.formState.errors.code.message}</p>
-                            )}
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
-                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
-                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Simpan
-                        </Button>
-                    </DialogFooter>
-                </form>
+                <DistrictForm
+                    initialData={editingItem as District | null}
+                    regencies={regencies}
+                    onSubmit={handleSaveDistrict}
+                    onCancel={() => setIsDialogOpen(false)}
+                    isPending={isPending}
+                />
             )
         }
 
-        // Village form
-        const selectedRegencyId = villageForm.watch("districtId")
-            ? districts.find(d => d.id === villageForm.watch("districtId"))?.regencyId
-            : ""
-
         return (
-            <form onSubmit={villageForm.handleSubmit(handleSaveVillage)} className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Kabupaten</Label>
-                    <Select
-                        value={selectedRegencyId}
-                        onValueChange={() => villageForm.setValue("districtId", "")}
-                    >
-                        <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Pilih Kabupaten" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {regencies.map(r => (
-                                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Kecamatan</Label>
-                    <Select
-                        value={villageForm.watch("districtId")}
-                        onValueChange={(val) => villageForm.setValue("districtId", val)}
-                    >
-                        <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Pilih Kecamatan" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {districts
-                                .filter(d => !selectedRegencyId || d.regencyId === selectedRegencyId)
-                                .map(d => (
-                                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                                ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Nama Desa</Label>
-                    <div className="col-span-3 space-y-1">
-                        <Input {...villageForm.register("name")} placeholder="Nama Desa" />
-                        {villageForm.formState.errors.name && (
-                            <p className="text-sm text-red-500">{villageForm.formState.errors.name.message}</p>
-                        )}
-                    </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Kode</Label>
-                    <div className="col-span-3 space-y-1">
-                        <Input {...villageForm.register("code")} placeholder="Contoh: 12.07.02.2001" />
-                        {villageForm.formState.errors.code && (
-                            <p className="text-sm text-red-500">{villageForm.formState.errors.code.message}</p>
-                        )}
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>Batal</Button>
-                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isPending}>
-                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Simpan
-                    </Button>
-                </DialogFooter>
-            </form>
+            <VillageForm
+                initialData={editingItem as Village | null}
+                regencies={regencies}
+                districts={districts}
+                onSubmit={handleSaveVillage}
+                onCancel={() => setIsDialogOpen(false)}
+                isPending={isPending}
+            />
         )
     }
 
@@ -607,7 +421,7 @@ export default function AdminWilayahPage() {
                     ) : (
                         <>
                             <TabsContent value="all" className="m-0 border-none">
-                                <DataTable
+                                <WilayahTable
                                     columns={["No", "Kabupaten", "Kode", "Kecamatan", "Kode", "Desa", "Kode", "Aksi"]}
                                     data={(paginatedData as Village[]).map((item, i) => [
                                         startIndex + i + 1,
@@ -617,39 +431,48 @@ export default function AdminWilayahPage() {
                                         <span key="kec_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.code || "-"}</span>,
                                         <span key="name" className="font-medium text-gray-900">{item.name}</span>,
                                         <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'desa')} disabled={isPending} />
+                                        item // Pass entire item as the last element for actions
                                     ])}
+                                    onEdit={handleEdit}
+                                    onDelete={(id) => handleDelete(id, 'desa')}
+                                    isPending={isPending}
                                 />
                             </TabsContent>
 
                             <TabsContent value="kabupaten" className="m-0 border-none">
-                                <DataTable
+                                <WilayahTable
                                     columns={["No", "Kode Kab", "Nama Kabupaten", "Provinsi", "Aksi"]}
                                     data={(paginatedData as Regency[]).map((item, i) => [
                                         startIndex + i + 1,
                                         <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
                                         <span key="name" className="font-medium text-gray-900">{item.name}</span>,
                                         <span key="prov" className="text-gray-500 text-sm">{item.province?.name || "SUMATERA UTARA"}</span>,
-                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'kabupaten')} disabled={isPending} />
+                                        item
                                     ])}
+                                    onEdit={handleEdit}
+                                    onDelete={(id) => handleDelete(id, 'kabupaten')}
+                                    isPending={isPending}
                                 />
                             </TabsContent>
 
                             <TabsContent value="kecamatan" className="m-0 border-none">
-                                <DataTable
+                                <WilayahTable
                                     columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
                                     data={(paginatedData as District[]).map((item, i) => [
                                         startIndex + i + 1,
                                         <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
                                         <span key="name" className="font-medium text-gray-900">{item.name}</span>,
                                         <span key="kab" className="text-gray-600">{item.regency?.name || "-"}</span>,
-                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'kecamatan')} disabled={isPending} />
+                                        item
                                     ])}
+                                    onEdit={handleEdit}
+                                    onDelete={(id) => handleDelete(id, 'kecamatan')}
+                                    isPending={isPending}
                                 />
                             </TabsContent>
 
                             <TabsContent value="desa" className="m-0 border-none">
-                                <DataTable
+                                <WilayahTable
                                     columns={["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten", "Aksi"]}
                                     data={(paginatedData as Village[]).map((item, i) => [
                                         startIndex + i + 1,
@@ -657,8 +480,11 @@ export default function AdminWilayahPage() {
                                         <span key="name" className="font-medium text-gray-900">{item.name}</span>,
                                         <span key="kec" className="text-gray-600">{item.district?.name || "-"}</span>,
                                         <span key="kab" className="text-gray-600">{item.district?.regency?.name || "-"}</span>,
-                                        <TableActions key={item.id} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id, 'desa')} disabled={isPending} />
+                                        item
                                     ])}
+                                    onEdit={handleEdit}
+                                    onDelete={(id) => handleDelete(id, 'desa')}
+                                    isPending={isPending}
                                 />
                             </TabsContent>
                         </>
@@ -730,47 +556,3 @@ export default function AdminWilayahPage() {
         </div>
     )
 }
-
-// Table Actions Component
-const TableActions = ({ onEdit, onDelete, disabled }: { onEdit: () => void; onDelete: () => void; disabled?: boolean }) => (
-    <div className="flex gap-2">
-        <Button variant="ghost" size="icon" onClick={onEdit} disabled={disabled} className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-            <Pencil className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={onDelete} disabled={disabled} className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50">
-            <Trash className="h-4 w-4" />
-        </Button>
-    </div>
-)
-
-// Reusable DataTable Component
-const DataTable = ({ columns, data }: { columns: string[]; data: (string | number | React.ReactNode)[][] }) => (
-    <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">
-                <tr>
-                    {columns.map((col, idx) => (
-                        <th key={idx} className="px-6 py-4 font-semibold text-gray-600 tracking-wider whitespace-nowrap">{col}</th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-                {data.length > 0 ? (
-                    data.map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-gray-50/50 transition-colors">
-                            {row.map((cell, cIdx) => (
-                                <td key={cIdx} className="px-6 py-4 text-gray-700 whitespace-nowrap">{cell}</td>
-                            ))}
-                        </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                            Tidak ada data
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </table>
-    </div>
-)

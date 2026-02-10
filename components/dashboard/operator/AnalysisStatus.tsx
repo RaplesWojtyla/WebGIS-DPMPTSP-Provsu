@@ -42,20 +42,20 @@ export default function AnalysisStatus({ submissions }: AnalysisStatusProps) {
         switch (status) {
             case 'APPROVED':
                 return (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-700">
                         <FiCheckCircle className="w-3 h-3" /> Disetujui
                     </span>
                 )
             case 'REJECTED':
                 return (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-red-100 text-red-700">
                         <FiXCircle className="w-3 h-3" /> Ditolak
                     </span>
                 )
             case 'PENDING':
             default:
                 return (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-yellow-100 text-yellow-700">
                         <FiClock className="w-3 h-3" /> Pending
                     </span>
                 )
@@ -65,25 +65,25 @@ export default function AnalysisStatus({ submissions }: AnalysisStatusProps) {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl shadow-sm border">
+                <div className="bg-white p-4 rounded-lg shadow-sm border">
                     <div className="text-sm text-gray-500">Total Pengajuan</div>
                     <div className="text-2xl font-bold">{submissionStats.total}</div>
                 </div>
-                <div className="bg-yellow-50 p-4 rounded-xl shadow-sm border border-yellow-100">
+                <div className="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-100">
                     <div className="text-sm text-yellow-600">Pending</div>
                     <div className="text-2xl font-bold text-yellow-700">{submissionStats.pending}</div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-green-100">
+                <div className="bg-green-50 p-4 rounded-lg shadow-sm border border-green-100">
                     <div className="text-sm text-green-600">Disetujui</div>
                     <div className="text-2xl font-bold text-green-700">{submissionStats.approved}</div>
                 </div>
-                <div className="bg-red-50 p-4 rounded-xl shadow-sm border border-red-100">
+                <div className="bg-red-50 p-4 rounded-lg shadow-sm border border-red-100">
                     <div className="text-sm text-red-600">Ditolak</div>
                     <div className="text-2xl font-bold text-red-700">{submissionStats.rejected}</div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-6 border-b border-slate-100">
                     <h2 className="text-lg font-bold text-slate-800">Status Pengajuan PDRB</h2>
                     <p className="text-sm text-slate-500 mt-1">Daftar pengajuan data PDRB yang telah disubmit</p>

@@ -1,10 +1,25 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { FiRefreshCw, FiLoader } from "react-icons/fi"
+import { FiRefreshCw } from "react-icons/fi"
+import { Check, ChevronsUpDown } from "lucide-react"
 import Decimal from "decimal.js"
 import { toast } from "sonner"
 import { getLQAnalysisData } from "@/lib/actions/pdrb.actions"
+import { cn } from "@/lib/utils"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import {
     Select,
     SelectContent,
@@ -40,6 +55,8 @@ interface AnalysisLQProps {
 export default function AnalysisLQ({ regions, sectors, years }: AnalysisLQProps) {
     const [isFetchingData, setIsFetchingData] = useState(false)
     const [resultLQ, setResultLQ] = useState<AnalysisResultLQ | null>(null)
+    const [openRegion, setOpenRegion] = useState(false)
+    const [openSector, setOpenSector] = useState(false)
 
     const [formDataLQ, setFormDataLQ] = useState({
         regencyId: "",
@@ -126,42 +143,104 @@ export default function AnalysisLQ({ regions, sectors, years }: AnalysisLQProps)
     }
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-100 p-8">
             <h2 className="text-xl font-bold text-slate-800 mb-6">Analisis Location Quotient (LQ)</h2>
 
             {/* Selection Controls */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div>
                     <label className="text-sm font-semibold text-slate-700">Kabupaten/Kota</label>
-                    <Select
-                        value={formDataLQ.regencyId}
-                        onValueChange={(val) => setFormDataLQ(prev => ({ ...prev, regencyId: val }))}
-                    >
-                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
-                            <SelectValue placeholder="Pilih Kabupaten/Kota" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            {regions.map(r => (
-                                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Popover open={openRegion} onOpenChange={setOpenRegion}>
+                        <PopoverTrigger asChild>
+                            <button
+                                role="combobox"
+                                aria-expanded={openRegion}
+                                className="w-full mt-1 justify-between flex items-center rounded-lg bg-white px-4 py-2 border h-auto hover:bg-slate-50 text-sm font-normal text-slate-900"
+                            >
+                                <span className="truncate">
+                                    {formDataLQ.regencyId
+                                        ? regions.find((r) => r.id === formDataLQ.regencyId)?.name
+                                        : "Pilih Kabupaten/Kota..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0 rounded-lg">
+                            <Command>
+                                <CommandInput placeholder="Cari kabupaten/kota..." />
+                                <CommandList>
+                                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                    <CommandGroup>
+                                        {regions.map((region) => (
+                                            <CommandItem
+                                                key={region.id}
+                                                value={region.name}
+                                                onSelect={() => {
+                                                    setFormDataLQ(prev => ({ ...prev, regencyId: region.id }))
+                                                    setOpenRegion(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        formDataLQ.regencyId === region.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {region.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className="md:col-span-2">
                     <label className="text-sm font-semibold text-slate-700">Sektor</label>
-                    <Select
-                        value={formDataLQ.sectorId}
-                        onValueChange={(val) => setFormDataLQ(prev => ({ ...prev, sectorId: val }))}
-                    >
-                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
-                            <SelectValue placeholder="Pilih Sektor" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            {sectors.map(s => (
-                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Popover open={openSector} onOpenChange={setOpenSector}>
+                        <PopoverTrigger asChild>
+                            <button
+                                role="combobox"
+                                aria-expanded={openSector}
+                                className="w-full mt-1 justify-between flex items-center rounded-lg bg-white px-4 py-2 border h-auto hover:bg-slate-50 text-sm font-normal text-slate-900"
+                            >
+                                <span className="truncate text-left">
+                                    {formDataLQ.sectorId
+                                        ? sectors.find((s) => s.id === formDataLQ.sectorId)?.name
+                                        : "Pilih Sektor..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[500px] p-0 rounded-lg">
+                            <Command>
+                                <CommandInput placeholder="Cari sektor..." />
+                                <CommandList>
+                                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                    <CommandGroup>
+                                        {sectors.map((sector) => (
+                                            <CommandItem
+                                                key={sector.id}
+                                                value={sector.name}
+                                                onSelect={() => {
+                                                    setFormDataLQ(prev => ({ ...prev, sectorId: sector.id }))
+                                                    setOpenSector(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        formDataLQ.sectorId === sector.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {sector.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div>
                     <label className="text-sm font-semibold text-slate-700">Tahun</label>
@@ -172,7 +251,7 @@ export default function AnalysisLQ({ regions, sectors, years }: AnalysisLQProps)
                         <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
                             <SelectValue placeholder="Pilih Tahun" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl">
+                        <SelectContent className="rounded-lg">
                             {years.map(y => (
                                 <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                             ))}
@@ -216,7 +295,7 @@ export default function AnalysisLQ({ regions, sectors, years }: AnalysisLQProps)
             </button>
 
             {resultLQ && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg">
                     <p className="text-lg font-bold text-blue-900">
                         Nilai LQ: {resultLQ.lq}
                         <span className={`ml-2 text-sm px-2 py-0.5 rounded ${resultLQ.status === 'Basis' ? 'bg-green-200 text-green-800' : 'bg-amber-200 text-amber-800'}`}>

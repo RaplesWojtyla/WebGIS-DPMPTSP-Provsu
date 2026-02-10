@@ -329,10 +329,10 @@ export default function PdrbPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={downloadCSV} disabled={isLoading}>
+                    <Button variant="outline" size="sm" onClick={downloadCSV} disabled={isLoading} className="flex-1 xl:flex-none border-green-200 text-green-700 hover:bg-green-50">
                         <FileSpreadsheet className="w-4 h-4 mr-2" /> CSV
                     </Button>
-                    <Button variant="outline" size="sm" onClick={downloadPDF} disabled={isLoading}>
+                    <Button variant="outline" size="sm" onClick={downloadPDF} disabled={isLoading} className="flex-1 xl:flex-none border-red-200 text-red-700 hover:bg-red-50">
                         <FileText className="w-4 h-4 mr-2" /> PDF
                     </Button>
                 </div>

@@ -2,9 +2,24 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { FiRefreshCw } from "react-icons/fi"
+import { Check, ChevronsUpDown } from "lucide-react"
 import Decimal from "decimal.js"
 import { toast } from "sonner"
 import { getTimeSeriesAnalysisData } from "@/lib/actions/pdrb.actions"
+import { cn } from "@/lib/utils"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import {
     Select,
     SelectContent,
@@ -40,6 +55,8 @@ interface AnalysisKlassenProps {
 export default function AnalysisKlassen({ regions, sectors, years }: AnalysisKlassenProps) {
     const [isFetchingData, setIsFetchingData] = useState(false)
     const [resultKlassen, setResultKlassen] = useState<AnalysisResultKlassen | null>(null)
+    const [openRegion, setOpenRegion] = useState(false)
+    const [openSector, setOpenSector] = useState(false)
 
     const [formDataTimeSeries, setFormDataTimeSeries] = useState({
         regencyId: "",
@@ -141,42 +158,104 @@ export default function AnalysisKlassen({ regions, sectors, years }: AnalysisKla
     }
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-100 p-8">
             <h2 className="text-xl font-bold text-slate-800 mb-6">Klassen Typology</h2>
 
             {/* Selection Controls */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                 <div>
                     <label className="text-sm font-semibold text-slate-700">Kabupaten/Kota</label>
-                    <Select
-                        value={formDataTimeSeries.regencyId}
-                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, regencyId: val }))}
-                    >
-                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
-                            <SelectValue placeholder="Pilih Kabupaten/Kota" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            {regions.map(r => (
-                                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Popover open={openRegion} onOpenChange={setOpenRegion}>
+                        <PopoverTrigger asChild>
+                            <button
+                                role="combobox"
+                                aria-expanded={openRegion}
+                                className="w-full mt-1 justify-between flex items-center rounded-lg bg-white px-4 py-2 border h-auto hover:bg-slate-50 text-sm font-normal text-slate-900"
+                            >
+                                <span className="truncate">
+                                    {formDataTimeSeries.regencyId
+                                        ? regions.find((r) => r.id === formDataTimeSeries.regencyId)?.name
+                                        : "Pilih Kabupaten/Kota..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0 rounded-lg">
+                            <Command>
+                                <CommandInput placeholder="Cari kabupaten/kota..." />
+                                <CommandList>
+                                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                    <CommandGroup>
+                                        {regions.map((region) => (
+                                            <CommandItem
+                                                key={region.id}
+                                                value={region.name}
+                                                onSelect={() => {
+                                                    setFormDataTimeSeries(prev => ({ ...prev, regencyId: region.id }))
+                                                    setOpenRegion(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        formDataTimeSeries.regencyId === region.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {region.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className="md:col-span-2">
                     <label className="text-sm font-semibold text-slate-700">Sektor</label>
-                    <Select
-                        value={formDataTimeSeries.sectorId}
-                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, sectorId: val }))}
-                    >
-                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
-                            <SelectValue placeholder="Pilih Sektor" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            {sectors.map(s => (
-                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Popover open={openSector} onOpenChange={setOpenSector}>
+                        <PopoverTrigger asChild>
+                            <button
+                                role="combobox"
+                                aria-expanded={openSector}
+                                className="w-full mt-1 justify-between flex items-center rounded-lg bg-white px-4 py-2 border h-auto hover:bg-slate-50 text-sm font-normal text-slate-900"
+                            >
+                                <span className="truncate text-left">
+                                    {formDataTimeSeries.sectorId
+                                        ? sectors.find((s) => s.id === formDataTimeSeries.sectorId)?.name
+                                        : "Pilih Sektor..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[500px] p-0 rounded-lg">
+                            <Command>
+                                <CommandInput placeholder="Cari sektor..." />
+                                <CommandList>
+                                    <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                    <CommandGroup>
+                                        {sectors.map((sector) => (
+                                            <CommandItem
+                                                key={sector.id}
+                                                value={sector.name}
+                                                onSelect={() => {
+                                                    setFormDataTimeSeries(prev => ({ ...prev, sectorId: sector.id }))
+                                                    setOpenSector(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        formDataTimeSeries.sectorId === sector.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {sector.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div>
                     <label className="text-sm font-semibold text-slate-700">Tahun Awal</label>
@@ -187,7 +266,7 @@ export default function AnalysisKlassen({ regions, sectors, years }: AnalysisKla
                         <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
                             <SelectValue placeholder="Pilih Tahun Awal" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl">
+                        <SelectContent className="rounded-lg">
                             {years.map(y => (
                                 <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                             ))}
@@ -200,10 +279,10 @@ export default function AnalysisKlassen({ regions, sectors, years }: AnalysisKla
                         value={formDataTimeSeries.endYear}
                         onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, endYear: val }))}
                     >
-                        <SelectTrigger className="w-full mt-1 rounded-full bg-white px-4 py-2 border h-auto">
+                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
                             <SelectValue placeholder="Pilih Tahun Akhir" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl">
+                        <SelectContent className="rounded-lg">
                             {years.map(y => (
                                 <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                             ))}
@@ -246,7 +325,7 @@ export default function AnalysisKlassen({ regions, sectors, years }: AnalysisKla
             </button>
 
             {resultKlassen && (
-                <div className="mt-6 p-4 bg-purple-50 border border-purple-100 rounded-xl">
+                <div className="mt-6 p-4 bg-purple-50 border border-purple-100 rounded-lg">
                     <p className="text-lg font-bold text-purple-900">
                         Kuadran:
                         <span className={`ml-2 px-3 py-1 rounded-lg text-sm ${resultKlassen.quadrant === 'Prima' ? 'bg-green-200 text-green-800' :

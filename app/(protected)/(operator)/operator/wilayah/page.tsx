@@ -5,23 +5,30 @@ import {
     Search,
     FileText,
     FileSpreadsheet,
+    Check,
+    ChevronsUpDown,
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
-    ChevronsRight
+    ChevronsRight,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
-import { toast } from "sonner";
 
 const INITIAL_DATA = [
     {
@@ -120,8 +127,13 @@ export default function KabupatenPage() {
 
     // Filters
     const [selectedKabupaten, setSelectedKabupaten] = useState<string>("all");
+    const [openKabupaten, setOpenKabupaten] = useState(false);
+
     const [selectedKecamatan, setSelectedKecamatan] = useState<string>("all");
+    const [openKecamatan, setOpenKecamatan] = useState(false);
+
     const [selectedDesa, setSelectedDesa] = useState<string>("all");
+    const [openDesa, setOpenDesa] = useState(false);
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -251,27 +263,206 @@ export default function KabupatenPage() {
                 {/* Bottom Row: Filters & Exports */}
                 <div className="flex flex-col xl:flex-row gap-4 justify-between items-end xl:items-center">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full xl:w-auto flex-1">
-                        <Select value={selectedKabupaten} onValueChange={(val) => { setSelectedKabupaten(val); setSelectedKecamatan("all"); setSelectedDesa("all"); }}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Semua Kabupaten" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua Kabupaten</SelectItem>
-                                {kabupatenOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <Select value={selectedKecamatan} onValueChange={(val) => { setSelectedKecamatan(val); setSelectedDesa("all"); }} disabled={selectedKabupaten === 'all'}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Semua Kecamatan" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua Kecamatan</SelectItem>
-                                {kecamatanOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <Select value={selectedDesa} onValueChange={setSelectedDesa} disabled={selectedKecamatan === 'all'}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Semua Desa" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua Desa</SelectItem>
-                                {desaOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                        {/* Kabupaten Combobox */}
+                        <Popover open={openKabupaten} onOpenChange={setOpenKabupaten}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openKabupaten}
+                                    className="w-full justify-between rounded-lg font-normal"
+                                >
+                                    <span className="truncate">
+                                        {selectedKabupaten === "all"
+                                            ? "Semua Kabupaten"
+                                            : selectedKabupaten}
+                                    </span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-lg">
+                                <Command>
+                                    <CommandInput placeholder="Cari kabupaten..." />
+                                    <CommandList>
+                                        <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem
+                                                value="all"
+                                                onSelect={() => {
+                                                    setSelectedKabupaten("all");
+                                                    setSelectedKecamatan("all");
+                                                    setSelectedDesa("all");
+                                                    setOpenKabupaten(false);
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        selectedKabupaten === "all" ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                Semua Kabupaten
+                                            </CommandItem>
+                                            {kabupatenOptions.map((opt) => (
+                                                <CommandItem
+                                                    key={opt}
+                                                    value={opt}
+                                                    onSelect={(currentValue) => {
+                                                        // Command usually lowercases values, but we want the display name or original value
+                                                        // Here 'opt' is the display name (e.g. "KAB. DELI SERDANG")
+                                                        // CommandItem value prop defaults to lowercase of text if not specified? 
+                                                        // Best to use strict matching or just pass the opt back.
+                                                        // Because 'value' in CommandItem is used for filtering.
+
+                                                        // If we want to set the exact string:
+                                                        setSelectedKabupaten(opt);
+                                                        setSelectedKecamatan("all");
+                                                        setSelectedDesa("all");
+                                                        setOpenKabupaten(false);
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            selectedKabupaten === opt ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                    />
+                                                    {opt}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* Kecamatan Combobox */}
+                        <Popover open={openKecamatan} onOpenChange={setOpenKecamatan}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openKecamatan}
+                                    className="w-full justify-between rounded-lg font-normal"
+                                    disabled={selectedKabupaten === 'all'}
+                                >
+                                    <span className="truncate">
+                                        {selectedKecamatan === "all"
+                                            ? "Semua Kecamatan"
+                                            : selectedKecamatan}
+                                    </span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-lg">
+                                <Command>
+                                    <CommandInput placeholder="Cari kecamatan..." />
+                                    <CommandList>
+                                        <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem
+                                                value="all"
+                                                onSelect={() => {
+                                                    setSelectedKecamatan("all");
+                                                    setSelectedDesa("all");
+                                                    setOpenKecamatan(false);
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        selectedKecamatan === "all" ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                Semua Kecamatan
+                                            </CommandItem>
+                                            {kecamatanOptions.map((opt) => (
+                                                <CommandItem
+                                                    key={opt}
+                                                    value={opt}
+                                                    onSelect={() => {
+                                                        setSelectedKecamatan(opt);
+                                                        setSelectedDesa("all");
+                                                        setOpenKecamatan(false);
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            selectedKecamatan === opt ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                    />
+                                                    {opt}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* Desa Combobox */}
+                        <Popover open={openDesa} onOpenChange={setOpenDesa}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openDesa}
+                                    className="w-full justify-between rounded-lg font-normal"
+                                    disabled={selectedKecamatan === 'all'}
+                                >
+                                    <span className="truncate">
+                                        {selectedDesa === "all"
+                                            ? "Semua Desa"
+                                            : selectedDesa}
+                                    </span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-lg">
+                                <Command>
+                                    <CommandInput placeholder="Cari desa..." />
+                                    <CommandList>
+                                        <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem
+                                                value="all"
+                                                onSelect={() => {
+                                                    setSelectedDesa("all");
+                                                    setOpenDesa(false);
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        selectedDesa === "all" ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                Semua Desa
+                                            </CommandItem>
+                                            {desaOptions.map((opt) => (
+                                                <CommandItem
+                                                    key={opt}
+                                                    value={opt}
+                                                    onSelect={() => {
+                                                        setSelectedDesa(opt);
+                                                        setOpenDesa(false);
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            selectedDesa === opt ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                    />
+                                                    {opt}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                     <div className="flex gap-2 w-full xl:w-auto shrink-0">
                         <Button onClick={downloadCSV} variant="outline" className="flex-1 xl:flex-none border-green-200 text-green-700 hover:bg-green-50">
