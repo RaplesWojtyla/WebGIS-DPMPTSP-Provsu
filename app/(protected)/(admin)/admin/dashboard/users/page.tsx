@@ -450,7 +450,7 @@ export default function UsersPage() {
                         <Button variant="outline" onClick={() => setIsRoleDialogOpen(false)} disabled={isPending}>
                             Batal
                         </Button>
-                        <Button onClick={confirmRoleChange} disabled={isPending}>
+                        <Button onClick={confirmRoleChange} disabled={isPending} className="bg-blue-600 hover:bg-blue-700 text-white">
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Simpan
                         </Button>
@@ -476,7 +476,7 @@ export default function UsersPage() {
                         <AlertDialogCancel disabled={isPending}>Batal</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmSuspend}
-                            className={selectedUser?.suspended ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
+                            className={selectedUser?.suspended ? "!bg-blue-600 hover:!bg-blue-700 text-white" : "bg-yellow-400 hover:bg-yellow-500"}
                             disabled={isPending}
                         >
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -537,3 +537,35 @@ export async function getPdrbSummaryByRegency(year: number) {
         return { success: false, error: 'Gagal mengambil ringkasan PDRB' }
     }
 }
+
+// ==================== PUBLIC ====================
+
+export async function getApprovedInvestmentRecords() {
+    try {
+        const pdrbValues = await prisma.pdrbValue.findMany({
+            where: { status: 'APPROVED' },
+            select: {
+                id: true,
+                value: true,
+                year: true,
+                regency: { select: { name: true } },
+                sector: { select: { name: true } }
+            },
+            orderBy: [{ year: 'asc' }, { regency: { name: 'asc' } }]
+        })
+
+        const records: InvestmentRecord[] = pdrbValues.map(p => ({
+            id: p.id,
+            region: p.regency.name,
+            sector: p.sector.name,
+            value: p.value,
+            year: p.year
+        }))
+
+        return { success: true, data: records }
+    } catch (error) {
+        console.error('Failed to get investment records:', error)
+
+        return { success: false, error: 'Gagal mengambil data investasi' }
+    }
+}

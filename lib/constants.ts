@@ -1,5 +1,4 @@
-import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, UsersIcon, Briefcase } from "lucide-react";
-import { FiActivity } from "react-icons/fi";
+import { FileTextIcon, LayoutDashboardIcon, MapIcon, PieChartIcon, UsersIcon } from "lucide-react";
 
 
 export const NAVIGATION_CONFIG = {
@@ -9,7 +8,7 @@ export const NAVIGATION_CONFIG = {
             { name: "Dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
             { name: "Profil Saya", href: "/dashboard/profile", icon: UsersIcon },
             // { name: "Simulasi Investasi", href: "/dashboard/simulation", icon: FiActivity },
-            // { name: "Ajukan Proposal", href: "/dashboard/proposal", icon: FileTextIcon },
+            { name: "Proposal Saya", href: "/dashboard/proposal", icon: FileTextIcon },
         ]
     },
     operator: {
@@ -18,6 +17,7 @@ export const NAVIGATION_CONFIG = {
             { name: "Dashboard Operator", href: "/operator/dashboard", icon: LayoutDashboardIcon },
             { name: "Data Wilayah", href: "/operator/wilayah", icon: MapIcon },
             { name: "Data PDRB", href: "/operator/pdrb", icon: PieChartIcon },
+            { name: "Review Proposal", href: "/operator/proposal", icon: FileTextIcon },
         ]
     },
     admin: {
@@ -27,6 +27,7 @@ export const NAVIGATION_CONFIG = {
             { name: "Data Pengguna", href: "/admin/dashboard/users", icon: UsersIcon },
             { name: "Data Wilayah", href: "/admin/dashboard/wilayah", icon: MapIcon },
             { name: "Data PDRB", href: "/admin/dashboard/pdrb", icon: PieChartIcon },
+            { name: "Kelola Proposal", href: "/admin/dashboard/proposal", icon: FileTextIcon },
         ]
     }
 }

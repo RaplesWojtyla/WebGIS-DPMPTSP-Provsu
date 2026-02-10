@@ -8,20 +8,50 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String       @unique
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          Role      @default(user)
-  suspended     Boolean   @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  role          Role         @default(user)
+  suspended     Boolean      @default(false)
   suspendedAt   DateTime?
   accounts      Account[]
   sessions      Session[]
+  profile       UserProfile?
+  proposals     Proposal[]
 
   @@map("user")
+}
+
+model UserProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  fullName        String?
+  nik             String?
+  gender          String?  @default("Laki-laki")
+  placeOfBirth    String?
+  dateOfBirth     String?
+  phone           String?
+  jobTitle        String?
+  companyName     String?
+  companyType     String?  @default("PT")
+  nib             String?
+  npwpCompany     String?
+  establishedYear String?
+  capitalSource   String?  @default("PMDN")
+  address         String?
+  province        String?  @default("Sumatera Utara")
+  regencyId       String?
+  postalCode      String?
+  isComplete      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profile")
 }
 
 model Session {
@@ -84,6 +114,7 @@ model Regency {
   province    Province     @relation(fields: [provinceId], references: [id])
   investments Investment[]
   pdrbValues  PdrbValue[]
+  proposals   Proposal[]
 }
 
 model District {
@@ -113,6 +144,7 @@ model Sector {
   updatedAt   DateTime     @updatedAt
   investments Investment[]
   pdrbValues  PdrbValue[]
+  proposals   Proposal[]
 
   @@map("sector")
 }
@@ -162,4 +194,64 @@ enum PdrbStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum ProposalType {
+  INVESTMENT
+  LAND_OFFER
+}
+
+enum ProposalStatus {
+  SUBMITTED
+  VERIFIED
+  REVISION
+  APPROVED
+  REJECTED
+}
+
+model Proposal {
+  id     String         @id @default(cuid())
+  type   ProposalType
+  status ProposalStatus @default(SUBMITTED)
+  userId String
+
+  // Shared fields
+  title       String
+  sectorId    String?
+  regencyId   String?
+  description String?
+
+  // Investment-specific
+  permitType      String?
+  investmentValue Float?
+  capitalSource   String?
+  workforcePlan   Int?
+  locationAddress String?
+  locationLat     Float?
+  locationLng     Float?
+  landArea        Float?
+
+  // Land-offer-specific
+  assetType       String?
+  offerPrice      Float?
+  transactionType String?
+
+  // Review
+  operatorNotes String?
+  verifiedAt    DateTime?
+  verifiedBy    String?
+  adminNotes    String?
+  approvedAt    DateTime?
+  approvedBy    String?
+  rejectedAt    DateTime?
+  rejectedBy    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sector  Sector?  @relation(fields: [sectorId], references: [id])
+  regency Regency? @relation(fields: [regencyId], references: [id])
+
+  @@map("proposal")
 }

@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useSectorAnalysis } from "@/hooks/useSectorAnalysis"
 import { RegionalComparisonChart } from "@/components/charts/RegionalComparisonChart"
 import { TrendCurveChart } from "@/components/charts/TrendCurveChart"
+import { getApprovedInvestmentRecords } from "@/lib/actions/pdrb.actions"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { Loader2, Download, X } from "lucide-react"
@@ -20,6 +21,22 @@ export default function SectorPrintPage() {
     const urlRegion = searchParams.get('region') || "all"
     const urlYear = searchParams.get('year') || undefined
 
+    const [records, setRecords] = React.useState<InvestmentRecord[]>([])
+    const hasFetched = React.useRef(false)
+
+    React.useEffect(() => {
+        if (hasFetched.current) return
+        hasFetched.current = true
+
+        const load = async () => {
+            const result = await getApprovedInvestmentRecords()
+            if (result.success && result.data) {
+                setRecords(result.data)
+            }
+        }
+        load()
+    }, [])
+
     const {
         sectorMetrics,
         currentYear,
@@ -28,7 +45,7 @@ export default function SectorPrintPage() {
         regionalData,
         formatCurrency,
         selectedRegion,
-    } = useSectorAnalysis(sectorName, urlRegion, urlYear)
+    } = useSectorAnalysis(sectorName, records, urlRegion, urlYear)
 
     const handleDownloadPDF = async () => {
         setIsGenerating(true)
