@@ -6,10 +6,10 @@ export const NAVIGATION_CONFIG = {
     user: {
         name: "Area Investor",
         items: [
-            { name: "Ringkasan", href: "/dashboard", icon: LayoutDashboardIcon },
+            { name: "Dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
             { name: "Profil Saya", href: "/dashboard/profile", icon: UsersIcon },
-            { name: "Simulasi Investasi", href: "/dashboard/simulation", icon: FiActivity },
-            { name: "Ajukan Proposal", href: "/dashboard/proposal", icon: FileTextIcon },
+            // { name: "Simulasi Investasi", href: "/dashboard/simulation", icon: FiActivity },
+            // { name: "Ajukan Proposal", href: "/dashboard/proposal", icon: FileTextIcon },
         ]
     },
     operator: {
@@ -23,7 +23,7 @@ export const NAVIGATION_CONFIG = {
     admin: {
         name: "Area Admin",
         items: [
-            { name: "Ringkasan", href: "/admin/dashboard", icon: LayoutDashboardIcon },
+            { name: "Dashboard Admin", href: "/admin/dashboard", icon: LayoutDashboardIcon },
             { name: "Data Pengguna", href: "/admin/dashboard/users", icon: UsersIcon },
             { name: "Data Wilayah", href: "/admin/dashboard/wilayah", icon: MapIcon },
             { name: "Data PDRB", href: "/admin/dashboard/pdrb", icon: PieChartIcon },
