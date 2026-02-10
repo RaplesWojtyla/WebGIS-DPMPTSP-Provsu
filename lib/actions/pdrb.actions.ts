@@ -347,6 +347,82 @@ export async function getOperatorPdrbSubmissions() {
 
 // ==================== ADMIN ACTIONS ====================
 
+export async function getAdminDashboardStats() {
+    try {
+        const [usersCount, regenciesCount, sectorsCount, pendingCount, approvedCount, rejectedCount, recentSubmissions] = await Promise.all([
+            prisma.user.count(),
+            prisma.regency.count(),
+            prisma.sector.count(),
+            prisma.pdrbValue.count({ where: { status: 'PENDING' } }),
+            prisma.pdrbValue.count({ where: { status: 'APPROVED' } }),
+            prisma.pdrbValue.count({ where: { status: 'REJECTED' } }),
+            prisma.pdrbValue.findMany({
+                select: {
+                    regencyId: true,
+                    year: true,
+                    status: true,
+                    submittedAt: true,
+                    updatedAt: true,
+                    notes: true,
+                    regency: {
+                        select: { name: true, code: true }
+                    }
+                },
+                orderBy: { updatedAt: 'desc' },
+                take: 50
+            })
+        ])
+
+        const groupedMap = new Map<string, {
+            regencyId: string
+            regencyName: string
+            regencyCode: string
+            year: number
+            status: string
+            submittedAt: Date | null
+            notes: string | null
+            sectorCount: number
+        }>()
+
+        for (const sub of recentSubmissions) {
+            const key = `${sub.regencyId}-${sub.year}`
+
+            if (!groupedMap.has(key)) {
+                groupedMap.set(key, {
+                    regencyId: sub.regencyId,
+                    regencyName: sub.regency.name,
+                    regencyCode: sub.regency.code,
+                    year: sub.year,
+                    status: sub.status,
+                    submittedAt: sub.submittedAt,
+                    notes: sub.notes,
+                    sectorCount: 1
+                })
+            } else {
+                groupedMap.get(key)!.sectorCount++
+            }
+        }
+
+        return {
+            success: true,
+            data: {
+                usersCount,
+                regenciesCount,
+                sectorsCount,
+                pendingCount,
+                approvedCount,
+                rejectedCount,
+                recentSubmissions: Array.from(groupedMap.values())
+            }
+        }
+    } catch (error) {
+        console.error('Failed to get admin dashboard stats:', error)
+
+        return { success: false, error: 'Gagal mengambil data dashboard' }
+    }
+}
+
+
 export async function getAllPdrbForReview(status?: 'PENDING' | 'APPROVED' | 'REJECTED') {
     try {
         const pdrbValues = await prisma.pdrbValue.findMany({
