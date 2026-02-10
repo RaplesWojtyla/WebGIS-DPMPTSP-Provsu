@@ -6,7 +6,99 @@ import { headers } from "next/headers"
 import { auth } from "@/lib/better-auth/auth"
 import { APIError } from "better-auth"
 
-const PROFILE_PATH = '/admin/dashboard/profile'
+const PROFILE_PATH = '/dashboard/profile'
+
+export type InvestorProfileData = {
+    fullName: string
+    nik: string
+    gender: string
+    placeOfBirth: string
+    dateOfBirth: string
+    phone: string
+    jobTitle: string
+    companyName: string
+    companyType: string
+    nib: string
+    npwpCompany: string
+    establishedYear: string
+    capitalSource: string
+    address: string
+    province: string
+    regencyId: string
+    postalCode: string
+}
+
+export async function getUserInvestorProfile() {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session?.user) {
+            return {
+                success: false,
+                error: 'Tidak ada sesi aktif'
+            }
+        }
+
+        const profile = await prisma.userProfile.findUnique({
+            where: { userId: session.user.id }
+        })
+
+        return {
+            success: true,
+            data: profile
+        }
+    } catch (error) {
+        console.error('Failed to get investor profile:', error)
+
+        return {
+            success: false,
+            error: 'Gagal mengambil data profil investor'
+        }
+    }
+}
+
+export async function upsertUserInvestorProfile(data: InvestorProfileData) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session?.user) {
+            return {
+                success: false,
+                error: 'Tidak ada sesi aktif'
+            }
+        }
+
+        const isComplete = !!(data.fullName && data.nik && data.companyName && data.nib)
+
+        await prisma.userProfile.upsert({
+            where: { userId: session.user.id },
+            update: {
+                ...data,
+                isComplete
+            },
+            create: {
+                userId: session.user.id,
+                ...data,
+                isComplete
+            }
+        })
+
+        revalidatePath(PROFILE_PATH)
+
+        return { success: true }
+    } catch (error) {
+        console.error('Failed to save investor profile:', error)
+
+        return {
+            success: false,
+            error: 'Gagal menyimpan profil investor'
+        }
+    }
+}
 
 export async function getCurrentUser() {
     try {

@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { FiUsers, FiMap, FiGrid, FiClock, FiCheckCircle, FiXCircle, FiLoader, FiExternalLink } from "react-icons/fi"
+import { FiUsers, FiMap, FiGrid, FiClock, FiCheckCircle, FiXCircle, FiLoader, FiExternalLink, FiFileText } from "react-icons/fi"
 import Link from "next/link"
 import { getAdminDashboardStats } from "@/lib/actions/pdrb.actions"
+import { getProposalStats } from "@/lib/actions/proposal.actions"
 
 interface AdminDashboardData {
     usersCount: number
@@ -27,6 +28,7 @@ interface AdminDashboardData {
 export default function AdminDashboard() {
     const [isLoading, setIsLoading] = useState(true)
     const [stats, setStats] = useState<AdminDashboardData | null>(null)
+    const [proposalStats, setProposalStats] = useState({ submitted: 0, verified: 0, total: 0 })
     const hasFetched = useRef(false)
 
     useEffect(() => {
@@ -39,9 +41,15 @@ export default function AdminDashboard() {
     const loadData = async () => {
         setIsLoading(true)
 
-        const result = await getAdminDashboardStats()
+        const [result, pResult] = await Promise.all([
+            getAdminDashboardStats(),
+            getProposalStats()
+        ])
         if (result.success && result.data) {
             setStats(result.data as AdminDashboardData)
+        }
+        if (pResult.success && pResult.data) {
+            setProposalStats(pResult.data)
         }
 
         setIsLoading(false)
@@ -154,6 +162,37 @@ export default function AdminDashboard() {
                         </div>
                         <div className="text-2xl font-bold text-red-700">{stats?.rejectedCount ?? 0}</div>
                     </div>
+                </div>
+
+                {/* Proposal Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <Link href="/admin/dashboard/proposal" className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                                <FiFileText className="w-4 h-4 text-violet-600" />
+                            </div>
+                            <span className="text-sm text-slate-500">Total Proposal</span>
+                        </div>
+                        <div className="text-2xl font-bold">{proposalStats.total}</div>
+                    </Link>
+                    <Link href="/admin/dashboard/proposal" className="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <FiClock className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <span className="text-sm text-blue-600">Proposal Baru</span>
+                        </div>
+                        <div className="text-2xl font-bold text-blue-700">{proposalStats.submitted}</div>
+                    </Link>
+                    <Link href="/admin/dashboard/proposal" className="bg-indigo-50 p-4 rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <FiCheckCircle className="w-4 h-4 text-indigo-600" />
+                            </div>
+                            <span className="text-sm text-indigo-600">Menunggu Keputusan</span>
+                        </div>
+                        <div className="text-2xl font-bold text-indigo-700">{proposalStats.verified}</div>
+                    </Link>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-3">
