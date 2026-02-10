@@ -10,7 +10,13 @@ import { signOut } from "@/lib/actions/auth.actions"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-export const UserDropdown = ({ user, isTransparent = false, trigger }: { user: any | null, isTransparent?: boolean, trigger?: React.ReactNode }) => {
+interface User {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+}
+
+export const UserDropdown = ({ user, isTransparent = false, trigger }: { user: User | null, isTransparent?: boolean, trigger?: React.ReactNode }) => {
     const router = useRouter()
 
     const handleSignOut = async () => {

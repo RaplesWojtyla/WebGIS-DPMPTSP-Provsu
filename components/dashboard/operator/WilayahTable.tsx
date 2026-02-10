@@ -21,17 +21,17 @@ const TableActions = ({ onEdit, onDelete, disabled }: TableActionsProps) => (
     </div>
 )
 
-interface WilayahTableProps {
+interface WilayahTableProps<T> {
     columns: string[]
-    data: any[][]
-    renderActions?: (item: any) => React.ReactNode // Optional custom action renderer
-    onEdit?: (item: any) => void
+    data: (React.ReactNode | T)[][]
+    renderActions?: (item: T) => React.ReactNode // Optional custom action renderer
+    onEdit?: (item: T) => void
     onDelete?: (id: string) => void
     isPending?: boolean
     startIndex?: number
 }
 
-export function WilayahTable({ columns, data, onEdit, onDelete, isPending, startIndex = 0 }: WilayahTableProps) {
+export function WilayahTable<T extends { id: string }>({ columns, data, onEdit, onDelete, isPending, startIndex = 0 }: WilayahTableProps<T>) {
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -46,7 +46,7 @@ export function WilayahTable({ columns, data, onEdit, onDelete, isPending, start
                     {data.length > 0 ? (
                         data.map((row, rIdx) => {
                             // The last item in the row is the actual data item object for actions
-                            const item = row[row.length - 1]
+                            const item = row[row.length - 1] as T
                             // The display cells are all except the last one
                             const cells = row.slice(0, row.length - 1)
 
@@ -59,7 +59,7 @@ export function WilayahTable({ columns, data, onEdit, onDelete, isPending, start
                                         {onEdit && onDelete && (
                                             <TableActions
                                                 onEdit={() => onEdit(item)}
-                                                onDelete={() => onDelete((item as any).id)}
+                                                onDelete={() => onDelete(item.id)}
                                                 disabled={isPending}
                                             />
                                         )}
