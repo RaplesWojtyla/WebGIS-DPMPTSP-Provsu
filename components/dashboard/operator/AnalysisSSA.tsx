@@ -1,0 +1,265 @@
+"use client"
+
+import { useState, useCallback, useEffect } from "react"
+import { FiRefreshCw } from "react-icons/fi"
+import Decimal from "decimal.js"
+import { toast } from "sonner"
+import { getTimeSeriesAnalysisData } from "@/lib/actions/pdrb.actions"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
+interface Region {
+    id: string
+    code: string
+    name: string
+}
+
+interface Sector {
+    id: string
+    code: string
+    name: string
+}
+
+interface AnalysisResultSSA {
+    nij: string
+    mij: string
+    cij: string
+    dij: string
+}
+
+interface AnalysisSSAProps {
+    regions: Region[]
+    sectors: Sector[]
+    years: number[]
+}
+
+export default function AnalysisSSA({ regions, sectors, years }: AnalysisSSAProps) {
+    const [isFetchingData, setIsFetchingData] = useState(false)
+    const [resultSSA, setResultSSA] = useState<AnalysisResultSSA | null>(null)
+
+    const [formDataTimeSeries, setFormDataTimeSeries] = useState({
+        regencyId: "",
+        sectorId: "",
+        startYear: (years[0] - 1).toString(),
+        endYear: years[0].toString(),
+        regionSectorStart: "",
+        regionSectorEnd: "",
+        regionTotalStart: "",
+        regionTotalEnd: "",
+        provSectorStart: "",
+        provSectorEnd: "",
+        provTotalStart: "",
+        provTotalEnd: "",
+    })
+
+    // Initialize form values when data is loaded
+    useEffect(() => {
+        if (regions.length > 0 && sectors.length > 0) {
+            setFormDataTimeSeries(prev => ({
+                ...prev,
+                regencyId: regions[0].id,
+                sectorId: sectors[0].id
+            }))
+        }
+    }, [regions, sectors])
+
+    const formatNumber = (val: number) => new Intl.NumberFormat("id-ID").format(val)
+
+    const toDecimal = (val: string | number) => {
+        try {
+            if (typeof val === 'number') return new Decimal(val)
+            const cleaned = val.replace(/[^0-9.-]/g, "")
+            if (!cleaned || cleaned === "." || cleaned === "-") return new Decimal(0)
+            return new Decimal(cleaned)
+        } catch {
+            return new Decimal(0)
+        }
+    }
+
+    const fetchTimeSeriesData = useCallback(async () => {
+        if (!formDataTimeSeries.regencyId || !formDataTimeSeries.sectorId) return
+
+        setIsFetchingData(true)
+        const result = await getTimeSeriesAnalysisData(
+            formDataTimeSeries.regencyId,
+            formDataTimeSeries.sectorId,
+            parseInt(formDataTimeSeries.startYear),
+            parseInt(formDataTimeSeries.endYear)
+        )
+
+        if (result.success && result.data) {
+            setFormDataTimeSeries(prev => ({
+                ...prev,
+                regionSectorStart: result.data.regionSectorStart.toString(),
+                regionSectorEnd: result.data.regionSectorEnd.toString(),
+                regionTotalStart: result.data.regionTotalStart.toString(),
+                regionTotalEnd: result.data.regionTotalEnd.toString(),
+                provSectorStart: result.data.provSectorStart.toString(),
+                provSectorEnd: result.data.provSectorEnd.toString(),
+                provTotalStart: result.data.provTotalStart.toString(),
+                provTotalEnd: result.data.provTotalEnd.toString()
+            }))
+            toast.success("Data PDRB berhasil dimuat")
+        } else {
+            toast.error("Gagal memuat data PDRB")
+        }
+        setIsFetchingData(false)
+    }, [formDataTimeSeries.regencyId, formDataTimeSeries.sectorId, formDataTimeSeries.startYear, formDataTimeSeries.endYear])
+
+    const calculateSSA = () => {
+        const Eij_t0 = toDecimal(formDataTimeSeries.regionSectorStart)
+        const Eij_t1 = toDecimal(formDataTimeSeries.regionSectorEnd)
+        const Ei_t0 = toDecimal(formDataTimeSeries.provSectorStart)
+        const Ei_t1 = toDecimal(formDataTimeSeries.provSectorEnd)
+        const Et_t0 = toDecimal(formDataTimeSeries.provTotalStart)
+        const Et_t1 = toDecimal(formDataTimeSeries.provTotalEnd)
+
+        if (Et_t0.isZero() || Ei_t0.isZero()) {
+            toast.error("Nilai awal tidak boleh 0!")
+            return
+        }
+
+        const Rn = Et_t1.minus(Et_t0).dividedBy(Et_t0)
+        const Ri = Ei_t1.minus(Ei_t0).dividedBy(Ei_t0)
+        const nij = Eij_t0.times(Rn)
+        const mij = Eij_t0.times(Ri.minus(Rn))
+        const cij = Eij_t1.minus(Eij_t0.times(new Decimal(1).plus(Ri)))
+        const dij = nij.plus(mij).plus(cij)
+
+        setResultSSA({
+            nij: nij.toFixed(2),
+            mij: mij.toFixed(2),
+            cij: cij.toFixed(2),
+            dij: dij.toFixed(2),
+        })
+    }
+
+    return (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Analisis Shift Share (SSA)</h2>
+
+            {/* Selection Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <div>
+                    <label className="text-sm font-semibold text-slate-700">Kabupaten/Kota</label>
+                    <Select
+                        value={formDataTimeSeries.regencyId}
+                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, regencyId: val }))}
+                    >
+                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
+                            <SelectValue placeholder="Pilih Kabupaten/Kota" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            {regions.map(r => (
+                                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="md:col-span-2">
+                    <label className="text-sm font-semibold text-slate-700">Sektor</label>
+                    <Select
+                        value={formDataTimeSeries.sectorId}
+                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, sectorId: val }))}
+                    >
+                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
+                            <SelectValue placeholder="Pilih Sektor" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            {sectors.map(s => (
+                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div>
+                    <label className="text-sm font-semibold text-slate-700">Tahun Awal</label>
+                    <Select
+                        value={formDataTimeSeries.startYear}
+                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, startYear: val }))}
+                    >
+                        <SelectTrigger className="w-full mt-1 rounded-lg bg-white px-4 py-2 border h-auto">
+                            <SelectValue placeholder="Pilih Tahun Awal" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            {years.map(y => (
+                                <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div>
+                    <label className="text-sm font-semibold text-slate-700">Tahun Akhir</label>
+                    <Select
+                        value={formDataTimeSeries.endYear}
+                        onValueChange={(val) => setFormDataTimeSeries(prev => ({ ...prev, endYear: val }))}
+                    >
+                        <SelectTrigger className="w-full mt-1 rounded-full bg-white px-4 py-2 border h-auto">
+                            <SelectValue placeholder="Pilih Tahun Akhir" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            {years.map(y => (
+                                <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <button
+                onClick={fetchTimeSeriesData}
+                disabled={isFetchingData}
+                className="mb-6 flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            >
+                <FiRefreshCw className={`w-4 h-4 ${isFetchingData ? 'animate-spin' : ''}`} />
+                Muat Data dari Database
+            </button>
+
+            {/* Data Values */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <label className="text-xs font-semibold text-blue-600">Sektor Wilayah (Awal)</label>
+                    <p className="text-sm font-bold text-blue-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.regionSectorStart) || 0)}</p>
+                </div>
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <label className="text-xs font-semibold text-blue-600">Sektor Wilayah (Akhir)</label>
+                    <p className="text-sm font-bold text-blue-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.regionSectorEnd) || 0)}</p>
+                </div>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                    <label className="text-xs font-semibold text-green-600">Sektor Provinsi (Awal)</label>
+                    <p className="text-sm font-bold text-green-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.provSectorStart) || 0)}</p>
+                </div>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                    <label className="text-xs font-semibold text-green-600">Sektor Provinsi (Akhir)</label>
+                    <p className="text-sm font-bold text-green-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.provSectorEnd) || 0)}</p>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <label className="text-xs font-semibold text-purple-600">Total Provinsi (Awal)</label>
+                    <p className="text-sm font-bold text-purple-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.provTotalStart) || 0)}</p>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <label className="text-xs font-semibold text-purple-600">Total Provinsi (Akhir)</label>
+                    <p className="text-sm font-bold text-purple-900 mt-1">{formatNumber(parseFloat(formDataTimeSeries.provTotalEnd) || 0)}</p>
+                </div>
+            </div>
+
+            <button onClick={calculateSSA} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700">
+                Hitung SSA
+            </button>
+
+            {resultSSA && (
+                <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div><p className="text-xs text-slate-500 uppercase">National Share (Nij)</p><p className="font-bold text-slate-900">{formatNumber(parseFloat(resultSSA.nij))}</p></div>
+                    <div><p className="text-xs text-slate-500 uppercase">Proportional Shift (Mij)</p><p className="font-bold text-slate-900">{formatNumber(parseFloat(resultSSA.mij))}</p></div>
+                    <div><p className="text-xs text-slate-500 uppercase">Differential Shift (Cij)</p><p className={`font-bold ${parseFloat(resultSSA.cij) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatNumber(parseFloat(resultSSA.cij))}</p></div>
+                    <div><p className="text-xs text-slate-500 uppercase">Total Shift (Dij)</p><p className="font-bold text-slate-900">{formatNumber(parseFloat(resultSSA.dij))}</p></div>
+                </div>
+            )}
+        </div>
+    )
+}
