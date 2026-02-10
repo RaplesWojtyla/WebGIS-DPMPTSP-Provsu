@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 import { RegionalComparisonChart } from "@/components/charts/RegionalComparisonChart"
 import { TrendCurveChart } from "@/components/charts/TrendCurveChart"
 import { useSectorAnalysis } from "@/hooks/useSectorAnalysis"
+import { getApprovedInvestmentRecords } from "@/lib/actions/pdrb.actions"
 import {
     Command,
     CommandEmpty,
@@ -36,6 +37,26 @@ export default function SectorDetailPage() {
     const params = useParams()
     const sectorName = decodeURIComponent(params.sector as string)
 
+    const [records, setRecords] = React.useState<InvestmentRecord[]>([])
+    const [isLoading, setIsLoading] = React.useState(true)
+    const hasFetched = React.useRef(false)
+
+    React.useEffect(() => {
+        if (hasFetched.current) return
+        hasFetched.current = true
+
+        loadData()
+    }, [])
+
+    const loadData = async () => {
+        setIsLoading(true)
+        const result = await getApprovedInvestmentRecords()
+        if (result.success && result.data) {
+            setRecords(result.data)
+        }
+        setIsLoading(false)
+    }
+
     const {
         regions,
         years,
@@ -49,9 +70,20 @@ export default function SectorDetailPage() {
         yearlyTrendData,
         regionalData,
         formatCurrency,
-    } = useSectorAnalysis(sectorName)
+    } = useSectorAnalysis(sectorName, records)
 
     const [openRegion, setOpenRegion] = React.useState(false)
+
+    if (isLoading) {
+        return (
+            <div className="container mx-auto py-20 text-center">
+                <div className="flex items-center justify-center gap-2 text-slate-500 animate-pulse">
+                    <div className="h-5 w-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
+                    Memuat data sektor...
+                </div>
+            </div>
+        )
+    }
 
     if (!sectorMetrics) {
         return (

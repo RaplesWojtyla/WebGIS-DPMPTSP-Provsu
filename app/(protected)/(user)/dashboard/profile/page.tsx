@@ -1,64 +1,117 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { FiUser, FiSave, FiBriefcase, FiMapPin } from "react-icons/fi";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react"
+import { FiUser, FiSave, FiBriefcase, FiMapPin, FiLoader } from "react-icons/fi"
+import { toast } from "sonner"
+import { getUserInvestorProfile, upsertUserInvestorProfile, type InvestorProfileData } from "@/lib/actions/profile.actions"
+import { getRegenciesWithProvince } from "@/lib/actions/pdrb.actions"
+
+type RegencyOption = {
+    id: string
+    name: string
+}
 
 export default function UserProfilePage() {
-    const router = useRouter();
-    const [profile, setProfile] = useState({
-        // Personal
+    const [isLoading, setIsLoading] = useState(true)
+    const [isSaving, setIsSaving] = useState(false)
+    const [regencies, setRegencies] = useState<RegencyOption[]>([])
+    const hasFetched = useRef(false)
+
+    const [profile, setProfile] = useState<InvestorProfileData>({
         fullName: "",
         nik: "",
         gender: "Laki-laki",
         placeOfBirth: "",
         dateOfBirth: "",
         phone: "",
-        email: "",
         jobTitle: "",
-
-        // Company
         companyName: "",
-        companyType: "PT", // PT, CV, UD, Firma
-        nib: "", // Nomor Induk Berusaha
+        companyType: "PT",
+        nib: "",
         npwpCompany: "",
         establishedYear: "",
-        capitalSource: "PMDN", // PMDN / PMA
-        annualRevenue: "",
-
-        // Address
+        capitalSource: "PMDN",
         address: "",
         province: "Sumatera Utara",
-        regency: "",
+        regencyId: "",
         postalCode: "",
-
-        isComplete: false,
-    });
+    })
 
     useEffect(() => {
-        const saved = localStorage.getItem("userProfile");
-        if (saved) {
-            setProfile(JSON.parse(saved));
+        if (hasFetched.current) return
+        hasFetched.current = true
+
+        loadData()
+    }, [])
+
+    const loadData = async () => {
+        setIsLoading(true)
+
+        const [profileResult, regenciesResult] = await Promise.all([
+            getUserInvestorProfile(),
+            getRegenciesWithProvince()
+        ])
+
+        if (profileResult.success && profileResult.data) {
+            const p = profileResult.data
+            setProfile({
+                fullName: p.fullName || "",
+                nik: p.nik || "",
+                gender: p.gender || "Laki-laki",
+                placeOfBirth: p.placeOfBirth || "",
+                dateOfBirth: p.dateOfBirth || "",
+                phone: p.phone || "",
+                jobTitle: p.jobTitle || "",
+                companyName: p.companyName || "",
+                companyType: p.companyType || "PT",
+                nib: p.nib || "",
+                npwpCompany: p.npwpCompany || "",
+                establishedYear: p.establishedYear || "",
+                capitalSource: p.capitalSource || "PMDN",
+                address: p.address || "",
+                province: p.province || "Sumatera Utara",
+                regencyId: p.regencyId || "",
+                postalCode: p.postalCode || "",
+            })
         }
-    }, []);
+
+        if (regenciesResult.success && regenciesResult.data) {
+            setRegencies(regenciesResult.data.map(r => ({ id: r.id, name: r.name })))
+        }
+
+        setIsLoading(false)
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setProfile(prev => ({ ...prev, [name]: value }));
-    };
+        const { name, value } = e.target
+        setProfile(prev => ({ ...prev, [name]: value }))
+    }
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!profile.fullName || !profile.nik || !profile.companyName || !profile.nib) {
-            alert("Harap lengkapi semua data wajib (bertanda *)");
-            return;
+            toast.error("Harap lengkapi semua data wajib (bertanda *)")
+            return
         }
 
-        const updatedProfile = { ...profile, isComplete: true };
-        setProfile(updatedProfile);
-        localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
-        alert("Profil berhasil disimpan! Fitur simulasi dan proposal kini terbuka.");
-        router.push("/dashboard/simulation");
-    };
+        setIsSaving(true)
+
+        const result = await upsertUserInvestorProfile(profile)
+        if (result.success) {
+            toast.success("Profil berhasil disimpan!")
+        } else {
+            toast.error(result.error || "Gagal menyimpan profil")
+        }
+
+        setIsSaving(false)
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -117,10 +170,6 @@ export default function UserProfilePage() {
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2">No. HP / WhatsApp <span className="text-red-500">*</span></label>
                                 <input name="phone" value={profile.phone} onChange={handleChange} className="w-full p-2.5 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-100 transition-all outline-none" placeholder="08..." />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-                                <input type="email" name="email" value={profile.email} onChange={handleChange} className="w-full p-2.5 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-100 transition-all outline-none" placeholder="email@perusahaan.com" />
                             </div>
                         </div>
                     </div>
@@ -200,13 +249,11 @@ export default function UserProfilePage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2">Kabupaten/Kota</label>
-                                <select name="regency" value={profile.regency} onChange={handleChange} className="w-full p-2.5 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-emerald-100 transition-all outline-none">
+                                <select name="regencyId" value={profile.regencyId} onChange={handleChange} className="w-full p-2.5 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-emerald-100 transition-all outline-none">
                                     <option value="">Pilih Kabupaten/Kota...</option>
-                                    <option>Medan</option>
-                                    <option>Deli Serdang</option>
-                                    <option>Binjai</option>
-                                    <option>Langkat</option>
-                                    <option>Karo</option>
+                                    {regencies.map(r => (
+                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div>
@@ -220,10 +267,18 @@ export default function UserProfilePage() {
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t flex justify-end md:static md:bg-transparent md:border-none md:p-0">
-                <button onClick={handleSave} className="w-full md:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 transform hover:scale-105">
-                    <FiSave size={20} /> Simpan Profil & Lanjutkan
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="w-full md:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                    {isSaving ? (
+                        <><FiLoader className="animate-spin" size={20} /> Menyimpan...</>
+                    ) : (
+                        <><FiSave size={20} /> Simpan Profil</>
+                    )}
                 </button>
             </div>
         </div>
-    );
+    )
 }

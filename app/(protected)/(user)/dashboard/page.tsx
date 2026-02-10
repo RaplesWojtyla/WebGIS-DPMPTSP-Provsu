@@ -1,23 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { FiUser, FiActivity, FiFileText, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { FiUser, FiCheckCircle, FiAlertCircle, FiLoader, FiFileText } from "react-icons/fi";
+import { getUserInvestorProfile } from "@/lib/actions/profile.actions";
 
-interface UserProfile {
+interface ProfileStatus {
     name: string;
     isComplete: boolean;
 }
 
 export default function UserOverviewPage() {
-    const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [profile, setProfile] = useState<ProfileStatus | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const hasFetched = useRef(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem("userProfile");
-        if (saved) {
-            setProfile(JSON.parse(saved));
-        }
+        if (hasFetched.current) return;
+        hasFetched.current = true;
+
+        loadProfile();
     }, []);
+
+    const loadProfile = async () => {
+        setIsLoading(true);
+        const result = await getUserInvestorProfile();
+        if (result.success && result.data) {
+            setProfile({
+                name: result.data.fullName || "Investor",
+                isComplete: result.data.isComplete,
+            });
+        }
+        setIsLoading(false);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+        );
+    }
 
     const isComplete = profile?.isComplete;
 
@@ -45,7 +68,7 @@ export default function UserOverviewPage() {
                         </div>
                     </div>
                     {!isComplete && (
-                        <Link href="/dashboard/user/profile" className="px-4 py-2 bg-amber-600 text-white rounded-lg font-bold text-sm hover:bg-amber-700">
+                        <Link href="/dashboard/profile" className="px-4 py-2 bg-amber-600 text-white rounded-lg font-bold text-sm hover:bg-amber-700">
                             Lengkapi Sekarang
                         </Link>
                     )}
@@ -54,7 +77,7 @@ export default function UserOverviewPage() {
 
             {/* Feature Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Link href="/dashboard/user/profile" className="block group">
+                <Link href="/dashboard/profile" className="block group">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
                         <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                             <FiUser size={24} />
@@ -64,7 +87,7 @@ export default function UserOverviewPage() {
                     </div>
                 </Link>
 
-                <Link href="/dashboard/user/simulation" className="block group">
+                {/* <Link href="/dashboard/simulation" className="block group">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
                         <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                             <FiActivity size={24} />
@@ -73,9 +96,9 @@ export default function UserOverviewPage() {
                         <p className="text-slate-500 text-sm">Jalankan analisis ekonomi (LQ, SSA, DLQ) untuk menemukan peluang.</p>
                         {!isComplete && <div className="mt-4 text-xs bg-slate-100 text-slate-500 py-1 px-2 rounded w-fit">Terkunci 🔒</div>}
                     </div>
-                </Link>
+                </Link> */}
 
-                <Link href="/dashboard/user/proposal" className="block group">
+                <Link href="/dashboard/proposal" className="block group">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-all group-hover:border-blue-200">
                         <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                             <FiFileText size={24} />

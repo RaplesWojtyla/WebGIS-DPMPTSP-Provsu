@@ -3,17 +3,52 @@
 import * as React from "react"
 import { SectorDashboard } from "@/components/Invest/SectorDashboard"
 import { SectorTypology } from "@/components/Invest/SectorTypology"
-import dummyData from "@/data/investment_dummy.json"
+import { getApprovedInvestmentRecords } from "@/lib/actions/pdrb.actions"
+import { FiLoader } from "react-icons/fi"
 
 
 export default function InvestPage() {
-    const [records] = React.useState<InvestmentRecord[]>(dummyData)
-    // Removed state for form and table
+    const [records, setRecords] = React.useState<InvestmentRecord[]>([])
+    const [isLoading, setIsLoading] = React.useState(true)
+    const hasFetched = React.useRef(false)
+
+    React.useEffect(() => {
+        if (hasFetched.current) return
+        hasFetched.current = true
+
+        loadData()
+    }, [])
+
+    const loadData = async () => {
+        setIsLoading(true)
+        const result = await getApprovedInvestmentRecords()
+        if (result.success && result.data) {
+            setRecords(result.data)
+        }
+        setIsLoading(false)
+    }
+
+    if (isLoading) {
+        return (
+            <div className="container mx-auto py-20 flex items-center justify-center">
+                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+        )
+    }
+
+    if (records.length === 0) {
+        return (
+            <div className="container mx-auto py-20 text-center">
+                <h1 className="text-2xl font-bold text-slate-400">Belum ada data investasi yang tersedia</h1>
+                <p className="text-slate-500 mt-2">Data akan muncul setelah operator mengajukan dan admin menyetujui data PDRB.</p>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto py-10 space-y-12">
 
-            {/* HERDER / TITLE */}
+            {/* HEADER / TITLE */}
             <div className="space-y-4">
                 <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-blue-900 border-b pb-4">
                     Dashboard Kinerja Sektor Investasi
@@ -28,8 +63,8 @@ export default function InvestPage() {
                 <div className="md:col-span-2 bg-blue-900 text-white p-8 rounded-2xl shadow-xl flex flex-col justify-center">
                     <h2 className="text-2xl font-bold mb-4">Ringkasan Eksekutif</h2>
                     <p className="text-blue-100 leading-relaxed mb-6">
-                        Berdasarkan analisis data tahun 2023-2024, sektor <strong>Perkebunan</strong> dan <strong>Industri Pengolahan</strong> menunjukkan kinerja
-                        <strong> Prima</strong> dengan nilai LQ {'>'} 1 dan pertumbuhan positif. Sektor Pariwisata memiliki potensi besar untuk dikembangkan lebih lanjut (Kuadran Potensial).
+                        Berdasarkan analisis data PDRB yang telah disetujui, halaman ini menyajikan analisis kinerja sektor-sektor investasi
+                        di Sumatera Utara menggunakan indikator <strong>LQ</strong>, <strong>SSA</strong>, dan <strong>Klassen</strong>.
                     </p>
                     <div className="flex gap-4">
                         <div className="bg-white/10 p-4 rounded-lg backdrop-blur-sm">

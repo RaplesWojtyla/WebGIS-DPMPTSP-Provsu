@@ -267,9 +267,6 @@ export default function UserSimulationPage() {
     };
 
 
-
-    if (!isAuthorized) return <div className="p-10 text-center"><FiLock className="mx-auto w-10 h-10 text-slate-400 mb-4" /> Checking Access...</div>;
-
     return (
         <div className="space-y-6">
             <div>
