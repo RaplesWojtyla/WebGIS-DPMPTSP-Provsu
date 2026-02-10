@@ -10,7 +10,7 @@ import { signOut } from "@/lib/actions/auth.actions"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-export const UserDropdown = ({ user, isTransparent = false }: { user: User | null, isTransparent?: boolean }) => {
+export const UserDropdown = ({ user, isTransparent = false, trigger }: { user: any | null, isTransparent?: boolean, trigger?: React.ReactNode }) => {
     const router = useRouter()
 
     const handleSignOut = async () => {
@@ -29,50 +29,56 @@ export const UserDropdown = ({ user, isTransparent = false }: { user: User | nul
 
     return (
         <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant={'ghost'}
-                    className={cn(
-                        "group flex items-center gap-2 rounded-full pl-2 pr-4 py-2 h-auto transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95 data-[state=open]:scale-[1.02] data-[state=open]:shadow-[0_0_20px_rgba(255,255,255,0.3)]",
-                        isTransparent
-                            ? "border border-white/30 bg-black/10 backdrop-blur-md hover:bg-white hover:text-black hover:border-white data-[state=open]:bg-white data-[state=open]:text-black data-[state=open]:border-white"
-                            : "hover:bg-blue-50 hover:text-blue-700 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
-                    )}
-                >
-                    <Avatar className={cn(
-                        "size-8 border-2 transition-all duration-300 group-hover:scale-105",
-                        isTransparent
-                            ? "border-white/20 group-hover:border-gray-200 group-data-[state=open]:border-gray-200"
-                            : "border-gray-200 group-hover:border-blue-200 group-data-[state=open]:border-blue-200"
-                    )}>
-                        <AvatarImage src={user?.image || ""} />
-                        <AvatarFallback className={cn(
-                            "bg-primary/20 text-blue-100 group-hover:text-primary group-data-[state=open]:text-primary",
+            {trigger ? (
+                <DropdownMenuTrigger asChild className="outline-none">
+                    {trigger}
+                </DropdownMenuTrigger>
+            ) : (
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant={'ghost'}
+                        className={cn(
+                            "group flex items-center gap-2 rounded-full pl-2 pr-4 py-2 h-auto transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95 data-[state=open]:scale-[1.02] data-[state=open]:shadow-[0_0_20px_rgba(255,255,255,0.3)]",
                             isTransparent
-                                ? "group-hover:bg-blue-100 group-data-[state=open]:bg-blue-100"
-                                : "text-primary/80 group-hover:bg-blue-100 group-data-[state=open]:bg-blue-100"
-                        )}>
-                            {user?.name?.[0]}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="hidden md:flex flex-col items-start gap-0.5">
-                        <span className={cn(
-                            "text-sm font-semibold leading-none transition-colors",
+                                ? "border border-white/30 bg-black/10 backdrop-blur-md hover:bg-white hover:text-black hover:border-white data-[state=open]:bg-white data-[state=open]:text-black data-[state=open]:border-white"
+                                : "hover:bg-blue-50 hover:text-blue-700 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
+                        )}
+                    >
+                        <Avatar className={cn(
+                            "size-8 border-2 transition-all duration-300 group-hover:scale-105",
                             isTransparent
-                                ? "text-white/90 group-hover:text-black group-data-[state=open]:text-black"
-                                : "text-gray-700 group-hover:text-blue-700 group-data-[state=open]:text-blue-700"
+                                ? "border-white/20 group-hover:border-gray-200 group-data-[state=open]:border-gray-200"
+                                : "border-gray-200 group-hover:border-blue-200 group-data-[state=open]:border-blue-200"
                         )}>
-                            {user?.name?.split(" ")[0]}
-                        </span>
-                    </div>
-                    <ChevronDown className={cn(
-                        "size-4 ml-1 transition-all duration-300 group-data-[state=open]:rotate-180",
-                        isTransparent
-                            ? "text-white/60 group-hover:text-black group-data-[state=open]:text-black"
-                            : "text-gray-500 group-hover:text-blue-700 group-data-[state=open]:text-blue-700"
-                    )} />
-                </Button>
-            </DropdownMenuTrigger>
+                            <AvatarImage src={user?.image || ""} />
+                            <AvatarFallback className={cn(
+                                "bg-primary/20 text-blue-100 group-hover:text-primary group-data-[state=open]:text-primary",
+                                isTransparent
+                                    ? "group-hover:bg-blue-100 group-data-[state=open]:bg-blue-100"
+                                    : "text-primary/80 group-hover:bg-blue-100 group-data-[state=open]:bg-blue-100"
+                            )}>
+                                {user?.name?.[0]}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="hidden md:flex flex-col items-start gap-0.5">
+                            <span className={cn(
+                                "text-sm font-semibold leading-none transition-colors",
+                                isTransparent
+                                    ? "text-white/90 group-hover:text-black group-data-[state=open]:text-black"
+                                    : "text-gray-700 group-hover:text-blue-700 group-data-[state=open]:text-blue-700"
+                            )}>
+                                {user?.name?.split(" ")[0]}
+                            </span>
+                        </div>
+                        <ChevronDown className={cn(
+                            "size-4 ml-1 transition-all duration-300 group-data-[state=open]:rotate-180",
+                            isTransparent
+                                ? "text-white/60 group-hover:text-black group-data-[state=open]:text-black"
+                                : "text-gray-500 group-hover:text-blue-700 group-data-[state=open]:text-blue-700"
+                        )} />
+                    </Button>
+                </DropdownMenuTrigger>
+            )}
             <DropdownMenuContent
                 align="end"
                 className="w-64 p-2 rounded-xl border-white/20 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-2xl mt-2 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
