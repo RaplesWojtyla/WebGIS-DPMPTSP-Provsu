@@ -208,7 +208,7 @@ export default function AdminProfilePage() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end border-t px-6 py-4 bg-gray-50/50 rounded-b-xl">
-                        <Button onClick={handleSaveProfile} disabled={isPending}>
+                        <Button onClick={handleSaveProfile} disabled={isPending} className="bg-blue-600 hover:bg-blue-700 text-white">
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Simpan Perubahan
                         </Button>

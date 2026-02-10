@@ -450,7 +450,7 @@ export default function AdminWilayahPage() {
                         </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Nama Kecamatan</Label>
+                        <Label className="text-left">Nama Kecamatan</Label>
                         <div className="col-span-3 space-y-1">
                             <Input {...districtForm.register("name")} placeholder="Nama Kecamatan" />
                             {districtForm.formState.errors.name && (
@@ -637,7 +637,7 @@ export default function AdminWilayahPage() {
 
                             <TabsContent value="kecamatan" className="m-0 border-none">
                                 <DataTable
-                                    columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
+                                    columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten", "Aksi"]}
                                     data={(paginatedData as District[]).map((item, i) => [
                                         startIndex + i + 1,
                                         <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
