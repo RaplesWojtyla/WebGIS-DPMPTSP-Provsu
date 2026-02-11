@@ -52,6 +52,7 @@ import {
     getSectors,
     getPdrbSummaryByYear,
 } from "@/lib/actions/pdrb.actions"
+import PDRBOperatorSkeleton from "@/components/skeleton/PDRBOperatorSkeleton"
 
 const YEARS = ["2024", "2023", "2022", "2021", "2020"]
 const ITEMS_PER_PAGE = 10
@@ -254,6 +255,10 @@ export default function PdrbPage() {
         })
 
         doc.save(`pdrb_${selectedYear}.pdf`)
+    }
+
+    if (isLoading) {
+        return <PDRBOperatorSkeleton />
     }
 
     return (

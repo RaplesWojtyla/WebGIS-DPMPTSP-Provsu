@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { FiUser, FiCheckCircle, FiAlertCircle, FiLoader, FiFileText } from "react-icons/fi";
+import { FiUser, FiCheckCircle, FiAlertCircle, FiFileText } from "react-icons/fi";
 import { getUserInvestorProfile } from "@/lib/actions/profile.actions";
+import DashboardUserSkeleton from "@/components/skeleton/DashboardUserSkeleton";
 
 interface ProfileStatus {
     name: string;
@@ -35,11 +36,7 @@ export default function UserOverviewPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        );
+        return <DashboardUserSkeleton />
     }
 
     const isComplete = profile?.isComplete;

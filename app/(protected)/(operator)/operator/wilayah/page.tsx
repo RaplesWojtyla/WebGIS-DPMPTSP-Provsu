@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import WilayahOperatorSkeleton from "@/components/skeleton/WilayahOperatorSkeleton";
 
 const INITIAL_DATA = [
     {
@@ -137,6 +138,14 @@ export default function KabupatenPage() {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    // Simulate loading
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000); // 1 second delay to show skeleton
+        return () => clearTimeout(timer);
+    }, []);
 
     // Filter Logic
     const filteredData = useMemo(() => {
@@ -235,6 +244,10 @@ export default function KabupatenPage() {
         });
         doc.save("data_wilayah_sumut.pdf");
     };
+
+    if (isLoading) {
+        return <WilayahOperatorSkeleton />
+    }
 
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 md:p-8 space-y-8">

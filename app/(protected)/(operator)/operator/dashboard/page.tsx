@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { FiClock, FiActivity, FiTrendingUp, FiFastForward, FiGrid, FiLoader } from "react-icons/fi"
+import { FiClock, FiActivity, FiTrendingUp, FiFastForward, FiGrid } from "react-icons/fi"
 import {
     getRegenciesWithProvince,
     getSectors,
@@ -13,6 +13,7 @@ import AnalysisLQ from "@/components/dashboard/operator/AnalysisLQ"
 import AnalysisSSA from "@/components/dashboard/operator/AnalysisSSA"
 import AnalysisDLQ from "@/components/dashboard/operator/AnalysisDLQ"
 import AnalysisKlassen from "@/components/dashboard/operator/AnalysisKlassen"
+import DashboardOperatorSkeleton from "@/components/skeleton/DashboardOperatorSkeleton"
 
 // Types needed for passing data
 interface PdrbSubmission {
@@ -81,11 +82,7 @@ export default function OperatorDashboard() {
     }
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <DashboardOperatorSkeleton />
     }
 
     return (

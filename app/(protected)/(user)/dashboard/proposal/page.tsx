@@ -5,6 +5,7 @@ import { FiSend, FiBriefcase, FiHome, FiLoader, FiClock, FiCheckCircle, FiXCircl
 import { toast } from "sonner"
 import { createProposal, updateProposal, getUserProposals, type InvestmentProposalData, type LandOfferProposalData } from "@/lib/actions/proposal.actions"
 import { getSectors, getRegenciesWithProvince } from "@/lib/actions/pdrb.actions"
+import ProposalUserSkeleton from "@/components/skeleton/ProposalUserSkeleton"
 
 type TabType = "form" | "list"
 
@@ -161,11 +162,7 @@ export default function UserProposalPage() {
     const formatCurrency = (v: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v)
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <ProposalUserSkeleton />
     }
 
     return (
