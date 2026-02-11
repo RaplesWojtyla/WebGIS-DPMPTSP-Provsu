@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { FiLoader, FiCheckCircle, FiAlertTriangle, FiEye, FiChevronDown, FiChevronUp } from "react-icons/fi"
 import { toast } from "sonner"
 import { getAllProposals, verifyProposal, requestRevision } from "@/lib/actions/proposal.actions"
+import ReviewOperatorSkeleton from "@/components/skeleton/ReviewOperator"
 
 type ProposalStatusFilter = "SUBMITTED" | "VERIFIED" | "REVISION" | "APPROVED" | "REJECTED"
 
@@ -74,7 +75,7 @@ export default function OperatorProposalPage() {
     const formatDate = (d: string) => new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
 
     if (isLoading) {
-        return <div className="flex items-center justify-center h-64"><FiLoader className="h-8 w-8 animate-spin text-blue-600" /></div>
+        return <ReviewOperatorSkeleton />
     }
 
     return (

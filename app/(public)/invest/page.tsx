@@ -4,7 +4,7 @@ import * as React from "react"
 import { SectorDashboard } from "@/components/Invest/SectorDashboard"
 import { SectorTypology } from "@/components/Invest/SectorTypology"
 import { getApprovedInvestmentRecords } from "@/lib/actions/pdrb.actions"
-import { FiLoader } from "react-icons/fi"
+import SektorDashboardSkeleton from "@/components/skeleton/SektorDashboardSkeleton"
 
 
 export default function InvestPage() {
@@ -29,11 +29,7 @@ export default function InvestPage() {
     }
 
     if (isLoading) {
-        return (
-            <div className="container mx-auto py-20 flex items-center justify-center">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <SektorDashboardSkeleton />;
     }
 
     if (records.length === 0) {

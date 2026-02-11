@@ -5,6 +5,7 @@ import { FiUser, FiSave, FiBriefcase, FiMapPin, FiLoader } from "react-icons/fi"
 import { toast } from "sonner"
 import { getUserInvestorProfile, upsertUserInvestorProfile, type InvestorProfileData } from "@/lib/actions/profile.actions"
 import { getRegenciesWithProvince } from "@/lib/actions/pdrb.actions"
+import ProfilUserSkeleton from "@/components/skeleton/ProfilUserSkeleton"
 
 type RegencyOption = {
     id: string
@@ -106,11 +107,7 @@ export default function UserProfilePage() {
     }
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <ProfilUserSkeleton />
     }
 
     return (

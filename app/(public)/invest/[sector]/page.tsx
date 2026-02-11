@@ -32,6 +32,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import SektorDetailSkeleton from "@/components/skeleton/SektorDetailSkeleton"
 
 export default function SectorDetailPage() {
     const params = useParams()
@@ -75,14 +76,7 @@ export default function SectorDetailPage() {
     const [openRegion, setOpenRegion] = React.useState(false)
 
     if (isLoading) {
-        return (
-            <div className="container mx-auto py-20 text-center">
-                <div className="flex items-center justify-center gap-2 text-slate-500 animate-pulse">
-                    <div className="h-5 w-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
-                    Memuat data sektor...
-                </div>
-            </div>
-        )
+        return <SektorDetailSkeleton />
     }
 
     if (!sectorMetrics) {
