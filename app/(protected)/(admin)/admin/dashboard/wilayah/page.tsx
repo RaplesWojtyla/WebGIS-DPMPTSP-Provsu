@@ -33,6 +33,7 @@ import { RegencyForm } from "@/components/dashboard/operator/RegencyForm"
 import { DistrictForm } from "@/components/dashboard/operator/DistrictForm"
 import { VillageForm } from "@/components/dashboard/operator/VillageForm"
 import { WilayahTable } from "@/components/dashboard/operator/WilayahTable"
+import WilayahAdminSkeleton from "@/components/skeleton/WilayahAdminSkeleton"
 
 const ITEMS_PER_PAGE = 10
 
@@ -78,6 +79,8 @@ export default function AdminWilayahPage() {
 
         setIsLoading(false)
     }
+
+
 
     // Reset when tab changes
     const handleTabChange = (val: string) => {
@@ -362,6 +365,10 @@ export default function AdminWilayahPage() {
         )
     }
 
+    if (isLoading) {
+        return <WilayahAdminSkeleton />
+    }
+
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 md:p-8 space-y-8">
             <div className="flex flex-col gap-2">
@@ -414,83 +421,75 @@ export default function AdminWilayahPage() {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px] hover:shadow-md transition-shadow">
-                    {isLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                        </div>
-                    ) : (
-                        <>
-                            <TabsContent value="all" className="m-0 border-none">
-                                <WilayahTable
-                                    columns={["No", "Kabupaten", "Kode", "Kecamatan", "Kode", "Desa", "Kode", "Aksi"]}
-                                    data={(paginatedData as Village[]).map((item, i) => [
-                                        startIndex + i + 1,
-                                        <span key="kab" className="font-medium text-gray-900">{item.district?.regency?.name || "-"}</span>,
-                                        <span key="kab_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.regency?.code || "-"}</span>,
-                                        <span key="kec" className="font-medium text-gray-900">{item.district?.name || "-"}</span>,
-                                        <span key="kec_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.code || "-"}</span>,
-                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                        item // Pass entire item as the last element for actions
-                                    ])}
-                                    onEdit={handleEdit}
-                                    onDelete={(id) => handleDelete(id, 'desa')}
-                                    isPending={isPending}
-                                />
-                            </TabsContent>
+                    <>
+                        <TabsContent value="all" className="m-0 border-none">
+                            <WilayahTable
+                                columns={["No", "Kabupaten", "Kode", "Kecamatan", "Kode", "Desa", "Kode", "Aksi"]}
+                                data={(paginatedData as Village[]).map((item, i) => [
+                                    startIndex + i + 1,
+                                    <span key="kab" className="font-medium text-gray-900">{item.district?.regency?.name || "-"}</span>,
+                                    <span key="kab_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.regency?.code || "-"}</span>,
+                                    <span key="kec" className="font-medium text-gray-900">{item.district?.name || "-"}</span>,
+                                    <span key="kec_code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.district?.code || "-"}</span>,
+                                    <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                    <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                    item // Pass entire item as the last element for actions
+                                ])}
+                                onEdit={handleEdit}
+                                onDelete={(id) => handleDelete(id, 'desa')}
+                                isPending={isPending}
+                            />
+                        </TabsContent>
 
-                            <TabsContent value="kabupaten" className="m-0 border-none">
-                                <WilayahTable
-                                    columns={["No", "Kode Kab", "Nama Kabupaten", "Provinsi", "Aksi"]}
-                                    data={(paginatedData as Regency[]).map((item, i) => [
-                                        startIndex + i + 1,
-                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                        <span key="prov" className="text-gray-500 text-sm">{item.province?.name || "SUMATERA UTARA"}</span>,
-                                        item
-                                    ])}
-                                    onEdit={handleEdit}
-                                    onDelete={(id) => handleDelete(id, 'kabupaten')}
-                                    isPending={isPending}
-                                />
-                            </TabsContent>
+                        <TabsContent value="kabupaten" className="m-0 border-none">
+                            <WilayahTable
+                                columns={["No", "Kode Kab", "Nama Kabupaten", "Provinsi", "Aksi"]}
+                                data={(paginatedData as Regency[]).map((item, i) => [
+                                    startIndex + i + 1,
+                                    <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                    <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                    <span key="prov" className="text-gray-500 text-sm">{item.province?.name || "SUMATERA UTARA"}</span>,
+                                    item
+                                ])}
+                                onEdit={handleEdit}
+                                onDelete={(id) => handleDelete(id, 'kabupaten')}
+                                isPending={isPending}
+                            />
+                        </TabsContent>
 
-                            <TabsContent value="kecamatan" className="m-0 border-none">
-                                <WilayahTable
-                                    columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
-                                    data={(paginatedData as District[]).map((item, i) => [
-                                        startIndex + i + 1,
-                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                        <span key="kab" className="text-gray-600">{item.regency?.name || "-"}</span>,
-                                        item
-                                    ])}
-                                    onEdit={handleEdit}
-                                    onDelete={(id) => handleDelete(id, 'kecamatan')}
-                                    isPending={isPending}
-                                />
-                            </TabsContent>
+                        <TabsContent value="kecamatan" className="m-0 border-none">
+                            <WilayahTable
+                                columns={["No", "Kode Kec", "Nama Kecamatan", "Kabupaten (Induk)", "Aksi"]}
+                                data={(paginatedData as District[]).map((item, i) => [
+                                    startIndex + i + 1,
+                                    <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                    <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                    <span key="kab" className="text-gray-600">{item.regency?.name || "-"}</span>,
+                                    item
+                                ])}
+                                onEdit={handleEdit}
+                                onDelete={(id) => handleDelete(id, 'kecamatan')}
+                                isPending={isPending}
+                            />
+                        </TabsContent>
 
-                            <TabsContent value="desa" className="m-0 border-none">
-                                <WilayahTable
-                                    columns={["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten", "Aksi"]}
-                                    data={(paginatedData as Village[]).map((item, i) => [
-                                        startIndex + i + 1,
-                                        <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
-                                        <span key="name" className="font-medium text-gray-900">{item.name}</span>,
-                                        <span key="kec" className="text-gray-600">{item.district?.name || "-"}</span>,
-                                        <span key="kab" className="text-gray-600">{item.district?.regency?.name || "-"}</span>,
-                                        item
-                                    ])}
-                                    onEdit={handleEdit}
-                                    onDelete={(id) => handleDelete(id, 'desa')}
-                                    isPending={isPending}
-                                />
-                            </TabsContent>
-                        </>
-                    )}
-
-                    {/* Pagination Footer */}
+                        <TabsContent value="desa" className="m-0 border-none">
+                            <WilayahTable
+                                columns={["No", "Kode Desa", "Nama Desa", "Kecamatan", "Kabupaten", "Aksi"]}
+                                data={(paginatedData as Village[]).map((item, i) => [
+                                    startIndex + i + 1,
+                                    <span key="code" className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{item.code}</span>,
+                                    <span key="name" className="font-medium text-gray-900">{item.name}</span>,
+                                    <span key="kec" className="text-gray-600">{item.district?.name || "-"}</span>,
+                                    <span key="kab" className="text-gray-600">{item.district?.regency?.name || "-"}</span>,
+                                    item
+                                ])}
+                                onEdit={handleEdit}
+                                onDelete={(id) => handleDelete(id, 'desa')}
+                                isPending={isPending}
+                            />
+                        </TabsContent>
+                    </>
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/30">
                         <div className="text-xs text-gray-500 text-center sm:text-left">
                             Menampilkan <span className="font-medium text-gray-900">{Math.min(endIndex, filteredData.length)}</span> dari <span className="font-medium text-gray-900">{filteredData.length}</span> data

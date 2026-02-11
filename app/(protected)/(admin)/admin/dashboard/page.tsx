@@ -5,6 +5,7 @@ import { FiUsers, FiMap, FiGrid, FiClock, FiCheckCircle, FiXCircle, FiLoader, Fi
 import Link from "next/link"
 import { getAdminDashboardStats } from "@/lib/actions/pdrb.actions"
 import { getProposalStats } from "@/lib/actions/proposal.actions"
+import DashboardAdminSkeleton from "@/components/skeleton/DashboardAdminSkeleton"
 
 interface AdminDashboardData {
     usersCount: number
@@ -90,12 +91,11 @@ export default function AdminDashboard() {
         }
     }
 
+    // ...
+    // ...
+
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <FiLoader className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <DashboardAdminSkeleton />
     }
 
     return (

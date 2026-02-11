@@ -73,6 +73,7 @@ import {
     unsuspendUser,
     deleteUser
 } from "@/lib/actions/user.actions"
+import UsersAdminSkeleton from "@/components/skeleton/UsersAdminSkeleton"
 
 const ITEMS_PER_PAGE = 10
 
@@ -98,6 +99,9 @@ export default function UsersPage() {
     }, [])
 
     const loadUsers = async () => {
+        // setIsLoading(true) - already set to true initially, but good to keep if reloading
+        // But for initial load, we want to show skeleton.
+        // The skeleton covers the whole page, so we return it early.
         setIsLoading(true)
 
         const result = await getAllUsers()
@@ -110,6 +114,8 @@ export default function UsersPage() {
 
         setIsLoading(false)
     }
+
+
 
     // Filter and Search
     const filteredUsers = useMemo(() => {
@@ -254,6 +260,10 @@ export default function UsersPage() {
         return { total, admins, operators, suspended }
     }, [users])
 
+    if (isLoading) {
+        return <UsersAdminSkeleton />
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -311,95 +321,90 @@ export default function UsersPage() {
 
             {/* Table */}
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                {isLoading ? (
-                    <div className="flex items-center justify-center h-64">
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                    </div>
-                ) : (
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead className="w-[50px] text-center">No</TableHead>
-                                <TableHead>Pengguna</TableHead>
-                                <TableHead className="text-center">Role</TableHead>
-                                <TableHead className="text-center">Status</TableHead>
-                                <TableHead className="text-center">Terdaftar</TableHead>
-                                <TableHead className="text-center w-[100px]">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {paginatedUsers.map((user, index) => (
-                                <TableRow key={user.id} className="hover:bg-gray-50">
-                                    <TableCell className="text-center text-gray-500">
-                                        {startIndex + index + 1}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
-                                                {user.name.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">{user.name}</span>
-                                                <div className="flex items-center text-xs text-gray-500">
-                                                    <Mail className="h-3 w-3 mr-1" />
-                                                    {user.email}
-                                                </div>
+                <Table>
+                    <TableHeader className="bg-gray-50">
+                        <TableRow>
+                            <TableHead className="w-[50px] text-center">No</TableHead>
+                            <TableHead>Pengguna</TableHead>
+                            <TableHead className="text-center">Role</TableHead>
+                            <TableHead className="text-center">Status</TableHead>
+                            <TableHead className="text-center">Terdaftar</TableHead>
+                            <TableHead className="text-center w-[100px]">Aksi</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {paginatedUsers.map((user, index) => (
+                            <TableRow key={user.id} className="hover:bg-gray-50">
+                                <TableCell className="text-center text-gray-500">
+                                    {startIndex + index + 1}
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                                            {user.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{user.name}</span>
+                                            <div className="flex items-center text-xs text-gray-500">
+                                                <Mail className="h-3 w-3 mr-1" />
+                                                {user.email}
                                             </div>
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {getRoleBadge(user.role)}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {getStatusBadge(user)}
-                                    </TableCell>
-                                    <TableCell className="text-center text-sm text-gray-500">
-                                        {formatDate(user.createdAt)}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => handleRoleClick(user)}>
-                                                    <Shield className="mr-2 h-4 w-4" /> Ubah Role
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleSuspendClick(user)}>
-                                                    {user.suspended ? (
-                                                        <><UserCheck className="mr-2 h-4 w-4" /> Aktifkan</>
-                                                    ) : (
-                                                        <><UserX className="mr-2 h-4 w-4" /> Suspend</>
-                                                    )}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    className="text-red-600"
-                                                    onClick={() => handleDeleteClick(user)}
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Hapus
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {paginatedUsers.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-12 text-gray-400">
-                                        {users.length === 0
-                                            ? "Belum ada data pengguna"
-                                            : "Tidak ada pengguna yang sesuai filter"
-                                        }
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                )}
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {getRoleBadge(user.role)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {getStatusBadge(user)}
+                                </TableCell>
+                                <TableCell className="text-center text-sm text-gray-500">
+                                    {formatDate(user.createdAt)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                                            <DropdownMenuItem onClick={() => handleRoleClick(user)}>
+                                                <Shield className="mr-2 h-4 w-4" /> Ubah Role
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleSuspendClick(user)}>
+                                                {user.suspended ? (
+                                                    <><UserCheck className="mr-2 h-4 w-4" /> Aktifkan</>
+                                                ) : (
+                                                    <><UserX className="mr-2 h-4 w-4" /> Suspend</>
+                                                )}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                className="text-red-600"
+                                                onClick={() => handleDeleteClick(user)}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {paginatedUsers.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center py-12 text-gray-400">
+                                    {users.length === 0
+                                        ? "Belum ada data pengguna"
+                                        : "Tidak ada pengguna yang sesuai filter"
+                                    }
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+
 
                 {/* Pagination */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t bg-gray-50/50">
@@ -508,6 +513,6 @@ export default function UsersPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </div >
     )
 }

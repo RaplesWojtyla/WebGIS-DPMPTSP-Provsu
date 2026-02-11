@@ -21,6 +21,7 @@ import {
     updateProfile,
     changePassword
 } from "@/lib/actions/profile.actions"
+import ProfileAdminSkeleton from "@/components/skeleton/ProfileAdminSkeleton"
 
 type UserProfile = {
     id: string
@@ -129,12 +130,10 @@ export default function AdminProfilePage() {
         }
     }
 
+    // ...
+
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-        )
+        return <ProfileAdminSkeleton />
     }
 
     if (!profile) {
