@@ -13,6 +13,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, Pencil,
 import { toast } from "sonner"
 import { getSectors, createSector, updateSector, deleteSector } from "@/lib/actions/sector.actions"
 import { sectorSchema, type SectorFormData } from "@/lib/zod/sector-schema"
+import SektorAdminSkeleton from "@/components/skeleton/SektorAdmin"
 
 export default function SektorPage() {
     const [sectors, setSectors] = useState<Sector[]>([])
@@ -43,15 +44,15 @@ export default function SektorPage() {
 
     const loadSectors = async () => {
         setIsLoading(true)
-        
+
         const result = await getSectors()
-        
+
         if (result.success && result.data) {
             setSectors(result.data)
         } else {
             toast.error(result.error || "Gagal memuat data")
         }
-        
+
         setIsLoading(false)
     }
 
@@ -69,11 +70,11 @@ export default function SektorPage() {
     const handleAdd = () => {
         setIsEditing(false)
         setEditingId(null)
-        reset({ 
-            code: "", 
-            name: "", 
-            nameEn: "", 
-            description: "" 
+        reset({
+            code: "",
+            name: "",
+            nameEn: "",
+            description: ""
         })
         setIsDialogOpen(true)
     }

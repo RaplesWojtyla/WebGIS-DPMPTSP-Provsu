@@ -62,6 +62,7 @@ import {
     rejectPdrb,
 } from "@/lib/actions/pdrb.actions"
 import { authClient } from "@/lib/better-auth/auth-client"
+import PDRBAdminSkeleton from "@/components/skeleton/PDRBAdminSkeleton"
 
 const ITEMS_PER_PAGE = 10
 const YEARS = ["2024", "2023", "2022", "2021", "2020"]
@@ -98,6 +99,8 @@ export default function PdrbAdminPage() {
 
         setIsLoading(false)
     }
+
+
 
     const groupedData = useMemo(() => {
         const groups = new Map<string, GroupedPdrb>()
@@ -303,6 +306,10 @@ export default function PdrbAdminPage() {
         return { pending, approved, rejected, total: groupedData.length }
     }, [groupedData])
 
+    if (isLoading) {
+        return <PDRBAdminSkeleton />
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -378,87 +385,81 @@ export default function PdrbAdminPage() {
 
             {/* Table */}
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                {isLoading ? (
-                    <div className="flex items-center justify-center h-64">
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                    </div>
-                ) : (
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead className="w-[50px] text-center">No</TableHead>
-                                <TableHead>Kabupaten</TableHead>
-                                <TableHead className="text-right">Total PDRB</TableHead>
-                                <TableHead className="text-center">Sektor</TableHead>
-                                <TableHead className="text-center">Status</TableHead>
-                                <TableHead className="text-center">Diajukan</TableHead>
-                                <TableHead className="text-center w-[180px]">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {paginatedData.map((item, index) => (
-                                <TableRow key={`${item.regencyId}-${item.year}`} className="hover:bg-gray-50">
-                                    <TableCell className="text-center text-gray-500">
-                                        {startIndex + index + 1}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{item.regencyName}</span>
-                                            <span className="text-xs text-gray-400">{item.regencyCode}</span>
+                <Table>
+                    <TableHeader className="bg-gray-50">
+                        <TableRow>
+                            <TableHead className="w-[50px] text-center">No</TableHead>
+                            <TableHead>Kabupaten</TableHead>
+                            <TableHead className="text-right">Total PDRB</TableHead>
+                            <TableHead className="text-center">Sektor</TableHead>
+                            <TableHead className="text-center">Status</TableHead>
+                            <TableHead className="text-center">Diajukan</TableHead>
+                            <TableHead className="text-center w-[180px]">Aksi</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {paginatedData.map((item, index) => (
+                            <TableRow key={`${item.regencyId}-${item.year}`} className="hover:bg-gray-50">
+                                <TableCell className="text-center text-gray-500">
+                                    {startIndex + index + 1}
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex flex-col">
+                                        <span className="font-medium">{item.regencyName}</span>
+                                        <span className="text-xs text-gray-400">{item.regencyCode}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-right font-mono">
+                                    {formatCurrency(item.totalValue)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <Badge variant="outline">{item.sectorCount} sektor</Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {getStatusBadge(item.status)}
+                                </TableCell>
+                                <TableCell className="text-center text-sm text-gray-500">
+                                    {formatDate(item.submittedAt)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {item.status === 'PENDING' ? (
+                                        <div className="flex gap-2 justify-center">
+                                            <Button
+                                                size="sm"
+                                                className="bg-green-600 hover:bg-green-700"
+                                                onClick={() => handleApprove(item)}
+                                                disabled={isPending}
+                                            >
+                                                <CheckCircle className="w-4 h-4 mr-1" /> Setujui
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="border-red-200 text-red-600 hover:bg-red-50"
+                                                onClick={() => handleReject(item)}
+                                                disabled={isPending}
+                                            >
+                                                <XCircle className="w-4 h-4 mr-1" /> Tolak
+                                            </Button>
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-right font-mono">
-                                        {formatCurrency(item.totalValue)}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant="outline">{item.sectorCount} sektor</Badge>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {getStatusBadge(item.status)}
-                                    </TableCell>
-                                    <TableCell className="text-center text-sm text-gray-500">
-                                        {formatDate(item.submittedAt)}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {item.status === 'PENDING' ? (
-                                            <div className="flex gap-2 justify-center">
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-green-600 hover:bg-green-700"
-                                                    onClick={() => handleApprove(item)}
-                                                    disabled={isPending}
-                                                >
-                                                    <CheckCircle className="w-4 h-4 mr-1" /> Setujui
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="border-red-200 text-red-600 hover:bg-red-50"
-                                                    onClick={() => handleReject(item)}
-                                                    disabled={isPending}
-                                                >
-                                                    <XCircle className="w-4 h-4 mr-1" /> Tolak
-                                                </Button>
-                                            </div>
-                                        ) : (
-                                            <span className="text-gray-400 text-sm">-</span>
-                                        )}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {paginatedData.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-12 text-gray-400">
-                                        {groupedData.length === 0
-                                            ? "Belum ada data PDRB yang diajukan"
-                                            : "Tidak ada data yang sesuai filter"
-                                        }
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                )}
+                                    ) : (
+                                        <span className="text-gray-400 text-sm">-</span>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {paginatedData.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={7} className="text-center py-12 text-gray-400">
+                                    {groupedData.length === 0
+                                        ? "Belum ada data PDRB yang diajukan"
+                                        : "Tidak ada data yang sesuai filter"
+                                    }
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
 
                 {/* Pagination */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t bg-gray-50/50">
