@@ -49,7 +49,9 @@ export default function SignInPage() {
                 })
             }
         } else {
-            if (response.errorCode === 'EMAIL_NOT_VERIFIED') {
+            if (response.errorCode === 'ACCOUNT_SUSPENDED') {
+                router.push('/suspended')
+            } else if (response.errorCode === 'EMAIL_NOT_VERIFIED') {
                 toast.info("Email Belum Terverifikasi", {
                     description: "Mengirim ulang email verifikasi...",
                     duration: 3000,
