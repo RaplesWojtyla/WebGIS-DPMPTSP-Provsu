@@ -16,7 +16,8 @@ export async function middleware(req: NextRequest) {
         pathname === "/" ||
         pathname.startsWith("/invest") ||
         pathname.startsWith("/maps") ||
-        pathname.startsWith("/api/auth")
+        pathname.startsWith("/api/auth") ||
+        pathname.startsWith("/suspended")
 
     const isAdminRoute = pathname.startsWith("/admin")
     const isOperatorRoute = pathname.startsWith("/operator")
@@ -29,9 +30,9 @@ export async function middleware(req: NextRequest) {
         })
     }
 
-    const session = getSessionCookie(req)
+    const sessionCookie = getSessionCookie(req)
 
-    if (!session) {
+    if (!sessionCookie) {
         if (isProtectedApiRoute) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
@@ -57,8 +58,31 @@ export async function middleware(req: NextRequest) {
         })
     }
 
+    // Cookie exists — validate session against DB before redirecting
     if (isAuthRoute) {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
+        try {
+            const sessionRes = await fetch(new URL('/api/auth/get-session', req.url), {
+                headers: {
+                    cookie: req.headers.get('cookie') || ''
+                }
+            })
+
+            if (sessionRes.ok) {
+                const session = await sessionRes.json()
+                if (session?.user) {
+                    return NextResponse.redirect(new URL('/dashboard', req.url))
+                }
+            }
+        } catch {
+            // Session validation failed — allow auth page access
+        }
+
+        // Session invalid/expired — clear stale cookie and let user access auth page
+        const response = NextResponse.next({
+            request: { headers: requestHeaders }
+        })
+        response.cookies.delete('better-auth.session_token')
+        return response
     }
 
     return NextResponse.next({

@@ -119,6 +119,12 @@ export const signInWithEmail = async (data: SignInFormData) => {
                         email: ["Email belum terverifikasi"]
                     }
                 }
+            } else if (error.body?.code === 'ACCOUNT_SUSPENDED') {
+                return {
+                    success: false,
+                    errorCode: 'ACCOUNT_SUSPENDED',
+                    message: "Akun Anda telah dinonaktifkan. Hubungi administrator untuk informasi lebih lanjut.",
+                }
             } else {
                 return {
                     success: false,

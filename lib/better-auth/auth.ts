@@ -5,6 +5,7 @@ import { nextCookies } from "better-auth/next-js"
 import { render } from "@react-email/components"
 import EmailVerification from "@/components/email/EmailVerificationTemplate"
 import { transporter } from "../email/mailer"
+import { createAuthMiddleware, APIError } from "better-auth/api"
 
 
 export const auth = betterAuth({
@@ -19,6 +20,25 @@ export const auth = betterAuth({
                 type: "string"
             }
         }
+    },
+    hooks: {
+        before: createAuthMiddleware(async (ctx) => {
+            if (ctx.path === "/sign-in/email") {
+                const email = ctx.body?.email
+                if (email) {
+                    const user = await prisma.user.findUnique({
+                        where: { email },
+                        select: { suspended: true }
+                    })
+                    if (user?.suspended) {
+                        throw new APIError("FORBIDDEN", {
+                            message: "Akun Anda telah dinonaktifkan. Hubungi administrator.",
+                            code: "ACCOUNT_SUSPENDED"
+                        })
+                    }
+                }
+            }
+        }),
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
@@ -55,3 +75,4 @@ export const auth = betterAuth({
     },
     plugins: [nextCookies()]
 })
+
