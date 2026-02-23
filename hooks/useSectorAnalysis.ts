@@ -2,7 +2,7 @@ import * as React from "react"
 import { calculateLQ, calculateSSA, calculateKlassen } from "@/lib/lq-utils"
 
 export function useSectorAnalysis(sectorName: string, inputRecords: InvestmentRecord[] = [], initialRegion: string = "all", initialYearStr?: string) {
-    const [records] = React.useState<InvestmentRecord[]>(inputRecords)
+    const records = inputRecords
 
     // Extract unique regions and years based on the CURRENT SECTOR
     const sectorRecords = React.useMemo(() => records.filter(r => r.sector === sectorName), [records, sectorName])
